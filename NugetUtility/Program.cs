@@ -1,8 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using CommandLine;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace NugetUtility
@@ -11,47 +13,35 @@ namespace NugetUtility
     {
         static void Main(string[] args)
         {
-            List<string> licences = new List<string>();
+            IEnumerable<Tuple<string, string, string>> licences = new List<Tuple<string, string, string>>();
 
-            Console.WriteLine("Application Started...");
-
-            XDocument projDefinition = XDocument.Load("Project-Path");
-            IEnumerable<string> references = projDefinition
-                .Element("Project")
-                .Elements("ItemGroup")
-                .Elements("PackageReference")
-                .Attributes("Include")
-                .Select(i => i.Value);
-
-            foreach (var reference in references)
+            Methods methods = new Methods();
+            Task.Run(async () =>
             {
-                using (var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10000) })
-                {
-                    string requestUrl = "https://api-v2v3search-0.nuget.org:443/query?q=" + reference;
-                    try
-                    {
-                        HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, requestUrl);
-                        HttpResponseMessage response = null;
-                        response = httpClient.SendAsync(req).Result;
-                        string responseText = response.Content.ReadAsStringAsync().Result;
-                        Package result = JsonConvert.DeserializeObject<Package>(responseText);
-                        licences.Add(reference + "," + result.data.FirstOrDefault().projectUrl + "," + result.data.FirstOrDefault().version + "," + result.data.FirstOrDefault().licenseUrl);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.Write("FAIL                 .");
-                        Console.WriteLine(e);
-                    }
-                }
-            }
+                var result = CommandLine.Parser.Default.ParseArguments<PackageOptions>(args);
 
-            foreach (var item in licences)
-            {
-                Console.WriteLine(item);
-            }
+                await result.MapResult(
+                    (PackageOptions options) =>
+                    {
+                        if (string.IsNullOrEmpty(options.ProjectDirectory))
+                        {
+                            Console.WriteLine("ERROR(S):");
+                            Console.WriteLine("-i\tInput File(s) or Folder(s) to encrypt.");
+                        }
+                        else
+                        {
+                            System.Console.WriteLine("Nuget Reference(s) Analysis...");
+                            licences = methods.PrintReferencesAsync(options.ProjectDirectory).Result;
+                        }
+                        return Task.FromResult(0);
+                    },
+                    errors => Task.FromResult(1));
 
-            Console.ReadKey();
-            Console.WriteLine("Application Finished...");
+            }).GetAwaiter().GetResult();
+
+            Console.WriteLine(licences.ToStringTable(
+            new[] { "Reference", "Version", "Licence" },
+            a => a.Item1 != null ? a.Item1 : "---", a => a.Item2 != null ? a.Item2 : "", a => a.Item3 != null ? a.Item3 : "---"));
         }
     }
 }
