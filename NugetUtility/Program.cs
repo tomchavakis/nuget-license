@@ -26,7 +26,7 @@ namespace NugetUtility
                         if (string.IsNullOrEmpty(options.ProjectDirectory))
                         {
                             Console.WriteLine("ERROR(S):");
-                            Console.WriteLine("-i\tInput File(s) or Folder(s) to encrypt.");
+                            Console.WriteLine("-i\tInput the Directory Path (csproj file)");
                         }
                         else
                         {
@@ -39,9 +39,13 @@ namespace NugetUtility
 
             }).GetAwaiter().GetResult();
 
-            Console.WriteLine(licences.ToStringTable(
-            new[] { "Reference", "Version", "Licence" },
-            a => a.Item1 != null ? a.Item1 : "---", a => a.Item2 != null ? a.Item2 : "", a => a.Item3 != null ? a.Item3 : "---"));
+            if (licences.Count() > 0)
+            {
+                Console.WriteLine(licences.ToStringTable(
+                new[] { "Reference", "Version", "Licence" },
+                a => a.Item1 != null ? a.Item1 : "---", a => a.Item2 != null ? a.Item2 : "", a => a.Item3 != null ? a.Item3 : "---"));
+            }
+
         }
     }
 }
