@@ -31,7 +31,7 @@ namespace NugetUtility
                         else
                         {
                             System.Console.WriteLine("Nuget Reference(s) Analysis...");
-                            licences = methods.PrintReferencesAsync(options.ProjectDirectory).Result;
+                            bool licensesHasRetrieved = methods.PrintReferencesAsync(options.ProjectDirectory).Result;
                         }
                         return Task.FromResult(0);
                     },
@@ -39,12 +39,7 @@ namespace NugetUtility
 
             }).GetAwaiter().GetResult();
 
-            if (licences.Count() > 0)
-            {
-                Console.WriteLine(licences.ToStringTable(
-                new[] { "Reference", "Version", "Licence" },
-                a => a.Item1 != null ? a.Item1 : "---", a => a.Item2 != null ? a.Item2 : "", a => a.Item3 != null ? a.Item3 : "---"));
-            }
+            
 
         }
     }
