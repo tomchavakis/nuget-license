@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -44,15 +45,21 @@ namespace NugetUtility
         }
 
 
-        public async Task<IEnumerable<Tuple<string, string, string>>> GetNugetInformationAsync(IEnumerable<string> references)
+        /// <summary>
+        /// Get Nuget References per project
+        /// </summary>
+        /// <param name="project">project name</param>
+        /// <param name="references">List of projects</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<Tuple<string, string, string>>> GetNugetInformationAsync(string project, IEnumerable<string> references)
         {
+            System.Console.WriteLine(project);
             List<Tuple<string, string, string>> licenses = new List<Tuple<string, string, string>>();
             foreach (var reference in references)
             {
                 using (var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) })
                 {
                     string requestUrl = nugetUrl + reference;
-
                     try
                     {
                         HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, requestUrl);
@@ -60,7 +67,6 @@ namespace NugetUtility
                         response = await httpClient.SendAsync(req);
                         string responseText = await response.Content.ReadAsStringAsync();
                         Package result = JsonConvert.DeserializeObject<Package>(responseText);
-                        //licenses.Add(license);
                         licenses.Add(Tuple.Create(reference, result.data.FirstOrDefault().version, result.data.FirstOrDefault().licenseUrl));
                     }
                     catch (Exception ex)
@@ -73,12 +79,33 @@ namespace NugetUtility
             return licenses;
         }
 
-        public async Task<IEnumerable<Tuple<string, string, string>>> PrintReferencesAsync(string projectPath)
+        public string GetProjectExtension()
         {
+            return ".csproj";
+        }
+
+        public async Task<bool> PrintReferencesAsync(string projectPath)
+        {
+            bool result = false;
+
             IEnumerable<Tuple<string, string, string>> licences = new List<Tuple<string, string, string>>();
-            IEnumerable<string> references = this.GetProjectReferences(projectPath);
-            licences = await this.GetNugetInformationAsync(references);
-            return licences;
+
+            var projects = Directory.GetFiles(projectPath, "*.*", SearchOption.AllDirectories).Where(i => i.EndsWith(GetProjectExtension()));
+            foreach (var item in projects)
+            {
+                IEnumerable<string> references = this.GetProjectReferences(item);
+                licences = await this.GetNugetInformationAsync(item, references);
+                if (licences.Count() > 0)
+                {
+                    Console.WriteLine(licences.ToStringTable(
+                    new[] { "Reference", "Version", "Licence" },
+                    a => a.Item1 != null ? a.Item1 : "---", a => a.Item2 != null ? a.Item2 : "", a => a.Item3 != null ? a.Item3 : "---"));
+                    result = true;
+                }
+            }
+
+            return result;
+
         }
 
     }
