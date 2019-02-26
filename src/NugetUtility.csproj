@@ -7,12 +7,12 @@
     <PackAsTool>true</PackAsTool>
     <PackageType>DotnetTool</PackageType>
     <RepositoryType>git</RepositoryType>
-    <PackageId>dotnet-license</PackageId>
-    <ToolCommandName>dotnet-license</ToolCommandName>
+    <PackageId>dotnet-project-licenses</PackageId>
+    <ToolCommandName>dotnet-project-licenses</ToolCommandName>
     <Version>1.0.0</Version>
     <Authors>Tom Chavakis</Authors>
     <Company>-</Company>
-    <Title>.NET Core Tool to retreive the licenses of a projects</Title>
+    <Title>.NET Core Tool to print a list of the licenses of a projects</Title>
     <PackageProjectUrl>https://github.com/tomchavakis/nuget-license</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
