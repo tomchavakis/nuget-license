@@ -84,29 +84,61 @@ namespace NugetUtility
             return ".csproj";
         }
 
-        public async Task<bool> PrintReferencesAsync(string projectPath)
+        public async Task<bool> PrintReferencesAsync(string projectPath, bool uniqueList)
         {
             bool result = false;
-
-            IEnumerable<Tuple<string, string, string>> licences = new List<Tuple<string, string, string>>();
+            List<Tuple<string, string, string>> licenses_new = new List<Tuple<string, string, string>>();
+            IEnumerable<Tuple<string, string, string>> licenses = new List<Tuple<string, string, string>>();
 
             var projects = Directory.GetFiles(projectPath, "*.*", SearchOption.AllDirectories).Where(i => i.EndsWith(GetProjectExtension()));
             foreach (var item in projects)
             {
                 IEnumerable<string> references = this.GetProjectReferences(item);
-                licences = await this.GetNugetInformationAsync(item, references);
-                if (licences.Count() > 0)
+
+                if (uniqueList)
                 {
-                    Console.WriteLine(licences.ToStringTable(
-                    new[] { "Reference", "Version", "Licence" },
-                    a => a.Item1 != null ? a.Item1 : "---", a => a.Item2 != null ? a.Item2 : "", a => a.Item3 != null ? a.Item3 : "---"));
-                    result = true;
+                    licenses = await this.GetNugetInformationAsync(item, references);
+                    licenses_new.AddRange(licenses.ToList());
                 }
+                else
+                {
+                    licenses = await this.GetNugetInformationAsync(item, references);
+                    PrintLicenses(licenses);
+                }
+
+                result = true;
+
             }
+
+            if (uniqueList)
+                PrintUniqueLicenses(licenses_new);
 
             return result;
 
         }
+
+        public void PrintLicenses(IEnumerable<Tuple<string, string, string>> licenses)
+        {
+            if (licenses.Count() > 0)
+            {
+                Console.WriteLine(licenses.ToStringTable(
+                new[] { "Reference", "Version", "Licence" },
+                a => a.Item1 != null ? a.Item1 : "---", a => a.Item2 != null ? a.Item2 : "", a => a.Item3 != null ? a.Item3 : "---"));
+            }
+        }
+
+        public void PrintUniqueLicenses(IEnumerable<Tuple<string, string, string>> licenses)
+        {
+
+            if (licenses.Count() > 0)
+            {
+                licenses = licenses.Distinct().ToList();
+                Console.WriteLine(licenses.ToStringTable(
+                new[] { "Reference", "Version", "Licence" },
+                a => a.Item1 != null ? a.Item1 : "---", a => a.Item2 != null ? a.Item2 : "", a => a.Item3 != null ? a.Item3 : "---"));
+            }
+        }
+
 
     }
 }
