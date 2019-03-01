@@ -30,7 +30,7 @@ namespace NugetUtility
                         }
                         else
                         {
-                            System.Console.WriteLine("Nuget Reference(s) Analysis...");
+                            System.Console.WriteLine("Project Reference(s) Analysis...");
                             bool licensesHasRetrieved = methods.PrintReferencesAsync(options.ProjectDirectory, options.UniqueOutput).Result;
                         }
                         return Task.FromResult(0);
@@ -38,9 +38,7 @@ namespace NugetUtility
                     errors => Task.FromResult(1));
 
             }).GetAwaiter().GetResult();
-
             
-
         }
     }
 }
