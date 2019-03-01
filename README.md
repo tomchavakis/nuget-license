@@ -12,18 +12,30 @@ Usage: dotnet-project-licenses [options]
 |------|-------------|
 | `-i` | Project Folder |
 
-## dotnet-encrypto tool
+## dotnet-project-licenses tool
 
-* Install tool
+**Install tool**
 
-`dotnet tool install --global dotnet-project-licenses`
+```
+dotnet tool install --global dotnet-project-licenses
 
-* Uninstall tool
+```
 
-`dotnet tool uninstall --global dotnet-project-licenses`
+**Uninstall tool**
+
+```
+dotnet tool uninstall --global dotnet-project-licenses
+```
 
 ## Using tool
 
-`dotnet-project-licenses --help`
+```
+dotnet-project-licenses --help
 
-`dotnet-project-licenses - i projectFolder`
+dotnet-project-licenses -i projectFolder
+```
+
+**Print unique licenses:**
+```
+dotnet-project-licenses -i projectFolder -u
+```
