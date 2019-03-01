@@ -1,7 +1,6 @@
 language: csharp
 solution: NugetUtility.sln
-dist: xenial
-dotnet: 2.2
+dotnet: 2.1.403
 script:
   - dotnet restore
   - dotnet build
