@@ -14,6 +14,9 @@ namespace NugetUtility
 
         [Option('u', "unique", Default = false , HelpText="Print unique licenses list")]
         public bool UniqueOutput {get;set;}
+        
+        [Option('o', "output", Default = false , HelpText="Output file")]
+        public bool Output { get; set; }
 
         [Usage(ApplicationAlias = "dotnet-nuget")]
         public static IEnumerable<Example> Examples

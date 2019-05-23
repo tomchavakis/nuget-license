@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Newtonsoft.Json;
@@ -84,8 +85,9 @@ namespace NugetUtility
             return ".csproj";
         }
 
-        public async Task<bool> PrintReferencesAsync(string projectPath, bool uniqueList)
+        public async Task<bool> PrintReferencesAsync(string projectPath, bool uniqueList, bool output)
         {
+            Console.WriteLine("output" + output);
             bool result = false;
             List<Tuple<string, string, string>> licenses_new = new List<Tuple<string, string, string>>();
             IEnumerable<Tuple<string, string, string>> licenses = new List<Tuple<string, string, string>>();
@@ -111,7 +113,7 @@ namespace NugetUtility
             }
 
             if (uniqueList)
-                PrintUniqueLicenses(licenses_new);
+                await PrintUniqueLicenses(licenses_new,output);
 
             return result;
 
@@ -127,7 +129,7 @@ namespace NugetUtility
             }
         }
 
-        public void PrintUniqueLicenses(IEnumerable<Tuple<string, string, string>> licenses)
+        public async Task PrintUniqueLicenses(IEnumerable<Tuple<string, string, string>> licenses, bool output)
         {
 
             if (licenses.Count() > 0)
@@ -136,7 +138,29 @@ namespace NugetUtility
                 Console.WriteLine(licenses.ToStringTable(
                 new[] { "Reference", "Version", "Licence" },
                 a => a.Item1 != null ? a.Item1 : "---", a => a.Item2 != null ? a.Item2 : "", a => a.Item3 != null ? a.Item3 : "---"));
+                
+                if (output)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var license in licenses)
+                    {
+                        Console.WriteLine("###" + license.Item3);
+                        if (!string.IsNullOrWhiteSpace(license.Item3))
+                        {
+                            HttpClient client = new HttpClient();
+                            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get,license.Item3 );
+                            HttpResponseMessage message = await client.SendAsync(request);
+                            string responseMessage = await message.Content.ReadAsStringAsync();
+                            sb.Append(responseMessage);
+                        }
+                    }
+
+                    File.WriteAllText("licences.txt",sb.ToString());
+                }
+                
             }
+
+           
         }
 
 
