@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 using Newtonsoft.Json;
 
 namespace NugetUtility
@@ -14,10 +15,10 @@ namespace NugetUtility
     {
         public Methods()
         {
-
         }
+        //private string nugetUrl = "https://api-v2v3search-0.nuget.org:443/query?q=";
 
-        private string nugetUrl = "https://api-v2v3search-0.nuget.org:443/query?q=";
+        private string nugetUrl = "https://api.nuget.org/v3-flatcontainer/";
 
         /// <summary>
         /// Retreive the project references from csproj file
@@ -31,11 +32,11 @@ namespace NugetUtility
             try
             {
                 references = projDefinition
-                    .Element("Project")
-                    .Elements("ItemGroup")
-                    .Elements("PackageReference")
-                    .Attributes("Include")
-                    .Select(i => i.Value);
+                             .Element("Project")
+                             .Elements("ItemGroup")
+                             .Elements("PackageReference")
+                             .Select(refElem => (refElem.Attribute("Include") == null ? "" : refElem.Attribute("Include").Value) + "," +
+                                                (refElem.Attribute("Version") == null ? "" : refElem.Attribute("Version").Value));
             }
             catch (System.Exception ex)
             {
@@ -52,29 +53,51 @@ namespace NugetUtility
         /// <param name="project">project name</param>
         /// <param name="references">List of projects</param>
         /// <returns></returns>
-        public async Task<IEnumerable<Tuple<string, string, string>>> GetNugetInformationAsync(string project, IEnumerable<string> references)
+        public async Task<Dictionary<string, Package>> GetNugetInformationAsync(string project, IEnumerable<string> references)
         {
             System.Console.WriteLine(project);
-            List<Tuple<string, string, string>> licenses = new List<Tuple<string, string, string>>();
+            Dictionary<string, Package> licenses = new Dictionary<string, Package>();
             foreach (var reference in references)
             {
-                using (var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) })
+                string referenceName = reference.Split(',')[0];
+                string versionNumber = reference.Split(',')[1];
+                using (var httpClient = new HttpClient {Timeout = TimeSpan.FromSeconds(10)})
                 {
-                    string requestUrl = nugetUrl + reference;
+                    string requestUrl = nugetUrl + referenceName + "/" + versionNumber + "/" + referenceName + ".nuspec";
+                    Console.WriteLine(requestUrl);
                     try
                     {
                         HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, requestUrl);
                         HttpResponseMessage response = null;
                         response = await httpClient.SendAsync(req);
                         string responseText = await response.Content.ReadAsStringAsync();
-                        Package result = JsonConvert.DeserializeObject<Package>(responseText);
-                        licenses.Add(Tuple.Create(reference, result.data.FirstOrDefault().version, result.data.FirstOrDefault().licenseUrl));
+                        XmlSerializer serializer = new XmlSerializer(typeof(Package));
+                        using (TextReader writer = new StringReader(responseText))
+                        {
+                            try
+                            {
+                                Package result = (Package) serializer.Deserialize(new NamespaceIgnorantXmlTextReader(writer));
+                                licenses.Add(reference, result);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                                throw;
+                            }
+                        }
+
+                        //Package result = JsonConvert.DeserializeObject<Package>(responseText);
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message);
                     }
                 }
+            }
+
+            foreach (var item in licenses)
+            {
+                Console.WriteLine(JsonConvert.SerializeObject(item.Key));
             }
 
             return licenses;
@@ -89,8 +112,7 @@ namespace NugetUtility
         {
             Console.WriteLine("output" + output);
             bool result = false;
-            List<Tuple<string, string, string>> licenses_new = new List<Tuple<string, string, string>>();
-            IEnumerable<Tuple<string, string, string>> licenses = new List<Tuple<string, string, string>>();
+            Dictionary<string, Package> licenses = new Dictionary<string, Package>();
 
             var projects = Directory.GetFiles(projectPath, "*.*", SearchOption.AllDirectories).Where(i => i.EndsWith(GetProjectExtension()));
             foreach (var item in projects)
@@ -100,7 +122,6 @@ namespace NugetUtility
                 if (uniqueList)
                 {
                     licenses = await this.GetNugetInformationAsync(item, references);
-                    licenses_new.AddRange(licenses.ToList());
                 }
                 else
                 {
@@ -109,60 +130,79 @@ namespace NugetUtility
                 }
 
                 result = true;
-
             }
 
             if (uniqueList)
-                await PrintUniqueLicenses(licenses_new,output);
+                await PrintUniqueLicenses(licenses, output);
 
             return result;
-
         }
 
-        public void PrintLicenses(IEnumerable<Tuple<string, string, string>> licenses)
+        public void PrintLicenses(Dictionary<string, Package> licenses)
         {
             if (licenses.Count() > 0)
             {
-                Console.WriteLine(licenses.ToStringTable(
-                new[] { "Reference", "Version", "Licence" },
-                a => a.Item1 != null ? a.Item1 : "---", a => a.Item2 != null ? a.Item2 : "", a => a.Item3 != null ? a.Item3 : "---"));
+                Console.WriteLine(licenses.ToStringTable(new[] {"Reference", "Version", "Licence"},
+                                                         a => a.Key != null ? a.Key : "---", a => a.Value.Metadata.License != null ? a.Value.Metadata.ProjectUrl : "",
+                                                         a => a.Value.Metadata != null ? a.Value.Metadata.ProjectUrl : "---"));
             }
         }
 
-        public async Task PrintUniqueLicenses(IEnumerable<Tuple<string, string, string>> licenses, bool output)
+        public async Task PrintUniqueLicenses(Dictionary<string, Package> licenses, bool output)
         {
-
             if (licenses.Count() > 0)
             {
-                licenses = licenses.Distinct().ToList();
-                Console.WriteLine(licenses.ToStringTable(
-                new[] { "Reference", "Version", "Licence" },
-                a => a.Item1 != null ? a.Item1 : "---", a => a.Item2 != null ? a.Item2 : "", a => a.Item3 != null ? a.Item3 : "---"));
-                
+                Console.WriteLine("#####PrintUniqueLicenses######");
+
+                Console.WriteLine(licenses.ToStringTable(new[] {"Reference", "Licence", "Version", "LicenceType"},
+                                                         a => a.Value.Metadata.Id ?? "---", a => a.Value.Metadata.LicenseUrl ?? "---",
+                                                         a => a.Value.Metadata.Version ?? "---", a => (a.Value.Metadata.License != null ? a.Value.Metadata.License.Text : "---")));
+
                 if (output)
                 {
                     StringBuilder sb = new StringBuilder();
                     foreach (var license in licenses)
                     {
-                        Console.WriteLine("###" + license.Item3);
-                        if (!string.IsNullOrWhiteSpace(license.Item3))
+                        Console.WriteLine("version:" + JsonConvert.SerializeObject(license.Value));
+                        Package packageData = license.Value;
+
+                        if (packageData != null)
                         {
-                            HttpClient client = new HttpClient();
-                            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get,license.Item3 );
-                            HttpResponseMessage message = await client.SendAsync(request);
-                            string responseMessage = await message.Content.ReadAsStringAsync();
-                            sb.Append(responseMessage);
+                            //Console.WriteLine(JsonConvert.SerializeObject(packageData));
+                            Console.WriteLine("#################################");
+
+                            sb.Append(new string('#', 150));
+                            sb.AppendLine();
+                            sb.Append(license.Key);
+
+                            sb.AppendLine();
+                            sb.AppendLine();
+                            sb.Append("project URL:");
+                            sb.Append(packageData.Metadata.ProjectUrl ?? string.Empty);
+
+                            sb.AppendLine();
+                            sb.AppendLine();
+                            sb.Append(packageData.Metadata.Description ?? string.Empty);
+
+                            sb.AppendLine();
+                            sb.AppendLine();
+                            sb.Append("licenseUrl:");
+                            sb.Append(packageData.Metadata.LicenseUrl ?? string.Empty);
+
+                            sb.AppendLine();
+                            sb.AppendLine();
+                            sb.Append("license Type:");
+                            sb.Append(packageData.Metadata.License != null ? packageData.Metadata.License.Text : string.Empty);
+
+                            sb.AppendLine();
+                            sb.AppendLine();
+                            sb.Append(new string('#', 150));
                         }
                     }
 
-                    File.WriteAllText("licences.txt",sb.ToString());
+                    File.WriteAllText("licences.txt", sb.ToString());
                 }
-                
             }
-
-           
         }
-
-
     }
 }
