@@ -16,7 +16,7 @@ namespace NugetUtility
         public Methods()
         {
         }
-        
+
         private string nugetUrl = "https://api.nuget.org/v3-flatcontainer/";
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace NugetUtility
         /// <returns></returns>
         public async Task<Dictionary<string, Package>> GetNugetInformationAsync(string project, IEnumerable<string> references)
         {
-            System.Console.WriteLine(project);
+            System.Console.WriteLine(Environment.NewLine + "project:" + project + Environment.NewLine);
             Dictionary<string, Package> licenses = new Dictionary<string, Package>();
             foreach (var reference in references)
             {
@@ -92,11 +92,6 @@ namespace NugetUtility
                 }
             }
 
-            foreach (var item in licenses)
-            {
-                Console.WriteLine(JsonConvert.SerializeObject(item.Key));
-            }
-
             return licenses;
         }
 
@@ -108,7 +103,7 @@ namespace NugetUtility
         public async Task<bool> PrintReferencesAsync(string projectPath, bool uniqueList, bool output)
         {
             bool result = false;
-            Dictionary<string, Package> licenses = new Dictionary<string, Package>();
+            List<Dictionary<string, Package>> licenses = new List<Dictionary<string, Package>>();
 
             var projects = Directory.GetFiles(projectPath, "*.*", SearchOption.AllDirectories).Where(i => i.EndsWith(GetProjectExtension()));
             foreach (var item in projects)
@@ -117,11 +112,11 @@ namespace NugetUtility
 
                 if (uniqueList)
                 {
-                    licenses = await this.GetNugetInformationAsync(item, references);
+                    licenses.Add(await this.GetNugetInformationAsync(item, references));
                 }
                 else
                 {
-                    licenses = await this.GetNugetInformationAsync(item, references);
+                    licenses.Add(await this.GetNugetInformationAsync(item, references));
                     PrintLicenses(licenses);
                 }
 
@@ -134,50 +129,63 @@ namespace NugetUtility
             return result;
         }
 
-        public void PrintLicenses(Dictionary<string, Package> licenses)
+        public void PrintLicenses(List<Dictionary<string, Package>> licenses)
         {
             if (licenses.Any())
             {
-                Console.WriteLine(licenses.ToStringTable(new[] {"Reference", "Licence", "Version", "LicenceType"},
-                                                         a => a.Value.Metadata.Id ?? "---", a => a.Value.Metadata.LicenseUrl ?? "---",
-                                                         a => a.Value.Metadata.Version ?? "---", a => (a.Value.Metadata.License != null ? a.Value.Metadata.License.Text : "---")));
+                Console.WriteLine(Environment.NewLine + "References:");
+
+                foreach (var license in licenses)
+                {
+                    Console.WriteLine(license.ToStringTable(new[] {"Reference", "Licence", "Version", "LicenceType"},
+                                                            a => a.Value.Metadata.Id ?? "---", a => a.Value.Metadata.LicenseUrl ?? "---",
+                                                            a => a.Value.Metadata.Version ?? "---", a => (a.Value.Metadata.License != null ? a.Value.Metadata.License.Text : "---")));
+                }
             }
         }
 
-        public async Task PrintUniqueLicenses(Dictionary<string, Package> licenses, bool output)
+        public async Task PrintUniqueLicenses(List<Dictionary<string, Package>> licenses, bool output)
         {
             if (licenses.Any())
             {
-                Console.WriteLine(licenses.ToStringTable(new[] {"Reference", "Licence", "Version", "LicenceType"},
-                                                         a => a.Value.Metadata.Id ?? "---", a => a.Value.Metadata.LicenseUrl ?? "---",
-                                                         a => a.Value.Metadata.Version ?? "---", a => (a.Value.Metadata.License != null ? a.Value.Metadata.License.Text : "---")));
+                Console.WriteLine(Environment.NewLine + "References:");
+                
+                foreach (var license in licenses)
+                {
+                    Console.WriteLine(license.ToStringTable(new[] {"Reference", "Licence", "Version", "LicenceType"},
+                                                            a => a.Value.Metadata.Id ?? "---", a => a.Value.Metadata.LicenseUrl ?? "---",
+                                                            a => a.Value.Metadata.Version ?? "---", a => (a.Value.Metadata.License != null ? a.Value.Metadata.License.Text : "---")));
+                }
 
                 if (output)
                 {
                     StringBuilder sb = new StringBuilder();
                     foreach (var license in licenses)
                     {
-                        Package packageData = license.Value;
-                        if (packageData != null)
+                        foreach (var lic in license)
                         {
-                            sb.Append(new string('#', 100));
-                            sb.AppendLine();
-                            sb.Append("Package:");
-                            sb.Append(packageData.Metadata.Id);
-                            sb.AppendLine();
-                            sb.Append("project URL:");
-                            sb.Append(packageData.Metadata.ProjectUrl ?? string.Empty);
-                            sb.AppendLine();
-                            sb.Append("Description:");
-                            sb.Append(packageData.Metadata.Description ?? string.Empty);
-                            sb.AppendLine();
-                            sb.Append("licenseUrl:");
-                            sb.Append(packageData.Metadata.LicenseUrl ?? string.Empty);
-                            sb.AppendLine();
-                            sb.Append("license Type:");
-                            sb.Append(packageData.Metadata.License != null ? packageData.Metadata.License.Text : string.Empty);
-                            sb.AppendLine();
-                            sb.AppendLine();
+                            Package packageData = lic.Value;
+                            if (packageData != null)
+                            {
+                                sb.Append(new string('#', 100));
+                                sb.AppendLine();
+                                sb.Append("Package:");
+                                sb.Append(packageData.Metadata.Id);
+                                sb.AppendLine();
+                                sb.Append("project URL:");
+                                sb.Append(packageData.Metadata.ProjectUrl ?? string.Empty);
+                                sb.AppendLine();
+                                sb.Append("Description:");
+                                sb.Append(packageData.Metadata.Description ?? string.Empty);
+                                sb.AppendLine();
+                                sb.Append("licenseUrl:");
+                                sb.Append(packageData.Metadata.LicenseUrl ?? string.Empty);
+                                sb.AppendLine();
+                                sb.Append("license Type:");
+                                sb.Append(packageData.Metadata.License != null ? packageData.Metadata.License.Text : string.Empty);
+                                sb.AppendLine();
+                                sb.AppendLine();
+                            }
                         }
                     }
 
