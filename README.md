@@ -40,3 +40,8 @@ dotnet-project-licenses -i projectFolder
 ```
 dotnet-project-licenses -i projectFolder -u
 ```
+
+** Create output file 
+```
+dotnet-project-licenses -i projectFolder -u -o
+```
