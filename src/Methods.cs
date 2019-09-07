@@ -100,7 +100,7 @@ namespace NugetUtility
             return ".csproj";
         }
 
-        public async Task<bool> PrintReferencesAsync(string projectPath, bool uniqueList, bool output)
+        public async Task<bool> PrintReferencesAsync(string projectPath, bool uniqueList, bool jsonOutput, bool output)
         {
             bool result = false;
             List<Dictionary<string, Package>> licenses = new List<Dictionary<string, Package>>();
@@ -123,7 +123,9 @@ namespace NugetUtility
                 result = true;
             }
 
-            if (uniqueList)
+            if (jsonOutput)
+                await PrintInJson(licenses);
+            else if (uniqueList)
                 await PrintUniqueLicenses(licenses, output);
 
             return result;
@@ -192,6 +194,36 @@ namespace NugetUtility
                     File.WriteAllText("licences.txt", sb.ToString());
                 }
             }
+        }
+
+        public async Task PrintInJson(List<Dictionary<string, Package>> licenses)
+        {
+            IList<LibraryInfo> libraryInfos = new List<LibraryInfo>();
+
+            foreach (Dictionary<string,Package>  packageLicense in licenses)
+            {
+                foreach (KeyValuePair<string, Package> license in packageLicense)
+                {
+                    libraryInfos.Add(
+                        new LibraryInfo
+                        {
+                            PackageName = license.Value.Metadata.Id ?? string.Empty,
+                            PackageUrl = license.Value.Metadata.ProjectUrl ?? string.Empty,
+                            Description = license.Value.Metadata.Description ?? string.Empty,
+                            LicenseType = license.Value.Metadata.License != null ? license.Value.Metadata.License.Text : string.Empty,
+                            LicenseUrl = license.Value.Metadata.LicenseUrl ?? string.Empty
+                        });
+                }
+            }
+            
+            var fileStream = new FileStream("licenses.json", FileMode.Create);
+            using (var streamWriter = new StreamWriter(fileStream))
+            {
+                streamWriter.Write(JsonConvert.SerializeObject(libraryInfos));
+                streamWriter.Flush();
+            }
+            
+            fileStream.Close();
         }
     }
 }
