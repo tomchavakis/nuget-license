@@ -45,3 +45,8 @@ dotnet-project-licenses -i projectFolder -u
 ```
 dotnet-project-licenses -i projectFolder -u -o
 ```
+
+** Generate output json file
+```
+dotnet-project-licenses -i projectFolder -u -o -j
+```
