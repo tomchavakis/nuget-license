@@ -13,7 +13,10 @@ namespace NugetUtility
         public string ProjectDirectory { get; set; }
 
         [Option('u', "unique", Default = false , HelpText="Print unique licenses list")]
-        public bool UniqueOutput {get;set;}
+        public bool UniqueOutput {get;set;} 
+        
+        [Option('j', "json", Default = false , HelpText="Print unique licenses list in a json file (licenses.json)")]
+        public bool JsonOutput {get; set;}
         
         [Option('o', "output", Default = false , HelpText="Output file")]
         public bool Output { get; set; }
