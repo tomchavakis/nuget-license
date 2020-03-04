@@ -174,6 +174,9 @@ namespace NugetUtility
                                 sb.Append("Package:");
                                 sb.Append(packageData.Metadata.Id);
                                 sb.AppendLine();
+                                sb.Append("Version:");
+                                sb.Append(packageData.Metadata.Version);
+                                sb.AppendLine();
                                 sb.Append("project URL:");
                                 sb.Append(packageData.Metadata.ProjectUrl ?? string.Empty);
                                 sb.AppendLine();
@@ -208,6 +211,7 @@ namespace NugetUtility
                         new LibraryInfo
                         {
                             PackageName = license.Value.Metadata.Id ?? string.Empty,
+                            PackageVersion = license.Value.Metadata.Version ?? string.Empty,
                             PackageUrl = license.Value.Metadata.ProjectUrl ?? string.Empty,
                             Description = license.Value.Metadata.Description ?? string.Empty,
                             LicenseType = license.Value.Metadata.License != null ? license.Value.Metadata.License.Text : string.Empty,
