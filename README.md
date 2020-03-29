@@ -1,7 +1,7 @@
 # Nuget License Utility [![Build Status](https://travis-ci.com/tomchavakis/nuget-license.svg?branch=develop)](https://travis-ci.com/tomchavakis/nuget-license.svg?branch=develop) [![NuGet](https://img.shields.io/nuget/v/BeatPulse.svg)]([https://www.nuget.org/packages/dotnet-project-licenses](https://www.nuget.org/packages/dotnet-project-licenses/))
 
 
-A .net core tool to print the licenses of a project.
+A .net core tool to print the licenses of a project. This tool support .NET Core and .NET Standard Projects.
 
 ## Usage
 
