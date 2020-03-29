@@ -160,15 +160,12 @@ namespace NugetUtility
             foreach (var item in projects)
             {
                 IEnumerable<string> references = this.GetProjectReferences(item);
+                var currentProjectLicenses = await this.GetNugetInformationAsync(item, references);
+                licenses.Add(currentProjectLicenses);
 
-                if (uniqueList)
+                if (!uniqueList)
                 {
-                    licenses.Add(await this.GetNugetInformationAsync(item, references));
-                }
-                else
-                {
-                    licenses.Add(await this.GetNugetInformationAsync(item, references));
-                    PrintLicenses(licenses);
+                    PrintLicenses(currentProjectLicenses);
                 }
 
                 result = true;
@@ -182,18 +179,14 @@ namespace NugetUtility
             return result;
         }
 
-        public void PrintLicenses(List<Dictionary<string, Package>> licenses)
+        public void PrintLicenses(Dictionary<string, Package> licenses)
         {
             if (licenses.Any())
             {
                 Console.WriteLine(Environment.NewLine + "References:");
-
-                foreach (var license in licenses)
-                {
-                    Console.WriteLine(license.ToStringTable(new[] { "Reference", "Licence", "Version", "LicenceType" },
-                                                            a => a.Value.Metadata.Id ?? "---", a => a.Value.Metadata.LicenseUrl ?? "---",
-                                                            a => a.Value.Metadata.Version ?? "---", a => (a.Value.Metadata.License != null ? a.Value.Metadata.License.Text : "---")));
-                }
+                Console.WriteLine(licenses.ToStringTable(new[] { "Reference", "Licence", "Version", "LicenceType" },
+                                                        a => a.Value.Metadata.Id ?? "---", a => a.Value.Metadata.LicenseUrl ?? "---",
+                                                        a => a.Value.Metadata.Version ?? "---", a => (a.Value.Metadata.License != null ? a.Value.Metadata.License.Text : "---")));
             }
         }
 
