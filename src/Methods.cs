@@ -26,16 +26,67 @@ namespace NugetUtility
         /// <returns></returns>
         public IEnumerable<string> GetProjectReferences(string projectPath)
         {
+            // First try to get references from new project file format
+            var references = GetProjectReferencesFromNewProjectFile(projectPath);
+
+            // Then if needed from old packages.config
+            if (references == null || !references.Any())
+            {
+                references = GetProjectReferencesFromPackagesConfig(projectPath);
+            }
+
+            return references;
+        }
+
+        /// <summary>
+        /// Retreive the project references from new csproj file format
+        /// </summary>
+        /// <param name="projectPath">The Project Path</param>
+        /// <returns></returns>
+        private IEnumerable<string> GetProjectReferencesFromNewProjectFile(string projectPath)
+        {
             IEnumerable<string> references = new List<string>();
             XDocument projDefinition = XDocument.Load(projectPath);
             try
             {
                 references = projDefinition
-                             .Element("Project")
-                             .Elements("ItemGroup")
-                             .Elements("PackageReference")
-                             .Select(refElem => (refElem.Attribute("Include") == null ? "" : refElem.Attribute("Include").Value) + "," +
+                             ?.Element("Project")
+                             ?.Elements("ItemGroup")
+                             ?.Elements("PackageReference")
+                             ?.Select(refElem => (refElem.Attribute("Include") == null ? "" : refElem.Attribute("Include").Value) + "," +
                                                 (refElem.Attribute("Version") == null ? "" : refElem.Attribute("Version").Value));
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+
+            return references;
+        }
+
+        /// <summary>
+        /// Retreive the project references from old packages.config file
+        /// </summary>
+        /// <param name="projectPath">The Project Path</param>
+        /// <returns></returns>
+        private IEnumerable<string> GetProjectReferencesFromPackagesConfig(string projectPath)
+        {
+            IEnumerable<string> references = new List<string>();
+
+            try
+            {
+                var dir = Path.GetDirectoryName(projectPath);
+                var packagesFile = Path.Join(dir, "packages.config");
+
+                if (File.Exists(packagesFile))
+                {
+                    var packagesConfig = XDocument.Load(packagesFile);
+
+                    references = packagesConfig
+                                ?.Element("packages")
+                                ?.Elements("package")
+                                ?.Select(refElem => (refElem.Attribute("id")?.Value ?? "") + "," + (refElem.Attribute("version")?.Value ?? ""));
+                }
             }
             catch (System.Exception ex)
             {
@@ -60,7 +111,7 @@ namespace NugetUtility
             {
                 string referenceName = reference.Split(',')[0];
                 string versionNumber = reference.Split(',')[1];
-                using (var httpClient = new HttpClient {Timeout = TimeSpan.FromSeconds(10)})
+                using (var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) })
                 {
                     string requestUrl = nugetUrl + referenceName + "/" + versionNumber + "/" + referenceName + ".nuspec";
                     Console.WriteLine(requestUrl);
@@ -75,7 +126,7 @@ namespace NugetUtility
                         {
                             try
                             {
-                                Package result = (Package) serializer.Deserialize(new NamespaceIgnorantXmlTextReader(writer));
+                                Package result = (Package)serializer.Deserialize(new NamespaceIgnorantXmlTextReader(writer));
                                 licenses.Add(reference, result);
                             }
                             catch (Exception e)
@@ -136,7 +187,6 @@ namespace NugetUtility
                 Console.WriteLine(licenses.ToStringTable(new[] { "Reference", "Licence", "Version", "LicenceType" },
                                                         a => a.Value.Metadata.Id ?? "---", a => a.Value.Metadata.LicenseUrl ?? "---",
                                                         a => a.Value.Metadata.Version ?? "---", a => (a.Value.Metadata.License != null ? a.Value.Metadata.License.Text : "---")));
-
             }
         }
 
@@ -145,10 +195,10 @@ namespace NugetUtility
             if (licenses.Any())
             {
                 Console.WriteLine(Environment.NewLine + "References:");
-                
+
                 foreach (var license in licenses)
                 {
-                    Console.WriteLine(license.ToStringTable(new[] {"Reference", "Licence", "Version", "LicenceType"},
+                    Console.WriteLine(license.ToStringTable(new[] { "Reference", "Licence", "Version", "LicenceType" },
                                                             a => a.Value.Metadata.Id ?? "---", a => a.Value.Metadata.LicenseUrl ?? "---",
                                                             a => a.Value.Metadata.Version ?? "---", a => (a.Value.Metadata.License != null ? a.Value.Metadata.License.Text : "---")));
                 }
@@ -197,7 +247,7 @@ namespace NugetUtility
         {
             IList<LibraryInfo> libraryInfos = new List<LibraryInfo>();
 
-            foreach (Dictionary<string,Package>  packageLicense in licenses)
+            foreach (Dictionary<string, Package> packageLicense in licenses)
             {
                 foreach (KeyValuePair<string, Package> license in packageLicense)
                 {
@@ -213,14 +263,14 @@ namespace NugetUtility
                         });
                 }
             }
-            
+
             var fileStream = new FileStream("licenses.json", FileMode.Create);
             using (var streamWriter = new StreamWriter(fileStream))
             {
                 streamWriter.Write(JsonConvert.SerializeObject(libraryInfos));
                 streamWriter.Flush();
             }
-            
+
             fileStream.Close();
         }
     }
