@@ -8,5 +8,6 @@ namespace NugetUtility
         public string Description { get; set; }
         public string LicenseUrl { get; set; }
         public string LicenseType { get; set; }
+        public string Projects { get; set; }
     }
 }

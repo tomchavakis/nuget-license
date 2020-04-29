@@ -1,23 +1,146 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using Newtonsoft.Json;
 
 namespace NugetUtility
 {
     public class Methods
     {
-        public Methods()
+        private const string fallbackPackageUrl = "https://www.nuget.org/api/v2/package/{0}/{1}";
+        private const string nugetUrl = "https://api.nuget.org/v3-flatcontainer/";
+        private static readonly Dictionary<Tuple<string, string>, Package> _requestCache = new Dictionary<Tuple<string, string>, Package>();
+        /// <summary>
+        /// See https://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
+        /// </summary>
+        private static HttpClient _httpClient;
+        private readonly IReadOnlyDictionary<string, string> _licenseMappings;
+        private readonly PackageOptions _packageOptions;
+        private readonly XmlSerializer _serializer;
+
+        public Methods(PackageOptions packageOptions)
         {
+            if (_httpClient is null)
+            {
+                _httpClient = new HttpClient
+                {
+                    BaseAddress = new Uri(nugetUrl),
+                    Timeout = TimeSpan.FromSeconds(10)
+                };
+            }
+
+            _serializer = new XmlSerializer(typeof(Package));
+            _packageOptions = packageOptions;
+            _licenseMappings = packageOptions.LicenseToUrlMappingsDictionary;
         }
 
-        private string nugetUrl = "https://api.nuget.org/v3-flatcontainer/";
+
+        /// <summary>
+        /// Get Nuget References per project
+        /// </summary>
+        /// <param name="project">project name</param>
+        /// <param name="packages">List of projects</param>
+        /// <returns></returns>
+        public async Task<PackageList> GetNugetInformationAsync(string project, IEnumerable<string> packages)
+        {
+            WriteOutput(Environment.NewLine + "project:" + project + Environment.NewLine, logLevel: LogLevel.Information);
+            var licenses = new PackageList();
+            foreach (var packageWithVersion in packages)
+            {
+                try
+                {
+                    var split = packageWithVersion.Split(',');
+                    var referenceName = split[0];
+                    var versionNumber = split[1];
+
+                    if (_packageOptions.PackageFilter.Count > 0
+                        && _packageOptions.PackageFilter
+                        .Any(p => string.Compare(p, referenceName, StringComparison.OrdinalIgnoreCase) == 0))
+                    {
+                        continue;
+                    }
+
+                    var lookupKey = Tuple.Create(referenceName, versionNumber);
+
+                    if (_requestCache.TryGetValue(lookupKey, out var package))
+                    {
+                        WriteOutput(packageWithVersion + " obtained from request cache.", logLevel: LogLevel.Information);
+                        licenses.Add(packageWithVersion, package);
+                        continue;
+                    }
+
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, $"{referenceName}/{versionNumber}/{referenceName}.nuspec"))
+                    using (var response = await _httpClient.SendAsync(request))
+                    {
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Error);
+                            var fallbackResult = await GetFallbackStreamOfNuGetPackageNuspecFile(referenceName, versionNumber);
+                            if (fallbackResult is object)
+                            {
+                                licenses.Add(packageWithVersion, fallbackResult);
+                                _requestCache[lookupKey] = fallbackResult;
+                            }
+
+                            continue;
+                        }
+
+                        WriteOutput(request.RequestUri.ToString(), logLevel: LogLevel.Information);
+                        using (var responseText = await response.Content.ReadAsStreamAsync())
+                        using (var textReader = new StreamReader(responseText))
+                        {
+                            try
+                            {
+                                if (_serializer.Deserialize(new NamespaceIgnorantXmlTextReader(textReader)) is Package result)
+                                {
+                                    licenses.Add(packageWithVersion, result);
+                                    _requestCache[lookupKey] = result;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                WriteOutput(e.Message, e, LogLevel.Error);
+                                throw;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    WriteOutput(ex.Message, ex, LogLevel.Error);
+                }
+            }
+
+            return licenses;
+        }
+
+        public async Task<Dictionary<string, PackageList>> GetPackages()
+        {
+            var licenses = new Dictionary<string, PackageList>();
+            var projectFiles = GetValidProjects(_packageOptions.ProjectDirectory);
+            foreach (var projectFile in projectFiles)
+            {
+                var references = this.GetProjectReferences(projectFile);
+                var currentProjectLicenses = await this.GetNugetInformationAsync(projectFile, references);
+                licenses[projectFile] = currentProjectLicenses;
+            }
+
+            return licenses;
+        }
+
+        public string GetProjectExtension(bool withWildcard = false)
+        {
+            return !withWildcard
+                ? ".csproj"
+                : "*.csproj";
+        }
 
         /// <summary>
         /// Retreive the project references from csproj file
@@ -26,16 +149,265 @@ namespace NugetUtility
         /// <returns></returns>
         public IEnumerable<string> GetProjectReferences(string projectPath)
         {
+            if (string.IsNullOrWhiteSpace(projectPath))
+            {
+                throw new ArgumentNullException(projectPath);
+            }
+
+            if (!projectPath.EndsWith(GetProjectExtension()))
+            {
+                projectPath = GetValidProjects(projectPath).FirstOrDefault();
+            }
+
+            if (projectPath is null)
+            {
+                throw new FileNotFoundException();
+            }
+
             // First try to get references from new project file format
             var references = GetProjectReferencesFromNewProjectFile(projectPath);
 
             // Then if needed from old packages.config
-            if (references == null || !references.Any())
+            if (!references.Any())
             {
                 references = GetProjectReferencesFromPackagesConfig(projectPath);
             }
 
-            return references;
+            return references ?? Array.Empty<string>();
+        }
+
+        /// <summary>
+        /// Main function to cleanup
+        /// </summary>
+        /// <param name="packages"></param>
+        /// <returns></returns>
+        public List<LibraryInfo> MapPackagesToLibraryInfo(Dictionary<string, PackageList> packages)
+        {
+            var libraryInfos = new List<LibraryInfo>(256);
+            foreach (var packageList in packages)
+            {
+                foreach (var item in packageList.Value.Select(p => p.Value))
+                {
+                    var info = MapPackageToLibraryInfo(item, packageList.Key);
+                    libraryInfos.Add(info);
+                }
+            }
+
+            // merge in missing manual items where there wasn't a package
+            var missedManualItems = _packageOptions.ManualInformation.Except(libraryInfos, LibraryNameAndVersionComparer.Default);
+            foreach (var missed in missedManualItems)
+            {
+                libraryInfos.Add(missed);
+            }
+
+            if (_packageOptions.UniqueOnly)
+            {
+                libraryInfos = libraryInfos
+                    .GroupBy(x => new { x.PackageName, x.PackageVersion })
+                    .Select(g =>
+                    {
+                        var first = g.First();
+                        return new LibraryInfo
+                        {
+                            PackageName = first.PackageName,
+                            PackageVersion = first.PackageVersion,
+                            PackageUrl = first.PackageUrl,
+                            Description = first.Description,
+                            LicenseType = first.LicenseType,
+                            LicenseUrl = first.LicenseUrl,
+                            Projects = _packageOptions.IncludeProjectFile ? string.Join(";", g.Select(p => p.Projects)) : null
+                        };
+                    })
+                    .ToList();
+            }
+
+            return libraryInfos
+                    .OrderBy(p => p.PackageName)
+                    .ToList();
+        }
+
+        private LibraryInfo MapPackageToLibraryInfo(Package item, string projectFile)
+        {
+            string licenseType = item.Metadata.License?.Text ?? null;
+            string licenseUrl = item.Metadata.LicenseUrl ?? null;
+
+            if (licenseUrl is string && string.IsNullOrWhiteSpace(licenseType))
+            {
+                if (_licenseMappings.TryGetValue(licenseUrl, out var license))
+                {
+                    licenseType = license;
+                }
+            }
+
+            var manual = _packageOptions.ManualInformation
+                .FirstOrDefault(f => f.PackageName == item.Metadata.Id && f.PackageVersion == item.Metadata.Version);
+
+            return new LibraryInfo
+            {
+                PackageName = item.Metadata.Id ?? string.Empty,
+                PackageVersion = item.Metadata.Version ?? string.Empty,
+                PackageUrl = manual?.PackageUrl ?? item.Metadata.ProjectUrl ?? string.Empty,
+                Description = manual?.Description ?? item.Metadata.Description ?? string.Empty,
+                LicenseType = licenseType ?? manual?.LicenseType ?? string.Empty,
+                LicenseUrl = licenseUrl ?? manual?.LicenseUrl ?? string.Empty,
+                Projects = _packageOptions.IncludeProjectFile ? projectFile : null
+            };
+        }
+
+        public void PrintLicenses(List<LibraryInfo> libraries)
+        {
+            if (libraries is null) { throw new ArgumentNullException(nameof(libraries)); }
+            if (!libraries.Any()) { return; }
+
+            WriteOutput(Environment.NewLine + "References:", logLevel: LogLevel.Always);
+            WriteOutput(libraries.ToStringTable(new[] { "Reference", "Version", "Licence Type", "License" },
+                                                            a => a.PackageName ?? "---",
+                                                            a => a.PackageVersion ?? "---",
+                                                            a => a.LicenseType ?? "---",
+                                                            a => a.LicenseUrl ?? "---"), logLevel: LogLevel.Always);
+        }
+
+        public void SaveAsJson(List<LibraryInfo> packages)
+        {
+            if (!_packageOptions.JsonOutput) { return; }
+            JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = _packageOptions.IncludeProjectFile ? NullValueHandling.Include : NullValueHandling.Ignore
+            };
+
+            using (var fileStream = new FileStream(GetOutputFilename("licenses.json"), FileMode.Create))
+            using (var streamWriter = new StreamWriter(fileStream))
+            {
+                streamWriter.Write(JsonConvert.SerializeObject(packages, jsonSettings));
+                streamWriter.Flush();
+            }
+        }
+
+        public void SaveAsTextFile(List<LibraryInfo> libraries)
+        {
+            if (!libraries.Any() || !_packageOptions.TextOutput) { return; }
+            StringBuilder sb = new StringBuilder(256);
+            foreach (var lib in libraries)
+            {
+                sb.Append(new string('#', 100));
+                sb.AppendLine();
+                sb.Append("Package:");
+                sb.Append(lib.PackageName);
+                sb.AppendLine();
+                sb.Append("Version:");
+                sb.Append(lib.PackageVersion);
+                sb.AppendLine();
+                sb.Append("project URL:");
+                sb.Append(lib.PackageUrl);
+                sb.AppendLine();
+                sb.Append("Description:");
+                sb.Append(lib.Description);
+                sb.AppendLine();
+                sb.Append("licenseUrl:");
+                sb.Append(lib.LicenseUrl);
+                sb.AppendLine();
+                sb.Append("license Type:");
+                sb.Append(lib.LicenseType);
+                sb.AppendLine();
+                if (_packageOptions.IncludeProjectFile)
+                {
+                    sb.Append("Project:");
+                    sb.Append(lib.LicenseType);
+                    sb.AppendLine();
+                }
+                sb.AppendLine();
+            }
+
+            File.WriteAllText(GetOutputFilename("licences.txt"), sb.ToString());
+        }
+
+        public ValidationResult ValidateLicenses(Dictionary<string, PackageList> projectPackages)
+        {
+            if (_packageOptions.AllowedLicenseType.Count == 0)
+            {
+                return new ValidationResult { IsValid = true };
+            }
+
+            var allowedLicenses = _packageOptions.AllowedLicenseType;
+            var invalidPackages = projectPackages
+                .SelectMany(kvp => kvp.Value.Select(p => new KeyValuePair<string, Package>(kvp.Key, p.Value)))
+                .Where(p => !allowedLicenses.Any(allowed =>
+                {
+                    if (p.Value.Metadata.LicenseUrl is string licenseUrl)
+                    {
+                        if (_licenseMappings.TryGetValue(licenseUrl, out var license))
+                        {
+                            return allowed == license;
+                        }
+
+                        if (p.Value.Metadata.LicenseUrl?.Contains(allowed, StringComparison.OrdinalIgnoreCase) == true)
+                        {
+                            return true;
+                        }
+                    }
+
+                // todo handle embedded licenses....
+                return allowed == p.Value.Metadata.License?.Text;
+                }))
+                .ToList();
+
+            return new ValidationResult { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
+        }
+
+        private async Task<Package> GetFallbackStreamOfNuGetPackageNuspecFile(string packageName, string versionNumber)
+        {
+            var fallbackEndpoint = new Uri(string.Format(fallbackPackageUrl, packageName, versionNumber));
+            using (var packageRequest = new HttpRequestMessage(HttpMethod.Get, fallbackEndpoint))
+            using (var packageResponse = await _httpClient.SendAsync(packageRequest))
+            {
+                if (!packageResponse.IsSuccessStatusCode)
+                {
+                    WriteOutput($"{packageRequest.RequestUri} failed due to {packageResponse.StatusCode}!", logLevel: LogLevel.Error);
+                    return null;
+                }
+
+                using (var fileStream = new MemoryStream())
+                {
+                    await packageResponse.Content.CopyToAsync(fileStream);
+
+                    using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Read))
+                    {
+                        var entry = archive.GetEntry($"{packageName}.nuspec");
+                        if (entry is null) { return null; }
+                        using (var entryStream = entry.Open())
+                        using (var textReader = new StreamReader(entryStream))
+                        {
+                            if (_serializer.Deserialize(new NamespaceIgnorantXmlTextReader(textReader)) is Package result)
+                            {
+                                return result;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private IEnumerable<string> GetFilteredProjects(IEnumerable<string> projects)
+        {
+            if (_packageOptions.ProjectFilter.Count == 0)
+            {
+                return projects;
+            }
+
+            var projectsToSkip = _packageOptions.ProjectFilter;
+
+            return projects.Where(p => projectsToSkip.Any(skip =>
+                string.Compare(p, skip, StringComparison.OrdinalIgnoreCase) != 0
+                && !p.EndsWith(skip)));
+        }
+
+        private string GetOutputFilename(string defaultName)
+        {
+            return string.IsNullOrWhiteSpace(_packageOptions.OutputFileName)
+               ? defaultName
+               : _packageOptions.OutputFileName;
         }
 
         /// <summary>
@@ -45,233 +417,79 @@ namespace NugetUtility
         /// <returns></returns>
         private IEnumerable<string> GetProjectReferencesFromNewProjectFile(string projectPath)
         {
-            IEnumerable<string> references = new List<string>();
-            XDocument projDefinition = XDocument.Load(projectPath);
-            try
-            {
-                references = projDefinition
-                             ?.Element("Project")
-                             ?.Elements("ItemGroup")
-                             ?.Elements("PackageReference")
-                             ?.Select(refElem => (refElem.Attribute("Include") == null ? "" : refElem.Attribute("Include").Value) + "," +
-                                                (refElem.Attribute("Version") == null ? "" : refElem.Attribute("Version").Value));
-            }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }
-
-            return references;
+            var projDefinition = XDocument.Load(projectPath);
+            return projDefinition
+                         ?.Element("Project")
+                         ?.Elements("ItemGroup")
+                         ?.Elements("PackageReference")
+                         ?.Select(refElem => (refElem.Attribute("Include") == null ? "" : refElem.Attribute("Include").Value) + "," +
+                                            (refElem.Attribute("Version") == null ? "" : refElem.Attribute("Version").Value))
+                         ?? Array.Empty<string>();
         }
 
         /// <summary>
-        /// Retreive the project references from old packages.config file
+        /// Retrieve the project references from old packages.config file
         /// </summary>
         /// <param name="projectPath">The Project Path</param>
         /// <returns></returns>
         private IEnumerable<string> GetProjectReferencesFromPackagesConfig(string projectPath)
         {
-            IEnumerable<string> references = new List<string>();
+            var dir = Path.GetDirectoryName(projectPath);
+            var packagesFile = Path.Join(dir, "packages.config");
 
-            try
+            if (File.Exists(packagesFile))
             {
-                var dir = Path.GetDirectoryName(projectPath);
-                var packagesFile = Path.Join(dir, "packages.config");
+                var packagesConfig = XDocument.Load(packagesFile);
 
-                if (File.Exists(packagesFile))
-                {
-                    var packagesConfig = XDocument.Load(packagesFile);
-
-                    references = packagesConfig
-                                ?.Element("packages")
-                                ?.Elements("package")
-                                ?.Select(refElem => (refElem.Attribute("id")?.Value ?? "") + "," + (refElem.Attribute("version")?.Value ?? ""));
-                }
-            }
-            catch (System.Exception ex)
-            {
-                throw ex;
+                return packagesConfig
+                            ?.Element("packages")
+                            ?.Elements("package")
+                            ?.Select(refElem => (refElem.Attribute("id")?.Value ?? "") + "," + (refElem.Attribute("version")?.Value ?? ""));
             }
 
-            return references;
+            return Array.Empty<string>();
         }
 
-
-        /// <summary>
-        /// Get Nuget References per project
-        /// </summary>
-        /// <param name="project">project name</param>
-        /// <param name="references">List of projects</param>
-        /// <returns></returns>
-        public async Task<Dictionary<string, Package>> GetNugetInformationAsync(string project, IEnumerable<string> references)
+        private IEnumerable<string> GetValidProjects(string projectPath)
         {
-            System.Console.WriteLine(Environment.NewLine + "project:" + project + Environment.NewLine);
-            Dictionary<string, Package> licenses = new Dictionary<string, Package>();
-            foreach (var reference in references)
+            var pathInfo = new FileInfo(projectPath);
+            var extension = GetProjectExtension();
+            IEnumerable<string> validProjects;
+            switch (pathInfo.Extension)
             {
-                string referenceName = reference.Split(',')[0];
-                string versionNumber = reference.Split(',')[1];
-                using (var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) })
-                {
-                    string requestUrl = nugetUrl + referenceName + "/" + versionNumber + "/" + referenceName + ".nuspec";
-                    Console.WriteLine(requestUrl);
-                    try
-                    {
-                        HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Get, requestUrl);
-                        HttpResponseMessage response = null;
-                        response = await httpClient.SendAsync(req);
-                        string responseText = await response.Content.ReadAsStringAsync();
-                        XmlSerializer serializer = new XmlSerializer(typeof(Package));
-                        using (TextReader writer = new StringReader(responseText))
-                        {
-                            try
-                            {
-                                Package result = (Package)serializer.Deserialize(new NamespaceIgnorantXmlTextReader(writer));
-                                licenses.Add(reference, result);
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e);
-                                throw;
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                }
+                case ".sln":
+                    validProjects = Onion.SolutionParser.Parser.SolutionParser
+                        .Parse(pathInfo.FullName)
+                        .Projects
+                        .Select(p => new FileInfo(Path.Combine(pathInfo.Directory.FullName, p.Path)))
+                        .Where(p => p.Exists && p.Extension == extension)
+                        .Select(p => p.FullName);
+                    break;
+                case ".csproj":
+                    validProjects = new string[] { projectPath };
+                    break;
+                default:
+                    validProjects = Directory
+                        .EnumerateFiles(projectPath, GetProjectExtension(withWildcard: true), SearchOption.AllDirectories);
+                    break;
             }
 
-            return licenses;
+            return GetFilteredProjects(validProjects);
         }
 
-        public string GetProjectExtension()
+        private void WriteOutput(string line, Exception exception = null, LogLevel logLevel = LogLevel.Information)
         {
-            return ".csproj";
-        }
-
-        public async Task<bool> PrintReferencesAsync(string projectPath, bool uniqueList, bool jsonOutput, bool output)
-        {
-            bool result = false;
-            List<Dictionary<string, Package>> licenses = new List<Dictionary<string, Package>>();
-
-            var projects = Directory.GetFiles(projectPath, "*.*", SearchOption.AllDirectories).Where(i => i.EndsWith(GetProjectExtension()));
-            foreach (var item in projects)
+            if ((int)logLevel < (int)_packageOptions.LogLevelThreshold)
             {
-                IEnumerable<string> references = this.GetProjectReferences(item);
-                var currentProjectLicenses = await this.GetNugetInformationAsync(item, references);
-                licenses.Add(currentProjectLicenses);
-
-                if (!uniqueList)
-                {
-                    PrintLicenses(currentProjectLicenses);
-                }
-
-                result = true;
+                return;
             }
 
-            if (jsonOutput)
-                await PrintInJson(licenses);
-            else if (uniqueList)
-                await PrintUniqueLicenses(licenses, output);
+            Console.WriteLine(line);
 
-            return result;
-        }
-
-        public void PrintLicenses(Dictionary<string, Package> licenses)
-        {
-            if (licenses.Any())
+            if (exception is object)
             {
-                Console.WriteLine(Environment.NewLine + "References:");
-                Console.WriteLine(licenses.ToStringTable(new[] { "Reference", "Licence", "Version", "LicenceType" },
-                                                        a => a.Value.Metadata.Id ?? "---", a => a.Value.Metadata.LicenseUrl ?? "---",
-                                                        a => a.Value.Metadata.Version ?? "---", a => (a.Value.Metadata.License != null ? a.Value.Metadata.License.Text : "---")));
+                Console.WriteLine(exception.ToString());
             }
-        }
-
-        public async Task PrintUniqueLicenses(List<Dictionary<string, Package>> licenses, bool output)
-        {
-            if (licenses.Any())
-            {
-                Console.WriteLine(Environment.NewLine + "References:");
-
-                foreach (var license in licenses)
-                {
-                    Console.WriteLine(license.ToStringTable(new[] { "Reference", "Licence", "Version", "LicenceType" },
-                                                            a => a.Value.Metadata.Id ?? "---", a => a.Value.Metadata.LicenseUrl ?? "---",
-                                                            a => a.Value.Metadata.Version ?? "---", a => (a.Value.Metadata.License != null ? a.Value.Metadata.License.Text : "---")));
-                }
-
-                if (output)
-                {
-                    StringBuilder sb = new StringBuilder();
-                    foreach (var license in licenses)
-                    {
-                        foreach (var lic in license)
-                        {
-                            Package packageData = lic.Value;
-                            if (packageData != null)
-                            {
-                                sb.Append(new string('#', 100));
-                                sb.AppendLine();
-                                sb.Append("Package:");
-                                sb.Append(packageData.Metadata.Id);
-                                sb.AppendLine();
-                                sb.Append("Version:");
-                                sb.Append(packageData.Metadata.Version);
-                                sb.AppendLine();
-                                sb.Append("project URL:");
-                                sb.Append(packageData.Metadata.ProjectUrl ?? string.Empty);
-                                sb.AppendLine();
-                                sb.Append("Description:");
-                                sb.Append(packageData.Metadata.Description ?? string.Empty);
-                                sb.AppendLine();
-                                sb.Append("licenseUrl:");
-                                sb.Append(packageData.Metadata.LicenseUrl ?? string.Empty);
-                                sb.AppendLine();
-                                sb.Append("license Type:");
-                                sb.Append(packageData.Metadata.License != null ? packageData.Metadata.License.Text : string.Empty);
-                                sb.AppendLine();
-                                sb.AppendLine();
-                            }
-                        }
-                    }
-
-                    File.WriteAllText("licences.txt", sb.ToString());
-                }
-            }
-        }
-
-        public async Task PrintInJson(List<Dictionary<string, Package>> licenses)
-        {
-            IList<LibraryInfo> libraryInfos = new List<LibraryInfo>();
-
-            foreach (Dictionary<string, Package> packageLicense in licenses)
-            {
-                foreach (KeyValuePair<string, Package> license in packageLicense)
-                {
-                    libraryInfos.Add(
-                        new LibraryInfo
-                        {
-                            PackageName = license.Value.Metadata.Id ?? string.Empty,
-                            PackageVersion = license.Value.Metadata.Version ?? string.Empty,
-                            PackageUrl = license.Value.Metadata.ProjectUrl ?? string.Empty,
-                            Description = license.Value.Metadata.Description ?? string.Empty,
-                            LicenseType = license.Value.Metadata.License != null ? license.Value.Metadata.License.Text : string.Empty,
-                            LicenseUrl = license.Value.Metadata.LicenseUrl ?? string.Empty
-                        });
-                }
-            }
-
-            var fileStream = new FileStream("licenses.json", FileMode.Create);
-            using (var streamWriter = new StreamWriter(fileStream))
-            {
-                streamWriter.Write(JsonConvert.SerializeObject(libraryInfos));
-                streamWriter.Flush();
-            }
-
-            fileStream.Close();
         }
     }
 }

@@ -1,0 +1,18 @@
+[
+  {
+    "PackageName": "ASamplePackage",
+    "PackageVersion": "1.4.0",
+    "PackageUrl": "http://localhost",
+    "Description": null,
+    "LicenseUrl": "http://localhost/LICENSE.txt",
+    "LicenseType": "MIT"
+  },
+  {
+    "PackageName": "Onion.SolutionParser.Parser.Standard",
+    "PackageVersion": "1.0.0",
+    "PackageUrl": "https://github.com/ost-onion/SolutionParser",
+    "Description": "An elegant parser for Visual Studio solution files.",
+    "LicenseUrl": "https://github.com/ost-onion/SolutionParser/blob/master/LICENSE",
+    "LicenseType": "MIT"
+  }
+]

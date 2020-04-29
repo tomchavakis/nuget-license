@@ -92,6 +92,11 @@ using System.Xml;
 	public class Package {
 		[XmlElement(ElementName="metadata")]
 		public Metadata Metadata { get; set; }
+
+		public override string ToString()
+		{
+			return $"{Metadata.Id} {Metadata.Version}";
+		}
 	}
 	
 	
