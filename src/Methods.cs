@@ -60,10 +60,15 @@ namespace NugetUtility
                     var referenceName = split[0];
                     var versionNumber = split[1];
 
-                    if (_packageOptions.PackageFilter.Count > 0
-                        && _packageOptions.PackageFilter
-                        .Any(p => string.Compare(p, referenceName, StringComparison.OrdinalIgnoreCase) == 0))
+                    if (_packageOptions.PackageFilter.Any(p => string.Compare(p, referenceName, StringComparison.OrdinalIgnoreCase) == 0))
                     {
+                        WriteOutput(referenceName + " skipped by filter.", logLevel: LogLevel.Verbose);
+                        continue;
+                    }
+
+                    if (_packageOptions.ManualInformation.Any(p => p.PackageName == referenceName && p.PackageVersion == versionNumber))
+                    {
+                        WriteOutput(packageWithVersion + " skipped due to manual item match.", logLevel: LogLevel.Verbose);
                         continue;
                     }
 
@@ -248,8 +253,8 @@ namespace NugetUtility
                 PackageVersion = item.Metadata.Version ?? string.Empty,
                 PackageUrl = manual?.PackageUrl ?? item.Metadata.ProjectUrl ?? string.Empty,
                 Description = manual?.Description ?? item.Metadata.Description ?? string.Empty,
-                LicenseType = licenseType ?? manual?.LicenseType ?? string.Empty,
-                LicenseUrl = licenseUrl ?? manual?.LicenseUrl ?? string.Empty,
+                LicenseType = manual?.LicenseType ?? licenseType ?? string.Empty,
+                LicenseUrl = manual?.LicenseUrl ?? licenseUrl ?? string.Empty,
                 Projects = _packageOptions.IncludeProjectFile ? projectFile : null
             };
         }
@@ -267,9 +272,9 @@ namespace NugetUtility
                                                             a => a.LicenseUrl ?? "---"), logLevel: LogLevel.Always);
         }
 
-        public void SaveAsJson(List<LibraryInfo> packages)
+        public void SaveAsJson(List<LibraryInfo> libraries)
         {
-            if (!_packageOptions.JsonOutput) { return; }
+            if (!libraries.Any() || !_packageOptions.JsonOutput) { return; }
             JsonSerializerSettings jsonSettings = new JsonSerializerSettings
             {
                 NullValueHandling = _packageOptions.IncludeProjectFile ? NullValueHandling.Include : NullValueHandling.Ignore
@@ -278,7 +283,7 @@ namespace NugetUtility
             using (var fileStream = new FileStream(GetOutputFilename("licenses.json"), FileMode.Create))
             using (var streamWriter = new StreamWriter(fileStream))
             {
-                streamWriter.Write(JsonConvert.SerializeObject(packages, jsonSettings));
+                streamWriter.Write(JsonConvert.SerializeObject(libraries, jsonSettings));
                 streamWriter.Flush();
             }
         }
@@ -312,7 +317,7 @@ namespace NugetUtility
                 if (_packageOptions.IncludeProjectFile)
                 {
                     sb.Append("Project:");
-                    sb.Append(lib.LicenseType);
+                    sb.Append(lib.Projects);
                     sb.AppendLine();
                 }
                 sb.AppendLine();
@@ -328,10 +333,9 @@ namespace NugetUtility
                 return new ValidationResult { IsValid = true };
             }
 
-            var allowedLicenses = _packageOptions.AllowedLicenseType;
             var invalidPackages = projectPackages
                 .SelectMany(kvp => kvp.Value.Select(p => new KeyValuePair<string, Package>(kvp.Key, p.Value)))
-                .Where(p => !allowedLicenses.Any(allowed =>
+                .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
                 {
                     if (p.Value.Metadata.LicenseUrl is string licenseUrl)
                     {
@@ -346,8 +350,8 @@ namespace NugetUtility
                         }
                     }
 
-                // todo handle embedded licenses....
-                return allowed == p.Value.Metadata.License?.Text;
+                    // todo handle embedded licenses....
+                    return allowed == p.Value.Metadata.License?.Text;
                 }))
                 .ToList();
 
@@ -396,11 +400,10 @@ namespace NugetUtility
                 return projects;
             }
 
-            var projectsToSkip = _packageOptions.ProjectFilter;
-
-            return projects.Where(p => projectsToSkip.Any(skip =>
-                string.Compare(p, skip, StringComparison.OrdinalIgnoreCase) != 0
-                && !p.EndsWith(skip)));
+            return projects.Where(project => _packageOptions.ProjectFilter
+                .Any(projectToSkip =>
+                    !project.Contains(projectToSkip, StringComparison.OrdinalIgnoreCase)
+                ));
         }
 
         private string GetOutputFilename(string defaultName)
