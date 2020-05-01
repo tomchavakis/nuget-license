@@ -32,6 +32,7 @@ namespace NugetUtility
 
             if (options.Print == true)
             {
+                Console.WriteLine();
                 Console.WriteLine("Project Reference(s) Analysis...");
                 methods.PrintLicenses(mappedLibraryInfo);
             }

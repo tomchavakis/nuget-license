@@ -92,7 +92,7 @@ namespace NugetUtility
                             continue;
                         }
 
-                        WriteOutput(request.RequestUri.ToString(), logLevel: LogLevel.Information);
+                        WriteOutput($"Successfully received {request.RequestUri}", logLevel: LogLevel.Information);
                         using (var responseText = await response.Content.ReadAsStreamAsync())
                         using (var textReader = new StreamReader(responseText))
                         {
@@ -124,6 +124,7 @@ namespace NugetUtility
 
         public async Task<Dictionary<string, PackageList>> GetPackages()
         {
+            WriteOutput(() => $"Starting {nameof(GetPackages)}...", logLevel: LogLevel.Verbose);
             var licenses = new Dictionary<string, PackageList>();
             var projectFiles = GetValidProjects(_packageOptions.ProjectDirectory);
             foreach (var projectFile in projectFiles)
@@ -150,6 +151,7 @@ namespace NugetUtility
         /// <returns></returns>
         public IEnumerable<string> GetProjectReferences(string projectPath)
         {
+            WriteOutput(() => $"Starting {nameof(GetProjectReferences)}...", logLevel: LogLevel.Verbose);
             if (string.IsNullOrWhiteSpace(projectPath))
             {
                 throw new ArgumentNullException(projectPath);
@@ -184,6 +186,7 @@ namespace NugetUtility
         /// <returns></returns>
         public List<LibraryInfo> MapPackagesToLibraryInfo(Dictionary<string, PackageList> packages)
         {
+            WriteOutput(() => $"Starting {nameof(MapPackagesToLibraryInfo)}...", logLevel: LogLevel.Verbose);
             var libraryInfos = new List<LibraryInfo>(256);
             foreach (var packageList in packages)
             {
@@ -333,6 +336,7 @@ namespace NugetUtility
                 return new ValidationResult { IsValid = true };
             }
 
+            WriteOutput(() => $"Starting {nameof(ValidateLicenses)}...", logLevel: LogLevel.Verbose);
             var invalidPackages = projectPackages
                 .SelectMany(kvp => kvp.Value.Select(p => new KeyValuePair<string, Package>(kvp.Key, p.Value)))
                 .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
@@ -376,6 +380,7 @@ namespace NugetUtility
             where T : class
         {
             var fallbackEndpoint = new Uri(string.Format(fallbackPackageUrl, packageName, versionNumber));
+            WriteOutput(() => "Attempting to download: " + fallbackEndpoint.ToString(), logLevel: LogLevel.Verbose);
             using (var packageRequest = new HttpRequestMessage(HttpMethod.Get, fallbackEndpoint))
             using (var packageResponse = await _httpClient.SendAsync(packageRequest))
             {
@@ -392,7 +397,12 @@ namespace NugetUtility
                     using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Read))
                     {
                         var entry = archive.GetEntry(fileInPackage);
-                        if (entry is null) { return null; }
+                        if (entry is null)
+                        {
+                            WriteOutput(() => $"{fileInPackage} was not found in NuGet Package: ", logLevel: LogLevel.Verbose);
+                            return null;
+                        }
+                        WriteOutput(() => "Attempting to read: " + fileInPackage, logLevel: LogLevel.Verbose);
                         using (var entryStream = entry.Open())
                         using (var textReader = new StreamReader(entryStream))
                         {
@@ -423,10 +433,15 @@ namespace NugetUtility
                 return projects;
             }
 
-            return projects.Where(project => _packageOptions.ProjectFilter
-                .Any(projectToSkip =>
-                    !project.Contains(projectToSkip, StringComparison.OrdinalIgnoreCase)
-                ));
+            var filteredProjects = projects.Where(project => _packageOptions.ProjectFilter
+               .Any(projectToSkip =>
+                   !project.Contains(projectToSkip, StringComparison.OrdinalIgnoreCase)
+               )).ToList();
+
+            WriteOutput(() => "Filtered Project Files" + Environment.NewLine, logLevel: LogLevel.Verbose);
+            WriteOutput(() => string.Join(Environment.NewLine, filteredProjects), logLevel: LogLevel.Verbose);
+
+            return filteredProjects;
         }
 
         private async Task HandleLicensing(Package package)
@@ -440,7 +455,7 @@ namespace NugetUtility
                 }
             }
 
-            if (!package.Metadata.License.IsLicenseFile()) { return; }
+            if (!package.Metadata.License.IsLicenseFile() || _packageOptions.AllowedLicenseType.Count == 0) { return; }
 
             var key = Tuple.Create(package.Metadata.Id, package.Metadata.Version);
 
@@ -520,22 +535,27 @@ namespace NugetUtility
                     break;
             }
 
+            WriteOutput(() => "Discovered Project Files" + Environment.NewLine, logLevel: LogLevel.Verbose);
+            WriteOutput(() => string.Join(Environment.NewLine, validProjects), logLevel: LogLevel.Verbose);
+
             return GetFilteredProjects(validProjects);
         }
 
-        private void WriteOutput(string line, Exception exception = null, LogLevel logLevel = LogLevel.Information)
+        private void WriteOutput(Func<string> line, Exception exception = null, LogLevel logLevel = LogLevel.Information)
         {
             if ((int)logLevel < (int)_packageOptions.LogLevelThreshold)
             {
                 return;
             }
 
-            Console.WriteLine(line);
+            Console.WriteLine(line.Invoke());
 
             if (exception is object)
             {
                 Console.WriteLine(exception.ToString());
             }
         }
+
+        private void WriteOutput(string line, Exception exception = null, LogLevel logLevel = LogLevel.Information) => WriteOutput(() => line, exception, logLevel);
     }
 }
