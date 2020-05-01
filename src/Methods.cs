@@ -17,6 +17,7 @@ namespace NugetUtility
         private const string fallbackPackageUrl = "https://www.nuget.org/api/v2/package/{0}/{1}";
         private const string nugetUrl = "https://api.nuget.org/v3-flatcontainer/";
         private static readonly Dictionary<Tuple<string, string>, Package> _requestCache = new Dictionary<Tuple<string, string>, Package>();
+        private static readonly Dictionary<Tuple<string, string>, string> _licenseFileCache = new Dictionary<Tuple<string, string>, string>();
         /// <summary>
         /// See https://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
         /// </summary>
@@ -41,7 +42,6 @@ namespace NugetUtility
             _licenseMappings = packageOptions.LicenseToUrlMappingsDictionary;
         }
 
-
         /// <summary>
         /// Get Nuget References per project
         /// </summary>
@@ -57,22 +57,16 @@ namespace NugetUtility
                 try
                 {
                     var split = packageWithVersion.Split(',');
-                    var referenceName = split[0];
+                    var packageId = split[0];
                     var versionNumber = split[1];
 
-                    if (_packageOptions.PackageFilter.Any(p => string.Compare(p, referenceName, StringComparison.OrdinalIgnoreCase) == 0))
+                    if (_packageOptions.PackageFilter.Any(p => string.Compare(p, packageId, StringComparison.OrdinalIgnoreCase) == 0))
                     {
-                        WriteOutput(referenceName + " skipped by filter.", logLevel: LogLevel.Verbose);
+                        WriteOutput(packageId + " skipped by filter.", logLevel: LogLevel.Verbose);
                         continue;
                     }
 
-                    if (_packageOptions.ManualInformation.Any(p => p.PackageName == referenceName && p.PackageVersion == versionNumber))
-                    {
-                        WriteOutput(packageWithVersion + " skipped due to manual item match.", logLevel: LogLevel.Verbose);
-                        continue;
-                    }
-
-                    var lookupKey = Tuple.Create(referenceName, versionNumber);
+                    var lookupKey = Tuple.Create(packageId, versionNumber);
 
                     if (_requestCache.TryGetValue(lookupKey, out var package))
                     {
@@ -81,18 +75,19 @@ namespace NugetUtility
                         continue;
                     }
 
-                    using (var request = new HttpRequestMessage(HttpMethod.Get, $"{referenceName}/{versionNumber}/{referenceName}.nuspec"))
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, $"{packageId}/{versionNumber}/{packageId}.nuspec"))
                     using (var response = await _httpClient.SendAsync(request))
                     {
                         if (!response.IsSuccessStatusCode)
                         {
                             WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Error);
-                            var fallbackResult = await GetFallbackStreamOfNuGetPackageNuspecFile(referenceName, versionNumber);
-                            if (fallbackResult is object)
+                            var fallbackResult = await GetNuGetPackageFileResult<Package>(packageId, versionNumber, $"{packageId}.nuspec");
+                            if (fallbackResult is Package)
                             {
                                 licenses.Add(packageWithVersion, fallbackResult);
                                 _requestCache[lookupKey] = fallbackResult;
                             }
+                            await HandleLicensing(fallbackResult);
 
                             continue;
                         }
@@ -107,6 +102,7 @@ namespace NugetUtility
                                 {
                                     licenses.Add(packageWithVersion, result);
                                     _requestCache[lookupKey] = result;
+                                    await HandleLicensing(result);
                                 }
                             }
                             catch (Exception e)
@@ -251,8 +247,12 @@ namespace NugetUtility
             {
                 PackageName = item.Metadata.Id ?? string.Empty,
                 PackageVersion = item.Metadata.Version ?? string.Empty,
-                PackageUrl = manual?.PackageUrl ?? item.Metadata.ProjectUrl ?? string.Empty,
-                Description = manual?.Description ?? item.Metadata.Description ?? string.Empty,
+                PackageUrl = !string.IsNullOrWhiteSpace(manual?.PackageUrl)
+                        ? manual.PackageUrl
+                        : item.Metadata.ProjectUrl ?? string.Empty,
+                Description = !string.IsNullOrWhiteSpace(manual?.Description)
+                        ? manual.Description
+                        : item.Metadata.Description ?? string.Empty,
                 LicenseType = manual?.LicenseType ?? licenseType ?? string.Empty,
                 LicenseUrl = manual?.LicenseUrl ?? licenseUrl ?? string.Empty,
                 Projects = _packageOptions.IncludeProjectFile ? projectFile : null
@@ -337,6 +337,7 @@ namespace NugetUtility
                 .SelectMany(kvp => kvp.Value.Select(p => new KeyValuePair<string, Package>(kvp.Key, p.Value)))
                 .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
                 {
+                    if (string.IsNullOrWhiteSpace(allowed)) { return true; }
                     if (p.Value.Metadata.LicenseUrl is string licenseUrl)
                     {
                         if (_licenseMappings.TryGetValue(licenseUrl, out var license))
@@ -350,7 +351,20 @@ namespace NugetUtility
                         }
                     }
 
-                    // todo handle embedded licenses....
+                    if (p.Value.Metadata.License.IsLicenseFile())
+                    {
+                        var key = Tuple.Create(p.Value.Metadata.Id, p.Value.Metadata.Version);
+
+                        if (_licenseFileCache.TryGetValue(key, out var licenseText))
+                        {
+                            if (licenseText.Contains(allowed, StringComparison.OrdinalIgnoreCase))
+                            {
+                                p.Value.Metadata.License.Text = allowed;
+                                return true;
+                            }
+                        }
+                    }
+
                     return allowed == p.Value.Metadata.License?.Text;
                 }))
                 .ToList();
@@ -358,7 +372,8 @@ namespace NugetUtility
             return new ValidationResult { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
         }
 
-        private async Task<Package> GetFallbackStreamOfNuGetPackageNuspecFile(string packageName, string versionNumber)
+        private async Task<T> GetNuGetPackageFileResult<T>(string packageName, string versionNumber, string fileInPackage)
+            where T : class
         {
             var fallbackEndpoint = new Uri(string.Format(fallbackPackageUrl, packageName, versionNumber));
             using (var packageRequest = new HttpRequestMessage(HttpMethod.Get, fallbackEndpoint))
@@ -376,21 +391,29 @@ namespace NugetUtility
 
                     using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Read))
                     {
-                        var entry = archive.GetEntry($"{packageName}.nuspec");
+                        var entry = archive.GetEntry(fileInPackage);
                         if (entry is null) { return null; }
                         using (var entryStream = entry.Open())
                         using (var textReader = new StreamReader(entryStream))
                         {
-                            if (_serializer.Deserialize(new NamespaceIgnorantXmlTextReader(textReader)) is Package result)
+                            var typeT = typeof(T);
+                            if (typeT == typeof(Package))
                             {
-                                return result;
+                                if (_serializer.Deserialize(new NamespaceIgnorantXmlTextReader(textReader)) is T result)
+                                {
+                                    return (T)result;
+                                }
                             }
+                            else if (typeT == typeof(string))
+                            {
+                                return await textReader.ReadToEndAsync() as T;
+                            }
+
+                            throw new ArgumentException($"{typeT.FullName} isn't supported!");
                         }
                     }
                 }
             }
-
-            return null;
         }
 
         private IEnumerable<string> GetFilteredProjects(IEnumerable<string> projects)
@@ -404,6 +427,26 @@ namespace NugetUtility
                 .Any(projectToSkip =>
                     !project.Contains(projectToSkip, StringComparison.OrdinalIgnoreCase)
                 ));
+        }
+
+        private async Task HandleLicensing(Package package)
+        {
+            if (package.Metadata.LicenseUrl is string licenseUrl
+                && package.Metadata.License?.Text is null)
+            {
+                if (_licenseMappings.TryGetValue(licenseUrl, out var mappedLicense))
+                {
+                    package.Metadata.License = new License { Text = mappedLicense };
+                }
+            }
+
+            if (!package.Metadata.License.IsLicenseFile()) { return; }
+
+            var key = Tuple.Create(package.Metadata.Id, package.Metadata.Version);
+
+            if (_licenseFileCache.TryGetValue(key, out _)) { return; }
+
+            _licenseFileCache[key] = await GetNuGetPackageFileResult<string>(package.Metadata.Id, package.Metadata.Version, package.Metadata.License.Text);
         }
 
         private string GetOutputFilename(string defaultName)

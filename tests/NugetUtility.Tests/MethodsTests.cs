@@ -102,8 +102,8 @@ namespace NugetUtility.Tests
 
             var result = await methods.GetPackages();
             var validationResult = methods.ValidateLicenses(result);
-            Assert.IsFalse(validationResult.IsValid);
-            Assert.IsTrue(validationResult.InvalidPackages.Count == 2);
+            Assert.False(validationResult.IsValid);
+            Assert.AreEqual(1, validationResult.InvalidPackages.Count);
         }
     }
 }

@@ -7,6 +7,9 @@ namespace NugetUtility
 {
     public static class Utilties
     {
+        public static bool IsLicenseFile(this License license) =>
+            string.Compare(license?.Type, "file", StringComparison.OrdinalIgnoreCase) == 0;
+
         public static ICollection<T> ReadListFromFile<T>(string jsonFileList)
         {
             if (string.IsNullOrWhiteSpace(jsonFileList))
