@@ -1,44 +1,62 @@
 ﻿using CommandLine;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace NugetUtility
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
-            IEnumerable<Tuple<string, string, string>> licences = new List<Tuple<string, string, string>>();
+            var result = Parser.Default.ParseArguments<PackageOptions>(args);
+            return await result.MapResult(
+                options => Execute(options),
+                errors => Task.FromResult(1));
+        }
 
-            Methods methods = new Methods();
-            Task.Run(async () =>
+        private static async Task<int> Execute(PackageOptions options)
+        {
+            if (string.IsNullOrWhiteSpace(options.ProjectDirectory))
             {
-                var result = CommandLine.Parser.Default.ParseArguments<PackageOptions>(args);
+                Console.WriteLine("ERROR(S):");
+                Console.WriteLine("-i\tInput the Directory Path (csproj file)");
 
-                await result.MapResult(
-                    (PackageOptions options) =>
-                    {
-                        if (string.IsNullOrEmpty(options.ProjectDirectory))
-                        {
-                            Console.WriteLine("ERROR(S):");
-                            Console.WriteLine("-i\tInput the Directory Path (csproj file)");
-                        }
-                        else
-                        {
-                            System.Console.WriteLine("Project Reference(s) Analysis...");
-                            bool licensesHasRetrieved = methods.PrintReferencesAsync(options.ProjectDirectory, options.UniqueOutput, options.JsonOutput, options.Output).Result;
-                        }
-                        return Task.FromResult(0);
-                    },
-                    errors => Task.FromResult(1));
+                return 1;
+            }
 
-            }).GetAwaiter().GetResult();
-            
+            Methods methods = new Methods(options);
+            var projectsWithPackages = await methods.GetPackages();
+            HandleInvalidLicenses(methods, projectsWithPackages, options.AllowedLicenseType);
+            var mappedLibraryInfo = methods.MapPackagesToLibraryInfo(projectsWithPackages);
+
+            if (options.Print == true)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Project Reference(s) Analysis...");
+                methods.PrintLicenses(mappedLibraryInfo);
+            }
+
+            if (options.JsonOutput)
+            {
+                methods.SaveAsJson(mappedLibraryInfo);
+            }
+            else
+            {
+                methods.SaveAsTextFile(mappedLibraryInfo);
+            }
+
+            return 0;
+        }
+
+        private static void HandleInvalidLicenses(Methods methods, Dictionary<string, PackageList> projectsWithPackages, ICollection<string> allowedLicenseType)
+        {
+            var invalidPackages = methods.ValidateLicenses(projectsWithPackages);
+
+            if (!invalidPackages.IsValid)
+            {
+                throw new InvalidLicensesException(invalidPackages, allowedLicenseType);
+            }
         }
     }
 }
