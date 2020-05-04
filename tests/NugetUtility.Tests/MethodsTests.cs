@@ -15,7 +15,7 @@ namespace NugetUtility.Tests
         [SetUp]
         public void Setup()
         {
-            _projectPath = @"..\..\..\";
+            _projectPath = @"../../../";
             _methods = new Methods(new PackageOptions { ProjectDirectory = _projectPath });
         }
 
@@ -65,7 +65,7 @@ namespace NugetUtility.Tests
         {
             var methods = new Methods(new PackageOptions
             {
-                ProjectsFilterOption = @"..\..\..\SampleProjectFilters.json",
+                ProjectsFilterOption = @"../../../SampleProjectFilters.json",
                 ProjectDirectory = TestSetup.ThisProjectSolutionPath
             });
 
@@ -80,7 +80,7 @@ namespace NugetUtility.Tests
         {
             var methods = new Methods(new PackageOptions
             {
-                PackagesFilterOption = @"..\..\..\SamplePackagesFilters.json",
+                PackagesFilterOption = @"../../../SamplePackagesFilters.json",
                 ProjectDirectory = TestSetup.ThisProjectSolutionPath
             });
 
@@ -95,8 +95,8 @@ namespace NugetUtility.Tests
         {
             var methods = new Methods(new PackageOptions
             {
-                ProjectsFilterOption = @"..\..\..\SampleProjectFilters.json",
-                AllowedLicenseTypesOption = @"..\..\..\SampleAllowedLicenses.json",
+                ProjectsFilterOption = @"../../../SampleProjectFilters.json",
+                AllowedLicenseTypesOption = @"../../../SampleAllowedLicenses.json",
                 ProjectDirectory = TestSetup.ThisProjectSolutionPath
             });
 

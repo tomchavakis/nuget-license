@@ -28,7 +28,7 @@ namespace NugetUtility.Tests
             Assert.AreEqual(1, status);
         }
 
-        [TestCase("-i " + TestSetup.ThisProjectSolutionPath + @" --allowed-license-types ..\..\..\SampleAllowedLicenses.json")]
+        [TestCase("-i " + TestSetup.ThisProjectSolutionPath + @" --allowed-license-types ../../../SampleAllowedLicenses.json")]
         [Test]
         public void Main_Should_Throw_When_InvalidLicenses(string args)
         {
@@ -38,7 +38,7 @@ namespace NugetUtility.Tests
         [Test]
         public async Task Main_Should_Run_For_This_Project()
         {
-            var status = await Program.Main(@"-i ..\..\..\".Split(' '));
+            var status = await Program.Main(@"-i ../../../".Split(' '));
 
             Assert.AreEqual(0, status);
         }
@@ -56,7 +56,7 @@ namespace NugetUtility.Tests
         [Test]
         public async Task Main_Should_Run_For_This_Solution_With_ManualInformation()
         {
-            const string args = "-i " + TestSetup.ThisProjectSolutionPath + @" -j --outfile custom-manual.json --manual-package-information ..\..\..\SampleManualInformation.json";
+            const string args = "-i " + TestSetup.ThisProjectSolutionPath + @" -j --outfile custom-manual.json --manual-package-information ../../../SampleManualInformation.json";
             var status = await Program.Main(args.Split(' '));
 
             Assert.AreEqual(0, status);

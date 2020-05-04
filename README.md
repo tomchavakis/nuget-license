@@ -3,6 +3,21 @@
 
 A .net core tool to print the licenses of a project. This tool support .NET Core and .NET Standard Projects.
 
+## dotnet-project-licenses tool
+
+### Install tool
+
+```ps
+dotnet tool install --global dotnet-project-licenses
+
+```
+
+### Uninstall tool
+
+```ps
+dotnet tool uninstall --global dotnet-project-licenses
+```
+
 ## Usage
 
 Usage: dotnet-project-licenses [options]
@@ -11,42 +26,54 @@ Usage: dotnet-project-licenses [options]
 
 | Option | Description |
 |------|-------------|
-| `-i` | Project Folder |
+| `-i, --input` | Project Folder |
+| `--allowed-license-types` | Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed |
+| `-j, --json` | (Default: false) Saves licenses list in a json file (licenses.json) |
+| `--include-project-file` | (Default: false) Adds project file path to information when enabled. |
+| `-l, --log-level` | (Default: Error) Sets log level for output display. Options: Error,Warning,Information,Verbose. |
+| `--manual-package-information` | Simple json file of an array of LibraryInfo objects for manually determined packages. |
+| `--licenseurl-to-license-mappings` | Simple json file of Dictinary<string,string> to override default mappings |
+| `-o, --output` | (Default: false) Saves as text file (licenses.txt) |
+| `--outfile` | Output filename |
+| `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj' |
+| `--packages-filter` | Simple json file of a text array of packages to skip. |
+| `-u, --unique` | (Default: false) Unique licenses list by Id/Version |
+| `-p, --print` | (Default: true) Print licenses. |
+| `--help` | Display this help screen. |
+| `--version` | Display version information. |
 
-## dotnet-project-licenses tool
+## Example tool commands
 
-**Install tool**
-
-```
-dotnet tool install --global dotnet-project-licenses
-
-```
-
-**Uninstall tool**
-
-```
-dotnet tool uninstall --global dotnet-project-licenses
-```
-
-## Using tool
-
-```
+```ps
 dotnet-project-licenses --help
+```
 
+```ps
 dotnet-project-licenses -i projectFolder
 ```
 
-**Print unique licenses:**
-```
+### Print unique licenses
+
+Values for the input may include a folder path, a Visual Studio '.sln' file, or a '.csproj' file.
+
+```ps
 dotnet-project-licenses -i projectFolder -u
 ```
 
-** Create output file 
-```
+### Creates output file of unique licenses in a plain text 'licenses.txt' file in current directory
+
+```ps
 dotnet-project-licenses -i projectFolder -u -o
 ```
 
-** Generate output json file
+### Create output file 'new-name.txt' in another directory
+
+```ps
+dotnet-project-licenses -i projectFolder -o --outfile ../../../another/folder/new-name.txt
 ```
+
+### Creates output json file of unique licences in a file 'licenses.json' in the current directory
+
+```ps
 dotnet-project-licenses -i projectFolder -u -o -j
 ```
