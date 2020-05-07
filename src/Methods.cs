@@ -60,6 +60,12 @@ namespace NugetUtility
                     var packageId = split[0];
                     var versionNumber = split[1];
 
+                    if (string.IsNullOrWhiteSpace(packageId) || string.IsNullOrWhiteSpace(versionNumber))
+                    {
+                        WriteOutput($"Skipping invalid entry {packageWithVersion}", logLevel: LogLevel.Verbose);
+                        continue;
+                    }
+
                     if (_packageOptions.PackageFilter.Any(p => string.Compare(p, packageId, StringComparison.OrdinalIgnoreCase) == 0))
                     {
                         WriteOutput(packageId + " skipped by filter.", logLevel: LogLevel.Verbose);
@@ -71,7 +77,7 @@ namespace NugetUtility
                     if (_requestCache.TryGetValue(lookupKey, out var package))
                     {
                         WriteOutput(packageWithVersion + " obtained from request cache.", logLevel: LogLevel.Information);
-                        licenses.Add(packageWithVersion, package);
+                        licenses.TryAdd(packageWithVersion, package);
                         continue;
                     }
 
@@ -80,14 +86,14 @@ namespace NugetUtility
                     {
                         if (!response.IsSuccessStatusCode)
                         {
-                            WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Error);
+                            WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Warning);
                             var fallbackResult = await GetNuGetPackageFileResult<Package>(packageId, versionNumber, $"{packageId}.nuspec");
                             if (fallbackResult is Package)
                             {
                                 licenses.Add(packageWithVersion, fallbackResult);
                                 _requestCache[lookupKey] = fallbackResult;
+                                await HandleLicensing(fallbackResult);
                             }
-                            await HandleLicensing(fallbackResult);
 
                             continue;
                         }
@@ -341,7 +347,6 @@ namespace NugetUtility
                 .SelectMany(kvp => kvp.Value.Select(p => new KeyValuePair<string, Package>(kvp.Key, p.Value)))
                 .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
                 {
-                    if (string.IsNullOrWhiteSpace(allowed)) { return true; }
                     if (p.Value.Metadata.LicenseUrl is string licenseUrl)
                     {
                         if (_licenseMappings.TryGetValue(licenseUrl, out var license))
@@ -379,6 +384,7 @@ namespace NugetUtility
         private async Task<T> GetNuGetPackageFileResult<T>(string packageName, string versionNumber, string fileInPackage)
             where T : class
         {
+            if(string.IsNullOrWhiteSpace(packageName) || string.IsNullOrWhiteSpace(versionNumber)) { return await Task.FromResult<T>(null); }
             var fallbackEndpoint = new Uri(string.Format(fallbackPackageUrl, packageName, versionNumber));
             WriteOutput(() => "Attempting to download: " + fallbackEndpoint.ToString(), logLevel: LogLevel.Verbose);
             using (var packageRequest = new HttpRequestMessage(HttpMethod.Get, fallbackEndpoint))
@@ -386,7 +392,7 @@ namespace NugetUtility
             {
                 if (!packageResponse.IsSuccessStatusCode)
                 {
-                    WriteOutput($"{packageRequest.RequestUri} failed due to {packageResponse.StatusCode}!", logLevel: LogLevel.Error);
+                    WriteOutput($"{packageRequest.RequestUri} failed due to {packageResponse.StatusCode}!", logLevel: LogLevel.Warning);
                     return null;
                 }
 
@@ -433,9 +439,9 @@ namespace NugetUtility
                 return projects;
             }
 
-            var filteredProjects = projects.Where(project => _packageOptions.ProjectFilter
+            var filteredProjects = projects.Where(project => !_packageOptions.ProjectFilter
                .Any(projectToSkip =>
-                   !project.Contains(projectToSkip, StringComparison.OrdinalIgnoreCase)
+                   project.Contains(projectToSkip, StringComparison.OrdinalIgnoreCase)
                )).ToList();
 
             WriteOutput(() => "Filtered Project Files" + Environment.NewLine, logLevel: LogLevel.Verbose);
@@ -446,6 +452,7 @@ namespace NugetUtility
 
         private async Task HandleLicensing(Package package)
         {
+            if (package?.Metadata is null) { return; }
             if (package.Metadata.LicenseUrl is string licenseUrl
                 && package.Metadata.License?.Text is null)
             {

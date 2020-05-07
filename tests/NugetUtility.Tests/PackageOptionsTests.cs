@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using FluentAssertions;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
@@ -21,10 +22,8 @@ namespace NugetUtility.Tests
 
             var options = new PackageOptions { LicenseToUrlMappingsOption = testFile };
 
-            Assert.IsTrue(options.LicenseToUrlMappingsDictionary.Count == 2);
-            Assert.AreEqual(options.LicenseToUrlMappingsDictionary["url1"], "license1");
-            Assert.AreEqual(options.LicenseToUrlMappingsDictionary["url2"], "license1");
-            File.Delete(testFile);
+            options.LicenseToUrlMappingsDictionary.Should().HaveCount(2)
+                .And.BeEquivalentTo(testMappings);
         }
 
     }
