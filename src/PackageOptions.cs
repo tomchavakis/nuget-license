@@ -52,7 +52,7 @@ namespace NugetUtility
         [Option('p', "print", Default = true, HelpText = "Print licenses.")]
         public bool? Print { get; set; }
 
-        [Usage(ApplicationAlias = "dotnet-nuget")]
+        [Usage(ApplicationAlias = "dotnet-project-licenses")]
         public static IEnumerable<Example> Examples
         {
             get
