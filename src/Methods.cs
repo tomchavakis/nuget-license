@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using System.Xml.XPath;
 
 namespace NugetUtility
 {
@@ -479,10 +480,10 @@ namespace NugetUtility
         private IEnumerable<string> GetProjectReferencesFromNewProjectFile(string projectPath)
         {
             var projDefinition = XDocument.Load(projectPath);
+            
+            // Uses an XPath instead of direct navigation (using Elements("…")) as the project file may use xml namespaces
             return projDefinition
-                         ?.Element("Project")
-                         ?.Elements("ItemGroup")
-                         ?.Elements("PackageReference")
+                         ?.XPathSelectElements("/*[local-name()='Project']/*[local-name()='ItemGroup']/*[local-name()='PackageReference']")
                          ?.Select(refElem => (refElem.Attribute("Include") == null ? "" : refElem.Attribute("Include").Value) + "," +
                                             (refElem.Attribute("Version") == null ? "" : refElem.Attribute("Version").Value))
                          ?? Array.Empty<string>();
