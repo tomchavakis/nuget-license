@@ -52,6 +52,9 @@ namespace NugetUtility
         [Option('p', "print", Default = true, HelpText = "Print licenses.")]
         public bool? Print { get; set; }
 
+        [Option("export-license-texts", Default = false, HelpText = "Exports the raw license texts")]
+        public bool ExportLicenseTexts { get; set; }
+
         [Usage(ApplicationAlias = "dotnet-project-licenses")]
         public static IEnumerable<Example> Examples
         {

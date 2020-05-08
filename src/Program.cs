@@ -30,6 +30,11 @@ namespace NugetUtility
             HandleInvalidLicenses(methods, projectsWithPackages, options.AllowedLicenseType);
             var mappedLibraryInfo = methods.MapPackagesToLibraryInfo(projectsWithPackages);
 
+            if (options.ExportLicenseTexts)
+            {
+                await methods.ExportLicenseTexts(mappedLibraryInfo);
+            }
+
             if (options.Print == true)
             {
                 Console.WriteLine();

@@ -472,6 +472,13 @@ namespace NugetUtility
                : _packageOptions.OutputFileName;
         }
 
+        private string GetOutputDirectory()
+        {
+            return string.IsNullOrWhiteSpace(_packageOptions.OutputFileName)
+                ? Environment.CurrentDirectory
+                : Path.GetDirectoryName(_packageOptions.OutputFileName);
+        }
+
         /// <summary>
         /// Retreive the project references from new csproj file format
         /// </summary>
@@ -558,5 +565,84 @@ namespace NugetUtility
         }
 
         private void WriteOutput(string line, Exception exception = null, LogLevel logLevel = LogLevel.Information) => WriteOutput(() => line, exception, logLevel);
+
+        public async Task ExportLicenseTexts(List<LibraryInfo> infos)
+        {
+            var directory = GetOutputDirectory();
+            foreach (var info in infos.Where(i => !string.IsNullOrEmpty(i.LicenseUrl)))
+            {
+                var source = info.LicenseUrl;
+                var outpath = Path.Combine(directory, info.PackageName + info.PackageVersion + ".txt");
+                if (File.Exists(outpath))
+                {
+                    continue;
+                }
+
+                // Correct some uris
+                if (source.StartsWith("https://github.com", StringComparison.Ordinal) && source.Contains("/blob/", StringComparison.Ordinal))
+                {
+                    source = source.Replace("/blob/", "/raw/", StringComparison.Ordinal);
+                }
+                if (source.StartsWith("https://github.com", StringComparison.Ordinal) && source.Contains("/dotnet/corefx/", StringComparison.Ordinal))
+                {
+                    source = source.Replace("/dotnet/corefx/", "/dotnet/runtime/", StringComparison.Ordinal);
+                }
+
+                do
+                {
+                    WriteOutput(() => $"Attempting to download {source} to {outpath}", logLevel: LogLevel.Verbose);
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, source))
+                    using (var response = await _httpClient.SendAsync(request))
+                    {
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Error);
+                            break;
+                        }
+
+                        // Somebody redirected us to github. Correct the uri and try again
+                        var realRequestUri = response.RequestMessage.RequestUri.AbsoluteUri;
+                        if (
+                            IsGithub(realRequestUri)
+                            && !IsGithub(source))
+                        {
+                            WriteOutput(() => " Redirect detected", logLevel: LogLevel.Verbose);
+                            source = CorrectUri(realRequestUri);
+                            continue;
+                        }
+
+                        using (var fileStream = File.OpenWrite(outpath))
+                        {
+                            await response.Content.CopyToAsync(fileStream);
+                        }
+                        break;
+                    }
+                } while (true);
+            }
+        }
+
+        private bool IsGithub(string uri)
+        {
+            return uri.StartsWith("https://github.com", StringComparison.Ordinal);
+        }
+
+        private string CorrectUri(string uri)
+        {
+            if (!IsGithub(uri))
+            {
+                return uri;
+            }
+            
+            if (uri.Contains("/blob/", StringComparison.Ordinal))
+            {
+                uri = uri.Replace("/blob/", "/raw/", StringComparison.Ordinal);
+            }
+            if (uri.Contains("/dotnet/corefx/", StringComparison.Ordinal))
+            {
+                uri = uri.Replace("/dotnet/corefx/", "/dotnet/runtime/", StringComparison.Ordinal);
+            }
+
+            return uri;
+        }
     }
 }
