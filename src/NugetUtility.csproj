@@ -20,7 +20,6 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.7.82" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Onion.SolutionParser.Parser.Standard" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

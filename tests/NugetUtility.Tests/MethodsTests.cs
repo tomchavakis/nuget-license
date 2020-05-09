@@ -1,6 +1,5 @@
 using FluentAssertions;
 using NUnit.Framework;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -75,7 +74,7 @@ namespace NugetUtility.Tests
         }
 
         [Test]
-        public async Task GetPackages_PackagesFilter_Should_Remove_SlnParser()
+        public async Task GetPackages_PackagesFilter_Should_Remove_CommandLineParser()
         {
             var methods = new Methods(new PackageOptions
             {
@@ -86,11 +85,11 @@ namespace NugetUtility.Tests
             var result = await methods.GetPackages();
 
             result.Should().NotBeEmpty()
-                .And.NotContainKey("Onion.SolutionParser.Parser.Standard");
+                .And.NotContainKey("CommandLineParser");
         }
 
         [Test]
-        public async Task GetPackages_AllowedLicenses_Should_Throw_On_Empty()
+        public async Task GetPackages_AllowedLicenses_Should_Throw_On_MIT()
         {
             var methods = new Methods(new PackageOptions
             {
@@ -102,8 +101,9 @@ namespace NugetUtility.Tests
             var result = await methods.GetPackages();
             var validationResult = methods.ValidateLicenses(result);
 
+            result.Should().HaveCount(1);
             validationResult.IsValid.Should().BeFalse();
-            validationResult.InvalidPackages.Count.Should().Be(1);
+            validationResult.InvalidPackages.Count.Should().Be(2);
         }
     }
 }

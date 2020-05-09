@@ -132,7 +132,7 @@ namespace NugetUtility
         {
             WriteOutput(() => $"Starting {nameof(GetPackages)}...", logLevel: LogLevel.Verbose);
             var licenses = new Dictionary<string, PackageList>();
-            var projectFiles = GetValidProjects(_packageOptions.ProjectDirectory);
+            var projectFiles = await GetValidProjects(_packageOptions.ProjectDirectory);
             foreach (var projectFile in projectFiles)
             {
                 var references = this.GetProjectReferences(projectFile);
@@ -165,7 +165,7 @@ namespace NugetUtility
 
             if (!projectPath.EndsWith(GetProjectExtension()))
             {
-                projectPath = GetValidProjects(projectPath).FirstOrDefault();
+                projectPath = GetValidProjects(projectPath).GetAwaiter().GetResult().FirstOrDefault();
             }
 
             if (projectPath is null)
@@ -384,7 +384,7 @@ namespace NugetUtility
         private async Task<T> GetNuGetPackageFileResult<T>(string packageName, string versionNumber, string fileInPackage)
             where T : class
         {
-            if(string.IsNullOrWhiteSpace(packageName) || string.IsNullOrWhiteSpace(versionNumber)) { return await Task.FromResult<T>(null); }
+            if (string.IsNullOrWhiteSpace(packageName) || string.IsNullOrWhiteSpace(versionNumber)) { return await Task.FromResult<T>(null); }
             var fallbackEndpoint = new Uri(string.Format(fallbackPackageUrl, packageName, versionNumber));
             WriteOutput(() => "Attempting to download: " + fallbackEndpoint.ToString(), logLevel: LogLevel.Verbose);
             using (var packageRequest = new HttpRequestMessage(HttpMethod.Get, fallbackEndpoint))
@@ -445,7 +445,7 @@ namespace NugetUtility
                )).ToList();
 
             WriteOutput(() => "Filtered Project Files" + Environment.NewLine, logLevel: LogLevel.Verbose);
-            WriteOutput(() => string.Join(Environment.NewLine, filteredProjects), logLevel: LogLevel.Verbose);
+            WriteOutput(() => string.Join(Environment.NewLine, filteredProjects.ToArray()), logLevel: LogLevel.Verbose);
 
             return filteredProjects;
         }
@@ -518,7 +518,7 @@ namespace NugetUtility
             return Array.Empty<string>();
         }
 
-        private IEnumerable<string> GetValidProjects(string projectPath)
+        private async Task<IEnumerable<string>> GetValidProjects(string projectPath)
         {
             var pathInfo = new FileInfo(projectPath);
             var extension = GetProjectExtension();
@@ -526,10 +526,8 @@ namespace NugetUtility
             switch (pathInfo.Extension)
             {
                 case ".sln":
-                    validProjects = Onion.SolutionParser.Parser.SolutionParser
-                        .Parse(pathInfo.FullName)
-                        .Projects
-                        .Select(p => new FileInfo(Path.Combine(pathInfo.Directory.FullName, p.Path)))
+                    validProjects = (await ParseSolution(pathInfo.FullName))
+                        .Select(p => new FileInfo(Path.Combine(pathInfo.Directory.FullName, p)))
                         .Where(p => p.Exists && p.Extension == extension)
                         .Select(p => p.FullName);
                     break;
@@ -543,9 +541,30 @@ namespace NugetUtility
             }
 
             WriteOutput(() => "Discovered Project Files" + Environment.NewLine, logLevel: LogLevel.Verbose);
-            WriteOutput(() => string.Join(Environment.NewLine, validProjects), logLevel: LogLevel.Verbose);
+            WriteOutput(() => string.Join(Environment.NewLine, validProjects.ToArray()), logLevel: LogLevel.Verbose);
 
             return GetFilteredProjects(validProjects);
+        }
+
+        private async Task<IEnumerable<string>> ParseSolution(string fullName)
+        {
+            var solutionFile = new FileInfo(fullName);
+            if (!solutionFile.Exists) { throw new FileNotFoundException(fullName); }
+            var projectFiles = new List<string>(250);
+
+            using (var fileStream = solutionFile.OpenRead())
+            using (var streamReader = new StreamReader(fileStream))
+            {
+                while (await streamReader.ReadLineAsync() is string line)
+                {
+                    if (!line.StartsWith("Project")) { continue; }
+                    var segments = line.Split(',');
+                    if (segments.Length < 2) { continue; }
+                    projectFiles.Add(segments[1].EnsureCorrectPathCharacter().Trim('"'));
+                }
+            }
+
+            return projectFiles;
         }
 
         private void WriteOutput(Func<string> line, Exception exception = null, LogLevel logLevel = LogLevel.Information)

@@ -10,6 +10,9 @@ namespace NugetUtility
         public static bool IsLicenseFile(this License license) =>
             string.Compare(license?.Type, "file", StringComparison.OrdinalIgnoreCase) == 0;
 
+        public static string EnsureCorrectPathCharacter(this string path) =>
+            path?.Replace("\\", "/").Trim();
+
         public static ICollection<T> ReadListFromFile<T>(string jsonFileList)
         {
             if (string.IsNullOrWhiteSpace(jsonFileList))
