@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -26,7 +27,9 @@ namespace NugetUtility.Tests
             };
             var exception = new InvalidLicensesException(result, !hasAllowed ? null : new List<string> { "MIT" });
 
-            Assert.IsTrue(exception.Message.Split(Environment.NewLine).Length == result.InvalidPackages.Count + 1);
+            exception.Should().NotBeNull();
+            exception.Message.Split(Environment.NewLine)
+                .Should().HaveCount(result.InvalidPackages.Count + 1);
         }
     }
 }

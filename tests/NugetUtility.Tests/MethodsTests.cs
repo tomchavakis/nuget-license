@@ -1,3 +1,4 @@
+using FluentAssertions;
 using NUnit.Framework;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace NugetUtility.Tests
         [Test]
         public void GetProjectExtension_Should_Be_Csproj()
         {
-            Assert.AreEqual(".csproj", _methods.GetProjectExtension());
+            _methods.GetProjectExtension().Should().Be(".csproj");
         }
 
         [Test]
@@ -30,7 +31,7 @@ namespace NugetUtility.Tests
         {
             var packages = _methods.GetProjectReferences(_projectPath);
 
-            CollectionAssert.IsNotEmpty(packages);
+            packages.Should().NotBeEmpty();
         }
 
         [Test]
@@ -39,11 +40,9 @@ namespace NugetUtility.Tests
             var packages = _methods.GetProjectReferences(_projectPath);
             var information = await _methods.GetNugetInformationAsync(_projectPath, packages);
 
-            CollectionAssert.AreEqual
-            (
-                packages.Select(x => x.Split(',')[0].ToLower()),
-                information.Select(x => x.Value.Metadata.Id.ToLower())
-            );
+            packages.Select(x => x.Split(',')[0].ToLower())
+                .Should()
+                .BeEquivalentTo(information.Select(x => x.Value.Metadata.Id.ToLower()));
         }
 
         [TestCase("FluentValidation,5.1.0.0")]
@@ -53,11 +52,9 @@ namespace NugetUtility.Tests
             var packages = package.Split(';', System.StringSplitOptions.RemoveEmptyEntries);
             var information = await _methods.GetNugetInformationAsync(_projectPath, packages);
 
-            CollectionAssert.AreEqual
-            (
-                packages.Select(x => x.Split(',')[0].ToLower()),
-                information.Select(x => x.Value.Metadata.Id.ToLower())
-            );
+            packages.Select(x => x.Split(',')[0])
+                .Should()
+                .BeEquivalentTo(information.Select(x => x.Value.Metadata.Id));
         }
 
         [Test]
@@ -71,12 +68,13 @@ namespace NugetUtility.Tests
 
             var result = await methods.GetPackages();
 
-            Assert.IsTrue(result.Count == 1);
-            Assert.IsTrue(result.First().Key.EndsWith("NugetUtility.csproj"), "name validation");
+            result.Should()
+                .HaveCount(1)
+                .And.Match(kvp => kvp.First().Key.EndsWith("NugetUtility.csproj"));
         }
 
         [Test]
-        public async Task GetPackages_PackagesFilter_Should_Remove_SlnParser()
+        public async Task GetPackages_PackagesFilter_Should_Remove_CommandLineParser()
         {
             var methods = new Methods(new PackageOptions
             {
@@ -86,12 +84,12 @@ namespace NugetUtility.Tests
 
             var result = await methods.GetPackages();
 
-            CollectionAssert.IsNotEmpty(result);
-            Assert.IsFalse(result.SelectMany(p => p.Value).Count(p => p.Key == "Onion.SolutionParser.Parser.Standard") > 0);
+            result.Should().NotBeEmpty()
+                .And.NotContainKey("CommandLineParser");
         }
 
         [Test]
-        public async Task GetPackages_AllowedLicenses_Should_Throw_On_Empty()
+        public async Task GetPackages_AllowedLicenses_Should_Throw_On_MIT()
         {
             var methods = new Methods(new PackageOptions
             {
@@ -102,8 +100,10 @@ namespace NugetUtility.Tests
 
             var result = await methods.GetPackages();
             var validationResult = methods.ValidateLicenses(result);
-            Assert.False(validationResult.IsValid);
-            Assert.AreEqual(1, validationResult.InvalidPackages.Count);
+
+            result.Should().HaveCount(1);
+            validationResult.IsValid.Should().BeFalse();
+            validationResult.InvalidPackages.Count.Should().Be(2);
         }
     }
 }
