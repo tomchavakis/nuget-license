@@ -77,3 +77,14 @@ dotnet-project-licenses -i projectFolder -o --outfile ../../../another/folder/ne
 ```ps
 dotnet-project-licenses -i projectFolder -u -o -j
 ```
+
+
+## CONTRIBUTORS 
+
+* bmcdavid
+
+* mersadk
+
+* devproffesional
+
+* fjaouani
