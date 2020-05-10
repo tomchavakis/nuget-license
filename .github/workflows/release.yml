@@ -35,6 +35,10 @@ jobs:
     # publish the package
     - name: Publish the artifact
       run: dotnet publish -c Release -o ./artifacts
+    # Add nuget package
+    - name: Nuget package
+      run: dotnet pack -c Release -o ./artifacts
+    # Zip Artifacts
     - name: Zip artifacts
       uses: montudor/action-zip@v0.1.0
       with:
