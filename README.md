@@ -39,6 +39,7 @@ Usage: dotnet-project-licenses [options]
 | `--packages-filter` | Simple json file of a text array of packages to skip. |
 | `-u, --unique` | (Default: false) Unique licenses list by Id/Version |
 | `-p, --print` | (Default: true) Print licenses. |
+| `--export-license-texts` | Exports the raw license texts |
 | `--help` | Display this help screen. |
 | `--version` | Display version information. |
 
@@ -78,6 +79,12 @@ dotnet-project-licenses -i projectFolder -o --outfile ../../../another/folder/ne
 dotnet-project-licenses -i projectFolder -u -o -j
 ```
 
+### Exports all license texts in the current directory
+
+```ps
+dotnet-project-licenses -i projectFolder --export-license-texts
+```
+
 
 ## CONTRIBUTORS 
 
@@ -88,3 +95,5 @@ dotnet-project-licenses -i projectFolder -u -o -j
 * devproffesional
 
 * fjaouani
+
+* mkuckert
