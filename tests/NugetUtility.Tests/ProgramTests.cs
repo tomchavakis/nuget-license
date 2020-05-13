@@ -1,7 +1,8 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace NugetUtility.Tests
@@ -17,7 +18,7 @@ namespace NugetUtility.Tests
         {
             var status = await Program.Main(args.Split(' '));
 
-            Assert.AreEqual(1, status);
+            status.Should().Be(1);
         }
 
         [Test]
@@ -25,14 +26,16 @@ namespace NugetUtility.Tests
         {
             var status = await Program.Main("-j".Split(' '));
 
-            Assert.AreEqual(1, status);
+            status.Should().Be(1);
         }
 
         [TestCase("-i " + TestSetup.ThisProjectSolutionPath + @" --allowed-license-types ../../../SampleAllowedLicenses.json")]
         [Test]
-        public void Main_Should_Throw_When_InvalidLicenses(string args)
+        public async Task Main_Should_Throw_When_InvalidLicenses(string args)
         {
-            Assert.ThrowsAsync<InvalidLicensesException>(async () => await Program.Main(args.Split(' ')));
+            Func<Task> act = async () => await Program.Main(args.Split(' '));
+
+            await act.Should().ThrowExactlyAsync<InvalidLicensesException>();
         }
 
         [Test]
@@ -40,7 +43,7 @@ namespace NugetUtility.Tests
         {
             var status = await Program.Main(@"-i ../../../".Split(' '));
 
-            Assert.AreEqual(0, status);
+            status.Should().Be(0);
         }
 
         [Test]
@@ -49,8 +52,8 @@ namespace NugetUtility.Tests
             const string args = "-i " + TestSetup.ThisProjectSolutionPath + " -j --outfile custom.json";
             var status = await Program.Main(args.Split(' '));
 
-            Assert.AreEqual(0, status);
-            Assert.IsTrue(File.Exists("custom.json"));
+            status.Should().Be(0);
+            File.Exists("custom.json").Should().BeTrue();
         }
 
         [Test]
@@ -59,11 +62,11 @@ namespace NugetUtility.Tests
             const string args = "-i " + TestSetup.ThisProjectSolutionPath + @" -j --outfile custom-manual.json --manual-package-information ../../../SampleManualInformation.json";
             var status = await Program.Main(args.Split(' '));
 
-            Assert.AreEqual(0, status);
+            status.Should().Be(0);
             var outputFile = new FileInfo("custom-manual.json");
-            Assert.IsTrue(outputFile.Exists, "File doesn't exist");
-            var outputList = Utilties.ReadListFromFile<LibraryInfo>(outputFile.FullName);
-            Assert.IsTrue(outputList.Any(l => l.PackageName == "ASamplePackage"));
+            outputFile.Exists.Should().BeTrue();;
+            Utilties.ReadListFromFile<LibraryInfo>(outputFile.FullName)
+                .Should().Contain(l => l.PackageName == "ASamplePackage");
         }
 
 #if WINDOWS
@@ -78,8 +81,8 @@ namespace NugetUtility.Tests
             }
             var status = await Program.Main(args.Split(' '));
 
-            Assert.AreEqual(0, status);
-            Assert.IsTrue(File.Exists(@"c:\temp\custom.json"));
+            status.Should().Be(0);
+            File.Exists(@"c:\temp\custom.json").Should().BeTrue();
             File.Delete(@"c:\temp\custom.json");
         }
 #endif

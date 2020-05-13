@@ -1,9 +1,0 @@
-language: csharp
-solution: NugetUtility.sln
-mono: none
-sudo: required
-dist: xenial
-dotnet: 3.1
-script:
-  - dotnet restore
-  - dotnet build

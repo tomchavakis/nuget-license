@@ -1,6 +1,7 @@
 using CommandLine;
 using CommandLine.Text;
 using System.Collections.Generic;
+using System.Linq;
 using static NugetUtility.Utilties;
 
 namespace NugetUtility
@@ -101,7 +102,9 @@ namespace NugetUtility
             {
                 if (_projectFilter is object) { return _projectFilter; }
 
-                return _projectFilter = ReadListFromFile<string>(ProjectsFilterOption);
+                return _projectFilter = ReadListFromFile<string>(ProjectsFilterOption)
+                    .Select(x => x.EnsureCorrectPathCharacter())
+                    .ToList();
             }
         }
 
