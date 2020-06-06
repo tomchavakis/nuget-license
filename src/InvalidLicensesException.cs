@@ -4,21 +4,34 @@ using System.Linq;
 
 namespace NugetUtility
 {
-    public class InvalidLicensesException : Exception
+    public class InvalidLicensesException<T> : Exception
     {
-        public InvalidLicensesException(ValidationResult validationResult, ICollection<string> allowedLicenses) : base(GetMessage(validationResult, allowedLicenses))
+        public InvalidLicensesException(IValidationResult<T> validationResult, ICollection<string> allowedLicenses)
+            : base(GetMessage(validationResult, allowedLicenses))
         {
         }
 
-        private static string GetMessage(ValidationResult validationResult, ICollection<string> allowedLicenses)
+        private static string GetMessage(IValidationResult<T> validationResult, ICollection<string> allowedLicenses)
         {
-            allowedLicenses = allowedLicenses ?? Array.Empty<string>();
+            allowedLicenses ??= Array.Empty<string>();
+            var message = $"Only the following packages are allowed: {string.Join(", ", allowedLicenses.ToArray())}{Environment.NewLine}";
 
-            return $"Only the following packages are allowed: {string.Join(", ", allowedLicenses.ToArray())}{Environment.NewLine}" 
-                + string.Join(Environment.NewLine, validationResult.InvalidPackages.Select(x =>
+            if (validationResult is IValidationResult<KeyValuePair<string, Package>> packageValidation)
             {
-                return $"Project ({x.Key}) Package({x.Value.Metadata.Id}-{x.Value.Metadata.Version}) LicenseUrl({x.Value.Metadata.LicenseUrl}) License Type ({x.Value.Metadata.License?.Text})";
-            }));
+                return message + string.Join(Environment.NewLine, packageValidation.InvalidPackages.Select(x =>
+                {
+                    return $"Project ({x.Key}) Package({x.Value.Metadata.Id}-{x.Value.Metadata.Version}) LicenseUrl({x.Value.Metadata.LicenseUrl}) License Type ({x.Value.Metadata.License?.Text})";
+                }));
+            }
+            else if (validationResult is IValidationResult<LibraryInfo> libraryInfos)
+            {
+                return message + string.Join(Environment.NewLine, libraryInfos.InvalidPackages.Select(x =>
+                {
+                    return $"Project ({x.Projects}) Package({x.PackageName}-{x.PackageVersion}) LicenseUrl({x.LicenseUrl}) License Type ({x.LicenseType})";
+                }));
+            }
+
+            return message;
         }
     }
 }
