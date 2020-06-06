@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -336,11 +337,11 @@ namespace NugetUtility
             File.WriteAllText(GetOutputFilename("licences.txt"), sb.ToString());
         }
 
-        public ValidationResult ValidateLicenses(Dictionary<string, PackageList> projectPackages)
+        public IValidationResult<KeyValuePair<string, Package>> ValidateLicenses(Dictionary<string, PackageList> projectPackages)
         {
             if (_packageOptions.AllowedLicenseType.Count == 0)
             {
-                return new ValidationResult { IsValid = true };
+                return new ValidationResult<KeyValuePair<string,Package>> { IsValid = true };
             }
 
             WriteOutput(() => $"Starting {nameof(ValidateLicenses)}...", logLevel: LogLevel.Verbose);
@@ -379,7 +380,38 @@ namespace NugetUtility
                 }))
                 .ToList();
 
-            return new ValidationResult { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
+            return new ValidationResult<KeyValuePair<string, Package>> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
+        }
+
+        public ValidationResult<LibraryInfo> ValidateLicenses(List<LibraryInfo> projectPackages)
+        {
+            if (_packageOptions.AllowedLicenseType.Count == 0)
+            {
+                return new ValidationResult<LibraryInfo> { IsValid = true };
+            }
+
+            WriteOutput(() => $"Starting {nameof(ValidateLicenses)}...", logLevel: LogLevel.Verbose);
+            var invalidPackages = projectPackages
+                .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
+                {
+                    if (p.LicenseUrl is string licenseUrl)
+                    {
+                        if (_licenseMappings.TryGetValue(licenseUrl, out var license))
+                        {
+                            return allowed == license;
+                        }
+
+                        if (p.LicenseUrl?.Contains(allowed, StringComparison.OrdinalIgnoreCase) == true)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return allowed == p.LicenseType;
+                }))
+                .ToList();
+
+            return new ValidationResult<LibraryInfo> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
         }
 
         private async Task<T> GetNuGetPackageFileResult<T>(string packageName, string versionNumber, string fileInPackage)
@@ -389,7 +421,7 @@ namespace NugetUtility
             var fallbackEndpoint = new Uri(string.Format(fallbackPackageUrl, packageName, versionNumber));
             WriteOutput(() => "Attempting to download: " + fallbackEndpoint.ToString(), logLevel: LogLevel.Verbose);
             using (var packageRequest = new HttpRequestMessage(HttpMethod.Get, fallbackEndpoint))
-            using (var packageResponse = await _httpClient.SendAsync(packageRequest))
+            using (var packageResponse = await _httpClient.SendAsync(packageRequest, CancellationToken.None))
             {
                 if (!packageResponse.IsSuccessStatusCode)
                 {
@@ -494,7 +526,7 @@ namespace NugetUtility
         private IEnumerable<string> GetProjectReferencesFromNewProjectFile(string projectPath)
         {
             var projDefinition = XDocument.Load(projectPath);
-            
+
             // Uses an XPath instead of direct navigation (using Elements("…")) as the project file may use xml namespaces
             return projDefinition
                          ?.XPathSelectElements("/*[local-name()='Project']/*[local-name()='ItemGroup']/*[local-name()='PackageReference']")
@@ -658,7 +690,7 @@ namespace NugetUtility
             {
                 return uri;
             }
-            
+
             if (uri.Contains("/blob/", StringComparison.Ordinal))
             {
                 uri = uri.Replace("/blob/", "/raw/", StringComparison.Ordinal);

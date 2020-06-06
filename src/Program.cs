@@ -27,8 +27,8 @@ namespace NugetUtility
 
             Methods methods = new Methods(options);
             var projectsWithPackages = await methods.GetPackages();
-            HandleInvalidLicenses(methods, projectsWithPackages, options.AllowedLicenseType);
             var mappedLibraryInfo = methods.MapPackagesToLibraryInfo(projectsWithPackages);
+            HandleInvalidLicenses(methods, mappedLibraryInfo, options.AllowedLicenseType);
 
             if (options.ExportLicenseTexts)
             {
@@ -54,13 +54,13 @@ namespace NugetUtility
             return 0;
         }
 
-        private static void HandleInvalidLicenses(Methods methods, Dictionary<string, PackageList> projectsWithPackages, ICollection<string> allowedLicenseType)
+        private static void HandleInvalidLicenses(Methods methods, List<LibraryInfo> libraries, ICollection<string> allowedLicenseType)
         {
-            var invalidPackages = methods.ValidateLicenses(projectsWithPackages);
+            var invalidPackages = methods.ValidateLicenses(libraries);
 
             if (!invalidPackages.IsValid)
             {
-                throw new InvalidLicensesException(invalidPackages, allowedLicenseType);
+                throw new InvalidLicensesException<LibraryInfo>(invalidPackages, allowedLicenseType);
             }
         }
     }

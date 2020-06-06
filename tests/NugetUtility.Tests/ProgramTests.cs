@@ -35,7 +35,7 @@ namespace NugetUtility.Tests
         {
             Func<Task> act = async () => await Program.Main(args.Split(' '));
 
-            await act.Should().ThrowExactlyAsync<InvalidLicensesException>();
+            await act.Should().ThrowExactlyAsync<InvalidLicensesException<LibraryInfo>>();
         }
 
         [Test]
