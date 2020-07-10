@@ -33,6 +33,7 @@ Usage: dotnet-project-licenses [options]
 | `-l, --log-level` | (Default: Error) Sets log level for output display. Options: Error,Warning,Information,Verbose. |
 | `--manual-package-information` | Simple json file of an array of LibraryInfo objects for manually determined packages. |
 | `--licenseurl-to-license-mappings` | Simple json file of Dictinary<string,string> to override default mappings |
+| `--include-transitive` | Include distinct transitive package licenses per project file. |
 | `-o, --output` | (Default: false) Saves as text file (licenses.txt) |
 | `--outfile` | Output filename |
 | `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj' |
