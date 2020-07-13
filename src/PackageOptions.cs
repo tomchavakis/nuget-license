@@ -56,6 +56,9 @@ namespace NugetUtility
         [Option("export-license-texts", Default = false, HelpText = "Exports the raw license texts")]
         public bool ExportLicenseTexts { get; set; }
 
+        [Option("include-transitive", Default = false, HelpText = "Include distinct transitive package licenses per project file.")]
+        public bool IncludeTransitive { get; set; }
+
         [Usage(ApplicationAlias = "dotnet-project-licenses")]
         public static IEnumerable<Example> Examples
         {

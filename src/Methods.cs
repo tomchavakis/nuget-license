@@ -93,6 +93,7 @@ namespace NugetUtility
                             if (fallbackResult is Package)
                             {
                                 licenses.Add(packageWithVersion, fallbackResult);
+                                await this.AddTransitivePackages(project, licenses, fallbackResult);
                                 _requestCache[lookupKey] = fallbackResult;
                                 await HandleLicensing(fallbackResult);
                             }
@@ -109,6 +110,7 @@ namespace NugetUtility
                                 if (_serializer.Deserialize(new NamespaceIgnorantXmlTextReader(textReader)) is Package result)
                                 {
                                     licenses.Add(packageWithVersion, result);
+                                    await this.AddTransitivePackages(project, licenses, result);
                                     _requestCache[lookupKey] = result;
                                     await HandleLicensing(result);
                                 }
@@ -128,6 +130,31 @@ namespace NugetUtility
             }
 
             return licenses;
+        }
+
+        private async Task AddTransitivePackages(string project, PackageList licenses, Package result)
+        {
+            var groups = result.Metadata?.Dependencies?.Group;
+            if (_packageOptions.IncludeTransitive && groups != null)
+            {
+                foreach (var group in groups)
+                {
+                    var dependant =
+                        group
+                            .Dependency
+                            .Select(e => $"{e.Id},{e.Version}")
+                            .Where(e => !licenses.Keys.Contains(e));
+
+                    var dependantPackages = await GetNugetInformationAsync(project, dependant);
+                    foreach (var dependantPackage in dependantPackages)
+                    {
+                        if (!licenses.ContainsKey(dependantPackage.Key))
+                        {
+                            licenses.Add(dependantPackage.Key, dependantPackage.Value);
+                        }
+                    }
+                }
+            }
         }
 
         public async Task<Dictionary<string, PackageList>> GetPackages()
