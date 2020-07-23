@@ -6,7 +6,7 @@ pool:
 
 steps:
 - task: DotNetCoreCLI@2
-  displayName: 'Restore Nuget Packages'
+  displayName: 'Test: Restore Nuget Packages'
   inputs:
     command: 'restore'
     projects: '**/*.Test*.csproj'
@@ -14,21 +14,53 @@ steps:
     vstsFeed: 'GriesserElectronicAG'
     
 - task: DotNetCoreCLI@2
-  displayName: 'Build Tests'
+  displayName: 'Test: Build'
   inputs:
     command: 'build'
     projects: '**/*.Test*.csproj'
     arguments: '-c Release --no-restore'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Execute Tests'
+  displayName: 'Test: Execute'
   inputs:
     command: 'test'
     projects: '**/*.Test*.csproj'
     arguments: '-c Release --collect:"XPlat Code Coverage"'
 
 - task: PublishCodeCoverageResults@1
-  displayName: 'Publish code coverage report'
+  displayName: 'Test: Publish code coverage report'
   inputs:
     codeCoverageTool: 'Cobertura'
     summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Release: Restore Nuget Packages'
+  inputs:
+    command: 'restore'
+    projects: '**/src/*.csproj'
+    feedsToUse: 'select'
+    vstsFeed: 'GriesserElectronicAG'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Release: Build'
+  inputs:
+    command: 'build'
+    projects: '**/src/*.csproj'
+    arguments: '-p:Version=1.0.$(Build.BuildNumber) -c Release /p:CopyOutputSymbolsToPublishDirectory=false --no-restore'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(agent.builddirectory)'
+    Contents: '**/Release/**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    CleanTargetFolder: true
+    OverWrite: true
+    flattenFolders: true
+    preserveTimestamp: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish: publish artifacts'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'NugetLicense'
+    publishLocation: 'Container'
