@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
+using static NugetUtility.Utilties;
 
 namespace NugetUtility
 {
@@ -600,6 +601,11 @@ namespace NugetUtility
                     break;
                 case ".csproj":
                     validProjects = new string[] { projectPath };
+                    break;
+                case ".json":
+                    validProjects = ReadListFromFile<string>(projectPath)
+                        .Select(x => x.EnsureCorrectPathCharacter())
+                        .ToList();
                     break;
                 default:
                     validProjects = Directory
