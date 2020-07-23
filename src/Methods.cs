@@ -98,6 +98,10 @@ namespace NugetUtility
                                 _requestCache[lookupKey] = fallbackResult;
                                 await HandleLicensing(fallbackResult);
                             }
+                            else
+                            {
+                                licenses.Add(packageWithVersion, new Package { Metadata = new Metadata { Version = versionNumber, Id = packageId } });
+                            }
 
                             continue;
                         }

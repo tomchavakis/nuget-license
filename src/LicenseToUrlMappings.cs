@@ -35,7 +35,12 @@ namespace NugetUtility
 
             public int GetHashCode([DisallowNull] string obj) => GetProtocolLessUrl(obj).ToLower().GetHashCode();
 
-            private static string GetProtocolLessUrl(string url) => url.Substring(url.IndexOf(':'));
+            private static string GetProtocolLessUrl(string url)
+            {
+                if (string.IsNullOrEmpty(url)) return "";
+                if (!url.Contains(":")) return "";
+                return url.Substring(url.IndexOf(':'));
+            }
         }
 
         public static LicenseToUrlMappings Default { get; } = new LicenseToUrlMappings
