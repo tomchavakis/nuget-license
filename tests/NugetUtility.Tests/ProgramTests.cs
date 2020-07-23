@@ -31,11 +31,11 @@ namespace NugetUtility.Tests
 
         [TestCase("-i " + TestSetup.ThisProjectSolutionPath + @" --allowed-license-types ../../../SampleAllowedLicenses.json")]
         [Test]
-        public async Task Main_Should_Throw_When_InvalidLicenses(string args)
+        public async Task Main_Should_ReturnNegative_When_InvalidLicenses(string args)
         {
-            Func<Task> act = async () => await Program.Main(args.Split(' '));
+            var status = await Program.Main(args.Split(' '));
 
-            await act.Should().ThrowExactlyAsync<InvalidLicensesException<LibraryInfo>>();
+            status.Should().Be(-1);
         }
 
         [Test]
