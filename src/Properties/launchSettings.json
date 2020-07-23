@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NugetUtility": {
+      "commandName": "Project",
+      "commandLineArgs": "-i D:\\GIT\\Heimdall\\projects.json -j -u --allowed-license-types D:\\GIT\\Heimdall\\allowedLicences.json"
+    }
+  }
+}

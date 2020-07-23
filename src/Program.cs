@@ -25,33 +25,41 @@ namespace NugetUtility
                 return 1;
             }
 
-            Methods methods = new Methods(options);
-            var projectsWithPackages = await methods.GetPackages();
-            var mappedLibraryInfo = methods.MapPackagesToLibraryInfo(projectsWithPackages);
-            HandleInvalidLicenses(methods, mappedLibraryInfo, options.AllowedLicenseType);
-
-            if (options.ExportLicenseTexts)
+            try
             {
-                await methods.ExportLicenseTexts(mappedLibraryInfo);
-            }
+                Methods methods = new Methods(options);
+                var projectsWithPackages = await methods.GetPackages();
+                var mappedLibraryInfo = methods.MapPackagesToLibraryInfo(projectsWithPackages);
+                HandleInvalidLicenses(methods, mappedLibraryInfo, options.AllowedLicenseType);
 
-            if (options.Print == true)
-            {
-                Console.WriteLine();
-                Console.WriteLine("Project Reference(s) Analysis...");
-                methods.PrintLicenses(mappedLibraryInfo);
-            }
+                if (options.ExportLicenseTexts)
+                {
+                    await methods.ExportLicenseTexts(mappedLibraryInfo);
+                }
 
-            if (options.JsonOutput)
-            {
-                methods.SaveAsJson(mappedLibraryInfo);
-            }
-            else
-            {
-                methods.SaveAsTextFile(mappedLibraryInfo);
-            }
+                if (options.Print == true)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Project Reference(s) Analysis...");
+                    methods.PrintLicenses(mappedLibraryInfo);
+                }
 
-            return 0;
+                if (options.JsonOutput)
+                {
+                    methods.SaveAsJson(mappedLibraryInfo);
+                }
+                else
+                {
+                    methods.SaveAsTextFile(mappedLibraryInfo);
+                }
+
+                return 0;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return -1;
+            }
         }
 
         private static void HandleInvalidLicenses(Methods methods, List<LibraryInfo> libraries, ICollection<string> allowedLicenseType)

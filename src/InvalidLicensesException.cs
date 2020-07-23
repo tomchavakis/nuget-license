@@ -14,7 +14,7 @@ namespace NugetUtility
         private static string GetMessage(IValidationResult<T> validationResult, ICollection<string> allowedLicenses)
         {
             allowedLicenses ??= Array.Empty<string>();
-            var message = $"Only the following packages are allowed: {string.Join(", ", allowedLicenses.ToArray())}{Environment.NewLine}";
+            var message = $"Only the following licenses are allowed: {string.Join(", ", allowedLicenses.ToArray())}{Environment.NewLine}";
 
             if (validationResult is IValidationResult<KeyValuePair<string, Package>> packageValidation)
             {
