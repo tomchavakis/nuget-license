@@ -1,20 +1,100 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Nuget License Utility [![Build Status](https://travis-ci.com/tomchavakis/nuget-license.svg?branch=develop)](https://travis-ci.com/tomchavakis/nuget-license.svg?branch=develop) [![NuGet](https://img.shields.io/nuget/v/BeatPulse.svg)]([https://www.nuget.org/packages/dotnet-project-licenses](https://www.nuget.org/packages/dotnet-project-licenses/))
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+A .net core tool to print the licenses of a project. This tool support .NET Core and .NET Standard Projects.
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+## dotnet-project-licenses tool
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+### Install tool
+
+```ps
+dotnet tool install --global dotnet-project-licenses
+
+```
+
+### Uninstall tool
+
+```ps
+dotnet tool uninstall --global dotnet-project-licenses
+```
+
+## Usage
+
+Usage: dotnet-project-licenses [options]
+
+** Options:
+
+| Option | Description |
+|------|-------------|
+| `-i, --input` | Project Folder |
+| `--allowed-license-types` | Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed |
+| `-j, --json` | (Default: false) Saves licenses list in a json file (licenses.json) |
+| `--include-project-file` | (Default: false) Adds project file path to information when enabled. |
+| `-l, --log-level` | (Default: Error) Sets log level for output display. Options: Error,Warning,Information,Verbose. |
+| `--manual-package-information` | Simple json file of an array of LibraryInfo objects for manually determined packages. |
+| `--licenseurl-to-license-mappings` | Simple json file of Dictinary<string,string> to override default mappings |
+| `--include-transitive` | Include distinct transitive package licenses per project file. |
+| `-o, --output` | (Default: false) Saves as text file (licenses.txt) |
+| `--outfile` | Output filename |
+| `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj' |
+| `--packages-filter` | Simple json file of a text array of packages to skip. |
+| `-u, --unique` | (Default: false) Unique licenses list by Id/Version |
+| `-p, --print` | (Default: true) Print licenses. |
+| `--export-license-texts` | Exports the raw license texts |
+| `--help` | Display this help screen. |
+| `--version` | Display version information. |
+
+## Example tool commands
+
+```ps
+dotnet-project-licenses --help
+```
+
+```ps
+dotnet-project-licenses -i projectFolder
+```
+
+### Print unique licenses
+
+Values for the input may include a folder path, a Visual Studio '.sln' file, or a '.csproj' file.
+
+```ps
+dotnet-project-licenses -i projectFolder -u
+```
+
+### Creates output file of unique licenses in a plain text 'licenses.txt' file in current directory
+
+```ps
+dotnet-project-licenses -i projectFolder -u -o
+```
+
+### Create output file 'new-name.txt' in another directory
+
+```ps
+dotnet-project-licenses -i projectFolder -o --outfile ../../../another/folder/new-name.txt
+```
+
+### Creates output json file of unique licences in a file 'licenses.json' in the current directory
+
+```ps
+dotnet-project-licenses -i projectFolder -u -o -j
+```
+
+### Exports all license texts in the current directory
+
+```ps
+dotnet-project-licenses -i projectFolder --export-license-texts
+```
+
+
+## CONTRIBUTORS 
+
+* bmcdavid
+
+* mersadk
+
+* devproffesional
+
+* fjaouani
+
+* mkuckert
