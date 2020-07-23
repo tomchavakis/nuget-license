@@ -1,0 +1,34 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Restore Nuget Packages'
+  inputs:
+    command: 'restore'
+    projects: '**/*.Test*.csproj'
+    feedsToUse: 'select'
+    vstsFeed: 'GriesserElectronicAG'
+    
+- task: DotNetCoreCLI@2
+  displayName: 'Build Tests'
+  inputs:
+    command: 'build'
+    projects: '**/*.Test*.csproj'
+    arguments: '-c Release --no-restore'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Execute Tests'
+  inputs:
+    command: 'test'
+    projects: '**/*.Test*.csproj'
+    arguments: '-c Release --collect:"XPlat Code Coverage"'
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish code coverage report'
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
