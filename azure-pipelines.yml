@@ -46,7 +46,7 @@ steps:
   inputs:
     command: 'build'
     projects: '**/src/*.csproj'
-    arguments: '-p:Version=1.0.$(Build.BuildNumber) -c Release /p:CopyOutputSymbolsToPublishDirectory=false --no-restore'
+    arguments: '-p:Version=1.0.$(BuildID) -c Release /p:CopyOutputSymbolsToPublishDirectory=false --no-restore'
 
 - task: CopyFiles@2
   inputs:
