@@ -127,7 +127,7 @@ namespace NugetUtility
             {
                 if (_customLicenseToUrlMappings is object) { return _customLicenseToUrlMappings; }
 
-                return _customLicenseToUrlMappings = ReadDictionaryFromFile(LicenseToUrlMappingsOption);
+                return _customLicenseToUrlMappings = ReadDictionaryFromFile(LicenseToUrlMappingsOption, LicenseToUrlMappings.Default);
             }
         }
     }
