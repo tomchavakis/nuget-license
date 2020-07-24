@@ -545,9 +545,15 @@ namespace NugetUtility
 
         private string GetOutputDirectory()
         {
-            return string.IsNullOrWhiteSpace(_packageOptions.OutputFileName)
+            var outputDirectory = string.IsNullOrWhiteSpace(_packageOptions.OutputFileName)
                 ? Environment.CurrentDirectory
                 : Path.GetDirectoryName(_packageOptions.OutputFileName);
+
+            if (!Directory.Exists(outputDirectory))
+            {
+                Directory.CreateDirectory(outputDirectory);
+            }
+            return outputDirectory;
         }
 
         /// <summary>
