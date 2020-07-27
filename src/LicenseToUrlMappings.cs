@@ -57,6 +57,7 @@ namespace NugetUtility
             { "http://opensource.org/licenses/MIT", MIT },
             { "http://www.opensource.org/licenses/mit-license.php", MIT },
             { "http://max.mit-license.org/", MIT },
+            { "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT", MIT},
 
             { "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html", GPL2_0 },
 
