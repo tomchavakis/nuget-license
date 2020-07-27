@@ -38,7 +38,7 @@ namespace NugetUtility
         [Option("outfile", Default = null, HelpText = "Output filename")]
         public string OutputFileName { get; set; }
 
-        [Option('i', "input", HelpText = "Project Directory")]
+        [Option('i', "input", HelpText = "The projects in which to search for used nuget packages. This can either be a folder, a project file, a solution file or a json file containing a list of projects.")]
         public string ProjectDirectory { get; set; }
 
         [Option("projects-filter", Default = null, HelpText = "Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj'")]

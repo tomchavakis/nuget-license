@@ -105,5 +105,22 @@ namespace NugetUtility.Tests
             validationResult.IsValid.Should().BeFalse();
             validationResult.InvalidPackages.Count.Should().Be(2);
         }
+
+        [Test]
+        public async Task GetPackages_InputJson_Should_OnlyParseGivenProjects()
+        {
+            var methods = new Methods(new PackageOptions
+            {
+                AllowedLicenseTypesOption = @"../../../SampleAllowedLicenses.json",
+                ProjectDirectory = @"../../../SampleAllowedProjects.json"
+            });
+
+            var result = await methods.GetPackages();
+            var validationResult = methods.ValidateLicenses(result);
+
+            result.Should().HaveCount(1);
+            validationResult.IsValid.Should().BeFalse();
+            validationResult.InvalidPackages.Count.Should().Be(2);
+        }
     }
 }
