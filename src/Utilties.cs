@@ -23,15 +23,15 @@ namespace NugetUtility
             return JsonConvert.DeserializeObject<List<T>>(EnsureFileExistsAndRead(jsonFileList));
         }
 
-        public static Dictionary<string, string> ReadDictionaryFromFile(string jsonFileList)
+        public static Dictionary<T1, T2> ReadDictionaryFromFile<T1, T2>(string jsonFileList, Dictionary<T1, T2> defaultValue = default)
         {
             if (string.IsNullOrWhiteSpace(jsonFileList))
             {
-                return LicenseToUrlMappings.Default;
+                return defaultValue;
             }
 
-            return JsonConvert.DeserializeObject<Dictionary<string, string>>(EnsureFileExistsAndRead(jsonFileList))
-                ?? LicenseToUrlMappings.Default;
+            return JsonConvert.DeserializeObject<Dictionary<T1, T2>>(EnsureFileExistsAndRead(jsonFileList))
+                ?? defaultValue;
         }
 
         public static string EnsureFileExistsAndRead(string jsonFileList)
