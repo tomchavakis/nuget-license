@@ -98,3 +98,7 @@ dotnet-project-licenses -i projectFolder --export-license-texts
 * fjaouani
 
 * mkuckert
+
+* sensslen
+
+* amis92
