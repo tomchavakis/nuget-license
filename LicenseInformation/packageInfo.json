@@ -1,0 +1,10 @@
+[
+  {
+    "PackageName": "RabbitMQ.Client",
+    "PackageVersion": "6.1.0",
+    "PackageUrl": "https://www.rabbitmq.com/dotnet.html",
+    "Description": ".NET/C# RabbitMQ Client Library",
+    "LicenseUrl": "https://www.nuget.org/packages/RabbitMQ.Client/6.1.0/License",
+    "LicenseType": "Apache-2.0"
+  }
+]
