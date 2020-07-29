@@ -1,0 +1,42 @@
+parameters:
+- name: projectSearchPattern
+  type: string
+  default: '*'
+- name: LicenseArtifactName
+  type: string
+  default: 'License'
+
+- job: 'license'
+  displayName: 'Check Licensing Information'
+  steps:
+  - task: FileList@0
+    displayName: 'Generate list of involved projects'
+    inputs:
+      RootFolder: '$(Build.SourcesDirectory)'
+      Matching: "${{ parameters.projectSearchPattern }}"
+      Destination: '$(Agent.TempDirectory)/projects.json'
+
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Get NuGet license validation tool'
+    inputs:
+      buildType: 'specific'
+      project: 'GE Services'
+      definition: 'NugetLicense'
+      specificBuildWithTriggering: true
+      buildVersionToDownload: 'latest'
+      artifactName: 'NugetLicense'
+      targetPath: '$(Pipeline.Workspace)/NugetLicense'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Test: Validate licenses of used Nuget packages'
+    inputs:
+      command: 'custom'
+      custom: '$(Pipeline.Workspace)/NugetLicense/NugetUtility.dll'
+      arguments: '-i $(Agent.TempDirectory)/projects.json --allowed-license-types $(Pipeline.Workspace)/NugetLicense/LicenseInformation/allowedLicences.json -j --include-project-file --include-transitive --outfile $(Build.ArtifactStagingDirectory)/LicenseInformation/licenses.json --packages-filter $(Pipeline.Workspace)/NugetLicense/LicenseInformation/packageFilter.json -u --export-license-texts --licenseurl-to-license-mappings $(Pipeline.Workspace)/NugetLicense/LicenseInformation/urlToLicenseMapping.json'
+    
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish license information'
+    inputs:
+      PathtoPublish: "$(Build.ArtifactStagingDirectory)/LicenseInformation"
+      ArtifactName: "${{ parameters.LicenseArtifactName }}"
+      publishLocation: "Container"
