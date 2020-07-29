@@ -1,0 +1,40 @@
+{
+  "http://www.apache.org/licenses/LICENSE-2.0.html": "Apache-2.0",
+  "https://www.apache.org/licenses/LICENSE-2.0.html": "Apache-2.0",
+  "http://www.apache.org/licenses/LICENSE-2.0": "Apache-2.0",
+  "https://www.apache.org/licenses/LICENSE-2.0": "Apache-2.0",
+  "http://opensource.org/licenses/Apache-2.0": "Apache-2.0",
+  "http://aws.amazon.com/apache2.0/": "Apache-2.0",
+  "http://logging.apache.org/log4net/license.html": "Apache-2.0",
+  "https://github.com/owin-contrib/owin-hosting/blob/master/LICENSE.txt": "Apache-2.0",
+  "https://raw.githubusercontent.com/aspnet/Home/2.0.0/LICENSE.txt": "Apache-2.0",
+
+  "https://github.com/Microsoft/Microsoft.IO.RecyclableMemoryStream/blob/master/LICENSE": "MIT",
+  "https://github.com/AutoMapper/AutoMapper/blob/master/LICENSE.txt": "MIT",
+  "https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE": "MIT",
+  "https://raw.githubusercontent.com/hey-red/markdownsharp/master/LICENSE": "MIT",
+  "https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md": "MIT",
+  "https://licenses.nuget.org/MIT": "MIT",
+  "http://opensource.org/licenses/MIT": "MIT",
+  "http://www.opensource.org/licenses/mit-license.php": "MIT",
+  "http://max.mit-license.org/": "MIT",
+  "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT": "MIT",
+
+  "http://www.gnu.org/licenses/old-licenses/gpl-2.0.html": "GPL-2.0",
+
+  "http://opensource.org/licenses/MS-PL": "MS-PL",
+  "http://www.opensource.org/licenses/ms-pl": "MS-PL",
+
+  "https://www.microsoft.com/web/webpi/eula/aspnetmvc3update-eula.htm": "MS-EULA",
+  "http://go.microsoft.com/fwlink/?LinkID=214339": "MS-EULA",
+  "https://www.microsoft.com/web/webpi/eula/net_library_eula_enu.htm": "MS-EULA",
+  "http://go.microsoft.com/fwlink/?LinkId=329770": "MS-EULA",
+  "http://go.microsoft.com/fwlink/?LinkId=529443": "MS-EULA",
+
+  "https://www.microsoft.com/web/webpi/eula/dotnet_library_license_non_redistributable.htm": "MS-EULA-Non-Redistributable",
+  "http://go.microsoft.com/fwlink/?LinkId=529444": "MS-EULA-Non-Redistributable",
+
+  "https://raw.githubusercontent.com/unosquare/raspberryio/master/LICENSE": "MIT",
+  "https://raw.githubusercontent.com/unosquare/swan/master/LICENSE": "MIT",
+  "https://raw.githubusercontent.com/unosquare/wiringpi-dotnet/master/LICENSE": "MIT"
+}

@@ -60,6 +60,14 @@ steps:
     flattenFolders: true
     preserveTimestamp: true
 
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: 'LicenseInformation'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/LicenseInformation'
+    OverWrite: true
+    preserveTimestamp: true
+
 - task: PublishBuildArtifacts@1
   displayName: 'Publish: publish artifacts'
   inputs:
