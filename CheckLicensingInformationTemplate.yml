@@ -6,6 +6,7 @@ parameters:
   type: string
   default: 'License'
 
+jobs:
 - job: 'license'
   displayName: 'Check Licensing Information'
   steps:
