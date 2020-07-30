@@ -16,17 +16,18 @@ jobs:
       RootFolder: '$(Build.SourcesDirectory)'
       Matching: "${{ parameters.projectSearchPattern }}"
       Destination: '$(Agent.TempDirectory)/projects.json'
-
-  - task: DownloadPipelineArtifact@2
+      
+  - task: DownloadBuildArtifacts@0
     displayName: 'Get NuGet license validation tool'
     inputs:
       buildType: 'specific'
       project: 'GE Services'
-      definition: 'NugetLicense'
+      pipeline: 'NugetLicense'
       specificBuildWithTriggering: true
       buildVersionToDownload: 'latest'
+      downloadType: 'single'
       artifactName: 'NugetLicense'
-      targetPath: '$(Pipeline.Workspace)/NugetLicense'
+      downloadPath: '$(Pipeline.Workspace)/NugetLicense'
 
   - task: DotNetCoreCLI@2
     displayName: 'Test: Validate licenses of used Nuget packages'
