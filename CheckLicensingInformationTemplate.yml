@@ -27,7 +27,7 @@ jobs:
       buildVersionToDownload: 'latest'
       downloadType: 'single'
       artifactName: 'NugetLicense'
-      downloadPath: '$(Pipeline.Workspace)/NugetLicense'
+      downloadPath: '$(Pipeline.Workspace)'
 
   - task: DotNetCoreCLI@2
     displayName: 'Test: Validate licenses of used Nuget packages'
