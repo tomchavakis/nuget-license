@@ -30,7 +30,7 @@ jobs:
       downloadPath: '$(Pipeline.Workspace)'
 
   - task: DotNetCoreCLI@2
-    displayName: 'Test: Validate licenses of used Nuget packages'
+    displayName: 'Validate licenses of used Nuget packages'
     inputs:
       command: 'custom'
       custom: '$(Pipeline.Workspace)/NugetLicense/NugetUtility.dll'
