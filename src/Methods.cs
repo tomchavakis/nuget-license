@@ -237,13 +237,6 @@ namespace NugetUtility
                 }
             }
 
-            // merge in missing manual items where there wasn't a package
-            var missedManualItems = _packageOptions.ManualInformation.Except(libraryInfos, LibraryNameAndVersionComparer.Default);
-            foreach (var missed in missedManualItems)
-            {
-                libraryInfos.Add(missed);
-            }
-
             if (_packageOptions.UniqueOnly)
             {
                 libraryInfos = libraryInfos
