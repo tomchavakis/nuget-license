@@ -66,7 +66,7 @@ namespace NugetUtility.Tests
             var outputFile = new FileInfo("custom-manual.json");
             outputFile.Exists.Should().BeTrue();;
             Utilties.ReadListFromFile<LibraryInfo>(outputFile.FullName)
-                .Should().Contain(l => l.PackageName == "ASamplePackage");
+                .Should().NotContain(l => l.PackageName == "ASamplePackage");
         }
 
 #if WINDOWS
