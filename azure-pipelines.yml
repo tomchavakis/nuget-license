@@ -3,6 +3,19 @@ name: "$(Rev:r)"
 trigger:
 - master
 
+resources:
+  repositories:
+    - repository: gitTooling
+      type: git
+      name: 'GE Services/GE.GitTooling'
+      ref: refs/tags/1.0.0
+
+variables:
+  ${{if eq(eq(variables['build.sourceBranch'], 'refs/heads/master'), false) }}:
+    versionPostfix: 'beta'
+  ${{if eq(eq(variables['build.sourceBranch'], 'refs/heads/master'), true) }}:
+    versionPostfix: ''
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -48,6 +61,10 @@ stages:
           inputs:
             codeCoverageTool: 'Cobertura'
             summaryFileLocation: '$(Agent.TempDirectory)/coveragereport/*.xml'
+      
+  - template: "GenerateVersionNumberStage.yml@gitTooling"
+    parameters:
+      repositoryName: 'gitTooling'
         
   - stage: BuildAndPublish
     displayName: 'Build And Publish'
@@ -63,12 +80,17 @@ stages:
               feedsToUse: 'select'
               vstsFeed: 'GriesserElectronicAG'
         
+          - template: "ReadGeneratedVersionNumberSteps.yml@gitTooling"
+            parameters:
+              outputVariableName: 'version'
+              postfix: $(versionPostfix)
+        
           - task: DotNetCoreCLI@2
             displayName: 'Build'
             inputs:
               command: 'build'
               projects: '**/src/*.csproj'
-              arguments: '-p:Version=1.0.$(Build.BuildNumber) -c Release /p:CopyOutputSymbolsToPublishDirectory=false --no-restore'
+              arguments: '-p:Version=$(version) -c Release /p:CopyOutputSymbolsToPublishDirectory=false --no-restore'
         
           - task: CopyFiles@2
             displayName: 'prepare application for publishing'
