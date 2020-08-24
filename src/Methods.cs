@@ -84,6 +84,26 @@ namespace NugetUtility
                         continue;
                     }
 
+                    // Search nuspec in local cache
+                    string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                    var nuspecPath = Path.Combine(userDir, ".nuget", "packages", packageId, versionNumber, packageId + ".nuspec");
+                    if (File.Exists(nuspecPath))
+                    {
+                        try
+                        {
+                            using (var textReader = new StreamReader(nuspecPath))
+                            {
+                                await ReadNuspecFile(project, licenses, packageWithVersion, lookupKey, textReader);
+                            }
+                            continue;
+                        }
+                        catch
+                        {
+                            // Ignore errors in local cache, try online call
+                        }
+                    }
+
+                    // Try dowload nuspec
                     using (var request = new HttpRequestMessage(HttpMethod.Get, $"{packageId}/{versionNumber}/{packageId}.nuspec"))
                     using (var response = await _httpClient.SendAsync(request))
                     {
@@ -112,13 +132,7 @@ namespace NugetUtility
                         {
                             try
                             {
-                                if (_serializer.Deserialize(new NamespaceIgnorantXmlTextReader(textReader)) is Package result)
-                                {
-                                    licenses.Add(packageWithVersion, result);
-                                    await this.AddTransitivePackages(project, licenses, result);
-                                    _requestCache[lookupKey] = result;
-                                    await HandleLicensing(result);
-                                }
+                                await ReadNuspecFile(project, licenses, packageWithVersion, lookupKey, textReader);
                             }
                             catch (Exception e)
                             {
@@ -135,6 +149,17 @@ namespace NugetUtility
             }
 
             return licenses;
+        }
+
+        private async Task ReadNuspecFile(string project, PackageList licenses, string packageWithVersion, Tuple<string, string> lookupKey, StreamReader textReader)
+        {
+            if (_serializer.Deserialize(new NamespaceIgnorantXmlTextReader(textReader)) is Package result)
+            {
+                licenses.Add(packageWithVersion, result);
+                await this.AddTransitivePackages(project, licenses, result);
+                _requestCache[lookupKey] = result;
+                await HandleLicensing(result);
+            }
         }
 
         private async Task AddTransitivePackages(string project, PackageList licenses, Package result)
