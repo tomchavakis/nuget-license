@@ -68,6 +68,9 @@ stages:
         
   - stage: BuildAndPublish
     displayName: 'Build And Publish'
+    dependsOn:
+      - Test
+      - VersionNumber
     jobs:
       - job: BuildAndPublish
         displayName: 'Build and Publish'
