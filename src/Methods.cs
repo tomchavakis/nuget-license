@@ -593,9 +593,24 @@ namespace NugetUtility
             // Uses an XPath instead of direct navigation (using Elements("…")) as the project file may use xml namespaces
             return projDefinition
                          ?.XPathSelectElements("/*[local-name()='Project']/*[local-name()='ItemGroup']/*[local-name()='PackageReference']")
-                         ?.Select(refElem => (refElem.Attribute("Include") == null ? "" : refElem.Attribute("Include").Value) + "," +
-                                            (refElem.Attribute("Version") == null ? "" : refElem.Attribute("Version").Value))
+                         ?.Select(refElem => GetProjectReferenceFromElement(refElem))
                          ?? Array.Empty<string>();
+        }
+         
+        private string GetProjectReferenceFromElement(XElement refElem)
+        {
+            string version, package = refElem.Attribute("Include")?.Value ?? "";
+
+            var versionAttribute = refElem.Attribute("Version");
+
+            if (versionAttribute != null)
+                version = versionAttribute.Value;
+            else // no version attribute, look for child element
+                version = refElem.Elements()
+                    .Where(elem => elem.Name.LocalName == "Version")
+                    .FirstOrDefault()?.Value ?? "";
+
+            return $"{package},{version}";
         }
 
         /// <summary>
