@@ -281,6 +281,7 @@ namespace NugetUtility
                             PackageName = first.PackageName,
                             PackageVersion = first.PackageVersion,
                             PackageUrl = first.PackageUrl,
+                            Copyright = first.Copyright,
                             Description = first.Description,
                             LicenseType = first.LicenseType,
                             LicenseUrl = first.LicenseUrl,
@@ -318,6 +319,7 @@ namespace NugetUtility
                 PackageUrl = !string.IsNullOrWhiteSpace(manual?.PackageUrl)
                         ? manual.PackageUrl
                         : item.Metadata.ProjectUrl ?? string.Empty,
+                Copyright = item.Metadata.Copyright ?? string.Empty,
                 Description = !string.IsNullOrWhiteSpace(manual?.Description)
                         ? manual.Description
                         : item.Metadata.Description ?? string.Empty,
