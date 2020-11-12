@@ -6,5 +6,13 @@
     "Description": ".NET/C# RabbitMQ Client Library",
     "LicenseUrl": "https://www.nuget.org/packages/RabbitMQ.Client/6.1.0/License",
     "LicenseType": "Apache-2.0"
+  },
+  {
+    "PackageName": "System.Device.Gpio",
+    "PackageVersion": "1.2.0-gePreview1",
+    "PackageUrl": "https://github.com/dotnet/iot",
+    "Description": ".NET Core IoT Libraries",
+    "LicenseUrl": "https://github.com/dotnet/iot/blob/master/LICENSE",
+    "LicenseType": "MIT"
   }
 ]
