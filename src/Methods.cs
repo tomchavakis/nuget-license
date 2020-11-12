@@ -262,6 +262,13 @@ namespace NugetUtility
                 }
             }
 
+            // merge in missing manual items where there wasn't a package
+            var missedManualItems = _packageOptions.ManualInformation.Except(libraryInfos, LibraryNameAndVersionComparer.Default);
+            foreach (var missed in missedManualItems)
+            {
+                libraryInfos.Add(missed);
+            }
+
             if (_packageOptions.UniqueOnly)
             {
                 libraryInfos = libraryInfos
@@ -274,6 +281,8 @@ namespace NugetUtility
                             PackageName = first.PackageName,
                             PackageVersion = first.PackageVersion,
                             PackageUrl = first.PackageUrl,
+                            Copyright = first.Copyright,
+                            Authors = first.Authors,
                             Description = first.Description,
                             LicenseType = first.LicenseType,
                             LicenseUrl = first.LicenseUrl,
@@ -311,6 +320,8 @@ namespace NugetUtility
                 PackageUrl = !string.IsNullOrWhiteSpace(manual?.PackageUrl)
                         ? manual.PackageUrl
                         : item.Metadata.ProjectUrl ?? string.Empty,
+                Copyright = item.Metadata.Copyright ?? string.Empty,
+                Authors = manual?.Authors ?? item.Metadata.Authors?.Split(',') ?? new string[] { },
                 Description = !string.IsNullOrWhiteSpace(manual?.Description)
                         ? manual.Description
                         : item.Metadata.Description ?? string.Empty,
