@@ -22,7 +22,7 @@ dotnet tool uninstall --global dotnet-project-licenses
 
 Usage: dotnet-project-licenses [options]
 
-** Options:
+**Options:**
 
 | Option | Description |
 |------|-------------|
