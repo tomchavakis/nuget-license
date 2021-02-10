@@ -74,6 +74,7 @@ namespace NugetUtility
             { "https://www.microsoft.com/web/webpi/eula/net_library_eula_enu.htm", MS_EULA },
             { "http://go.microsoft.com/fwlink/?LinkId=329770", MS_EULA },
             { "http://go.microsoft.com/fwlink/?LinkId=529443", MS_EULA },
+            { "https://dotnet.microsoft.com/en/dotnet_library_license.htm", MS_EULA },
 
             {"https://www.microsoft.com/web/webpi/eula/dotnet_library_license_non_redistributable.htm", MS_EULA_Non_Redistributable  },
             {"http://go.microsoft.com/fwlink/?LinkId=529444", MS_EULA_Non_Redistributable  }
