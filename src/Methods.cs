@@ -51,111 +51,111 @@ namespace NugetUtility
         /// <param name="project">project name</param>
         /// <param name="packages">List of projects</param>
         /// <returns></returns>
-        public async Task<PackageList> GetNugetInformationAsync(string project, IEnumerable<string> packages)
+        public async Task<PackageList> GetNugetInformationAsync(string project, IEnumerable<PackageNameAndVersion> packages)
         {
             WriteOutput(Environment.NewLine + "project:" + project + Environment.NewLine, logLevel: LogLevel.Information);
             var licenses = new PackageList();
             foreach (var packageWithVersion in packages)
             {
-                try
+                var versions = packageWithVersion.Version.Trim(new char[] { '[', ']', '(', ')' }).Split(",");
+                foreach (var version in versions)
                 {
-                    var split = packageWithVersion.Split(',');
-                    var packageId = split[0];
-                    var versionNumber = split[1];
-
-                    if (string.IsNullOrWhiteSpace(packageId) || string.IsNullOrWhiteSpace(versionNumber))
+                    try
                     {
-                        WriteOutput($"Skipping invalid entry {packageWithVersion}", logLevel: LogLevel.Verbose);
-                        continue;
-                    }
-
-                    if (_packageOptions.PackageFilter.Any(p => string.Compare(p, packageId, StringComparison.OrdinalIgnoreCase) == 0))
-                    {
-                        WriteOutput(packageId + " skipped by filter.", logLevel: LogLevel.Verbose);
-                        continue;
-                    }
-
-                    var lookupKey = Tuple.Create(packageId, versionNumber);
-
-                    if (_requestCache.TryGetValue(lookupKey, out var package))
-                    {
-                        WriteOutput(packageWithVersion + " obtained from request cache.", logLevel: LogLevel.Information);
-                        licenses.TryAdd(packageWithVersion, package);
-                        continue;
-                    }
-
-                    // Search nuspec in local cache
-                    string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                    var nuspecPath = Path.Combine(userDir, ".nuget", "packages", packageId, versionNumber, packageId + ".nuspec");
-                    if (File.Exists(nuspecPath))
-                    {
-                        try
+                        if (string.IsNullOrWhiteSpace(packageWithVersion.Name) || string.IsNullOrWhiteSpace(version))
                         {
-                            using (var textReader = new StreamReader(nuspecPath))
-                            {
-                                await ReadNuspecFile(project, licenses, packageWithVersion, lookupKey, textReader);
-                            }
-                            continue;
-                        }
-                        catch
-                        {
-                            // Ignore errors in local cache, try online call
-                        }
-                    }
-
-                    // Try dowload nuspec
-                    using (var request = new HttpRequestMessage(HttpMethod.Get, $"{packageId}/{versionNumber}/{packageId}.nuspec"))
-                    using (var response = await _httpClient.SendAsync(request))
-                    {
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Warning);
-                            var fallbackResult = await GetNuGetPackageFileResult<Package>(packageId, versionNumber, $"{packageId}.nuspec");
-                            if (fallbackResult is Package)
-                            {
-                                licenses.Add(packageWithVersion, fallbackResult);
-                                await this.AddTransitivePackages(project, licenses, fallbackResult);
-                                _requestCache[lookupKey] = fallbackResult;
-                                await HandleLicensing(fallbackResult);
-                            }
-                            else
-                            {
-                                licenses.Add(packageWithVersion, new Package { Metadata = new Metadata { Version = versionNumber, Id = packageId } });
-                            }
-
+                            WriteOutput($"Skipping invalid entry {packageWithVersion}", logLevel: LogLevel.Verbose);
                             continue;
                         }
 
-                        WriteOutput($"Successfully received {request.RequestUri}", logLevel: LogLevel.Information);
-                        using (var responseText = await response.Content.ReadAsStreamAsync())
-                        using (var textReader = new StreamReader(responseText))
+                        if (_packageOptions.PackageFilter.Any(p => string.Compare(p, packageWithVersion.Name, StringComparison.OrdinalIgnoreCase) == 0))
+                        {
+                            WriteOutput(packageWithVersion.Name + " skipped by filter.", logLevel: LogLevel.Verbose);
+                            continue;
+                        }
+
+                        var lookupKey = Tuple.Create(packageWithVersion.Name, version);
+
+                        if (_requestCache.TryGetValue(lookupKey, out var package))
+                        {
+                            WriteOutput(packageWithVersion + " obtained from request cache.", logLevel: LogLevel.Information);
+                            licenses.TryAdd($"{packageWithVersion.Name},{version}", package);
+                            continue;
+                        }
+
+                        // Search nuspec in local cache
+                        string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                        var nuspecPath = Path.Combine(userDir, ".nuget", "packages", packageWithVersion.Name, version, packageWithVersion.Name + ".nuspec");
+                        if (File.Exists(nuspecPath))
                         {
                             try
                             {
-                                await ReadNuspecFile(project, licenses, packageWithVersion, lookupKey, textReader);
+                                using (var textReader = new StreamReader(nuspecPath))
+                                {
+                                    await ReadNuspecFile(project, licenses, packageWithVersion.Name, version, lookupKey, textReader);
+                                }
+                                continue;
                             }
-                            catch (Exception e)
+                            catch
                             {
-                                WriteOutput(e.Message, e, LogLevel.Error);
-                                throw;
+                                // Ignore errors in local cache, try online call
+                            }
+                        }
+
+                        // Try dowload nuspec
+                        using (var request = new HttpRequestMessage(HttpMethod.Get, $"{packageWithVersion.Name}/{version}/{packageWithVersion.Name}.nuspec"))
+                        using (var response = await _httpClient.SendAsync(request))
+                        {
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Warning);
+                                var fallbackResult = await GetNuGetPackageFileResult<Package>(packageWithVersion.Name, version, $"{packageWithVersion.Name}.nuspec");
+                                if (fallbackResult is Package)
+                                {
+                                    licenses.Add($"{packageWithVersion.Name},{version}", fallbackResult);
+                                    await this.AddTransitivePackages(project, licenses, fallbackResult);
+                                    _requestCache[lookupKey] = fallbackResult;
+                                    await HandleLicensing(fallbackResult);
+                                }
+                                else
+                                {
+                                    licenses.Add($"{packageWithVersion.Name},{version}", new Package { Metadata = new Metadata { Version = version, Id = packageWithVersion.Name } });
+                                }
+
+                                continue;
+                            }
+
+                            WriteOutput($"Successfully received {request.RequestUri}", logLevel: LogLevel.Information);
+                            using (var responseText = await response.Content.ReadAsStreamAsync())
+                            using (var textReader = new StreamReader(responseText))
+                            {
+                                try
+                                {
+                                    await ReadNuspecFile(project, licenses, packageWithVersion.Name, version, lookupKey, textReader);
+                                }
+                                catch (Exception e)
+                                {
+                                    WriteOutput(e.Message, e, LogLevel.Error);
+                                    throw;
+                                }
                             }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    WriteOutput(ex.Message, ex, LogLevel.Error);
+                    catch (Exception ex)
+                    {
+                        WriteOutput(ex.Message, ex, LogLevel.Error);
+                    }
                 }
             }
 
             return licenses;
         }
 
-        private async Task ReadNuspecFile(string project, PackageList licenses, string packageWithVersion, Tuple<string, string> lookupKey, StreamReader textReader)
+        private async Task ReadNuspecFile(string project, PackageList licenses, string package, string version,Tuple<string, string> lookupKey, StreamReader textReader)
         {
             if (_serializer.Deserialize(new NamespaceIgnorantXmlTextReader(textReader)) is Package result)
             {
-                licenses.Add(packageWithVersion, result);
+                licenses.Add($"{package},{version}", result);
                 await this.AddTransitivePackages(project, licenses, result);
                 _requestCache[lookupKey] = result;
                 await HandleLicensing(result);
@@ -172,8 +172,8 @@ namespace NugetUtility
                     var dependant =
                         group
                             .Dependency
-                            .Select(e => $"{e.Id},{e.Version}")
-                            .Where(e => !licenses.Keys.Contains(e));
+                            .Where(e => !licenses.Keys.Contains($"{e.Id},{e.Version}"))
+                            .Select(e => new PackageNameAndVersion { Name = e.Id, Version = e.Version });
 
                     var dependantPackages = await GetNugetInformationAsync(project, dependant);
                     foreach (var dependantPackage in dependantPackages)
@@ -195,7 +195,11 @@ namespace NugetUtility
             foreach (var projectFile in projectFiles)
             {
                 var references = this.GetProjectReferences(projectFile);
-                var currentProjectLicenses = await this.GetNugetInformationAsync(projectFile, references);
+                var referencedPackages = references.Select((package) => {
+                    var split = package.Split(',');
+                    return new PackageNameAndVersion { Name = split[0], Version = split[1] };
+                });
+                var currentProjectLicenses = await this.GetNugetInformationAsync(projectFile, referencedPackages);
                 licenses[projectFile] = currentProjectLicenses;
             }
 
