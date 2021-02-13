@@ -13,6 +13,7 @@ namespace NugetUtility
         private ICollection<string> _projectFilter;
         private ICollection<string> _packagesFilter;
         private Dictionary<string, string> _customLicenseToUrlMappings;
+        private bool _unique;
 
         [Option("allowed-license-types", Default = null, HelpText = "Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed")]
         public string AllowedLicenseTypesOption { get; set; }
@@ -32,7 +33,7 @@ namespace NugetUtility
         [Option("licenseurl-to-license-mappings", Default = null, HelpText = "Simple json file of Dictinary<string,string> to override default mappings")]
         public string LicenseToUrlMappingsOption { get; set; }
 
-        [Option('o', "output", Default = false, HelpText = "Savas as text file (licenses.txt)")]
+        [Option('o', "output", Default = false, HelpText = "Saves as text file (licenses.txt)")]
         public bool TextOutput { get; set; }
 
         [Option("outfile", Default = null, HelpText = "Output filename")]

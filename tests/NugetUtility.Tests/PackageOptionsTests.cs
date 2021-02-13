@@ -26,5 +26,14 @@ namespace NugetUtility.Tests
                 .And.BeEquivalentTo(testMappings);
         }
 
+
+        [Test]
+        public void UniqueMappingsOption_When_Set_Should_Replace_Default_Mappings()
+        {
+            var options = new PackageOptions { UniqueOnly = true };
+            
+            options.UniqueOnly.Should().BeTrue();
+        }
+
     }
 }
