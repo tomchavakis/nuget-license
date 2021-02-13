@@ -13,7 +13,6 @@ namespace NugetUtility
         private ICollection<string> _projectFilter;
         private ICollection<string> _packagesFilter;
         private Dictionary<string, string> _customLicenseToUrlMappings;
-        private bool _unique;
 
         [Option("allowed-license-types", Default = null, HelpText = "Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed")]
         public string AllowedLicenseTypesOption { get; set; }
