@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,7 +18,12 @@ namespace NugetUtility.Tests
         public void Setup()
         {
             _projectPath = @"../../../";
-            _methods = new Methods(new PackageOptions { ProjectDirectory = _projectPath });
+            _methods = new Methods(new PackageOptions { ProjectDirectory = _projectPath});
+        }
+
+        private void AddUniquePackageOption()
+        {
+            _methods = new Methods(new PackageOptions { UniqueOnly = true, ProjectDirectory = _projectPath });
         }
 
         [Test]
@@ -52,9 +58,51 @@ namespace NugetUtility.Tests
             var packages = package.Split(';', System.StringSplitOptions.RemoveEmptyEntries);
             var information = await _methods.GetNugetInformationAsync(_projectPath, packages);
 
+
+
             packages.Select(x => x.Split(',')[0])
                 .Should()
                 .BeEquivalentTo(information.Select(x => x.Value.Metadata.Id));
+        }
+
+        
+        [Test]
+        public void MapPackagesToLibraryInfo_Unique_Should_Return_One_Result()
+        {
+            AddUniquePackageOption();
+            PackageList list = new PackageList();
+            list.Add("log4net", new Package
+            {
+                Metadata = new Metadata
+                {
+                    Id = "log4net",
+                    License = new License
+                    {
+                        Text = "MIT",
+                        Type = "Open"
+                    },
+                    Version = "2.0.8",
+                },
+            });
+
+            list.Add("log4net2", new Package
+            {
+                Metadata = new Metadata
+                {
+                    Id = "log4net",
+                    License = new License
+                    {
+                        Text = "MIT",
+                        Type = "Open"
+                    },
+                    Version = "2.0.8",
+                }
+            });
+
+            var packages = new Dictionary<string, PackageList>();
+            packages.Add("packages", list);
+            var info = _methods.MapPackagesToLibraryInfo(packages);
+            info.Count.Should().Equals(1);
         }
 
         [Test]
