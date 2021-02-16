@@ -14,5 +14,13 @@
     "Description": ".NET Core IoT Libraries",
     "LicenseUrl": "https://github.com/dotnet/iot/blob/master/LICENSE",
     "LicenseType": "MIT"
+  },
+  {
+    "PackageName": "stateless",
+    "PackageVersion": "5.10.0",
+    "PackageUrl": "https://github.com/dotnet-state-machine/stateless",
+    "Description": "Create state machines and lightweight state machine-based workflows directly in .NET code",
+    "LicenseUrl": "https://github.com/dotnet-state-machine/stateless/blob/dev/LICENSE",
+    "LicenseType": "Apache-2.0"
   }
 ]
