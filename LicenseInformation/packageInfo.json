@@ -22,5 +22,13 @@
     "Description": "Create state machines and lightweight state machine-based workflows directly in .NET code",
     "LicenseUrl": "https://github.com/dotnet-state-machine/stateless/blob/dev/LICENSE",
     "LicenseType": "Apache-2.0"
+  },
+  {
+    "PackageName": "SharpZipLib",
+    "PackageVersion": "1.3.2-gePreview",
+    "PackageUrl": "https://github.com/icsharpcode/SharpZipLib",
+    "Description": "#ziplib is a Zip, GZip, Tar and BZip2 library written entirely in C# for the .NET platform.",
+    "LicenseUrl": "https://github.com/icsharpcode/SharpZipLib/blob/master/LICENSE.txt",
+    "LicenseType": "MIT"
   }
 ]
