@@ -30,5 +30,13 @@
     "Description": "#ziplib is a Zip, GZip, Tar and BZip2 library written entirely in C# for the .NET platform.",
     "LicenseUrl": "https://github.com/icsharpcode/SharpZipLib/blob/master/LICENSE.txt",
     "LicenseType": "MIT"
+  },
+  {
+    "PackageName": "Serilog.Sinks.File",
+    "PackageVersion": "5.0.0-dev-gePreview1",
+    "PackageUrl": "https://github.com/serilog/serilog-sinks-file",
+    "Description": "Writes Serilog events to one or more text files.",
+    "LicenseUrl": "https://github.com/serilog/serilog-sinks-file/blob/dev/LICENSE",
+    "LicenseType": "Apache-2.0"
   }
 ]
