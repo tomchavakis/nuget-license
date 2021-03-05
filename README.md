@@ -74,7 +74,7 @@ dotnet-project-licenses -i projectFolder -u -o
 dotnet-project-licenses -i projectFolder -o --outfile ../../../another/folder/new-name.txt
 ```
 
-### Creates output json file of unique licences in a file 'licenses.json' in the current directory
+### Creates output json file of unique licenses in a file 'licenses.json' in the current directory
 
 ```ps
 dotnet-project-licenses -i projectFolder -u -o -j
