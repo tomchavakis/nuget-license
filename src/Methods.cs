@@ -337,7 +337,7 @@ namespace NugetUtility
             if (!libraries.Any()) { return; }
 
             WriteOutput(Environment.NewLine + "References:", logLevel: LogLevel.Always);
-            WriteOutput(libraries.ToStringTable(new[] { "Reference", "Version", "Licence Type", "License" },
+            WriteOutput(libraries.ToStringTable(new[] { "Reference", "Version", "License Type", "License" },
                                                             a => a.PackageName ?? "---",
                                                             a => a.PackageVersion ?? "---",
                                                             a => a.LicenseType ?? "---",
@@ -395,7 +395,7 @@ namespace NugetUtility
                 sb.AppendLine();
             }
 
-            File.WriteAllText(GetOutputFilename("licences.txt"), sb.ToString());
+            File.WriteAllText(GetOutputFilename("licenses.txt"), sb.ToString());
         }
 
         public IValidationResult<KeyValuePair<string, Package>> ValidateLicenses(Dictionary<string, PackageList> projectPackages)
