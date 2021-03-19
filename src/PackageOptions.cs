@@ -32,7 +32,7 @@ namespace NugetUtility
         [Option("licenseurl-to-license-mappings", Default = null, HelpText = "Simple json file of Dictinary<string,string> to override default mappings")]
         public string LicenseToUrlMappingsOption { get; set; }
 
-        [Option('o', "output", Default = false, HelpText = "Savas as text file (licenses.txt)")]
+        [Option('o', "output", Default = false, HelpText = "Saves as text file (licenses.txt)")]
         public bool TextOutput { get; set; }
 
         [Option("outfile", Default = null, HelpText = "Output filename")]
