@@ -20,7 +20,7 @@ namespace NugetUtility
             if (string.IsNullOrWhiteSpace(options.ProjectDirectory))
             {
                 Console.WriteLine("ERROR(S):");
-                Console.WriteLine("-i\tInput the Directory Path (csproj file)");
+                Console.WriteLine("-i\tInput the Directory Path (csproj or fsproj file)");
 
                 return 1;
             }
