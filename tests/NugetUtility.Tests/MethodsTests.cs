@@ -44,7 +44,8 @@ namespace NugetUtility.Tests
         public async Task GetNugetInformationAsync_Should_Resolve_Projects()
         {
             var packages = _methods.GetProjectReferences(_projectPath);
-            var information = await _methods.GetNugetInformationAsync(_projectPath, packages);
+            var referencedpackages = packages.Select(p => { var split = p.Split(","); return new PackageNameAndVersion { Name = split[0], Version = split[1] }; });
+            var information = await _methods.GetNugetInformationAsync(_projectPath, referencedpackages);
 
             packages.Select(x => x.Split(',')[0].ToLower())
                 .Should()
@@ -56,7 +57,8 @@ namespace NugetUtility.Tests
         public async Task GetNugetInformationAsync_Should_Resolve_Missing_NuSpec_File(string package)
         {
             var packages = package.Split(';', System.StringSplitOptions.RemoveEmptyEntries);
-            var information = await _methods.GetNugetInformationAsync(_projectPath, packages);
+            var referencedpackages = packages.Select(p => { var split = p.Split(","); return new PackageNameAndVersion { Name = split[0], Version = split[1] }; });
+            var information = await _methods.GetNugetInformationAsync(_projectPath, referencedpackages);
 
 
 
@@ -65,7 +67,29 @@ namespace NugetUtility.Tests
                 .BeEquivalentTo(information.Select(x => x.Value.Metadata.Id));
         }
 
-        
+        [TestCase("FluentValidation", "5.1.0.0")]
+        [TestCase("System.Linq", "(4.1.0,)")]
+        [TestCase("System.Linq", "[4.1.0]")]
+        [TestCase("System.Linq", "(,4.1.0]")]
+        [TestCase("System.Linq", "(,4.1.0)")]
+        [TestCase("System.Linq", "[4.1.0,4.3.0]")]
+        [TestCase("System.Linq", "(4.1.0,4.3.0)")]
+        [TestCase("System.Linq", "[4.1.0,4.3.0)")]
+        [Test]
+        public async Task GetNugetInformationAsync_Should_Properly_TreatAllAllowedNuSpecReferenceTypes(string package,
+            string version)
+        {
+            var referencedpackages = new PackageNameAndVersion[]
+                {new PackageNameAndVersion {Name = package, Version = version}};
+            var information = await _methods.GetNugetInformationAsync(_projectPath, referencedpackages);
+
+            var expectation = version.Trim(new char[] {'[', '(', ']', ')'})
+                .Split(",", System.StringSplitOptions.RemoveEmptyEntries).Select(v => $"{package},{v}");
+            expectation.Should().BeEquivalentTo(information.Select(x => x.Key));
+            expectation.Should()
+                .BeEquivalentTo(information.Select(x => $"{x.Value.Metadata.Id},{x.Value.Metadata.Version}"));
+        }
+
         [Test]
         public void MapPackagesToLibraryInfo_Unique_Should_Return_One_Result()
         {
