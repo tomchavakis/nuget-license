@@ -19,6 +19,8 @@ namespace NugetUtility
     {
         private const string fallbackPackageUrl = "https://www.nuget.org/api/v2/package/{0}/{1}";
         private const string nugetUrl = "https://api.nuget.org/v3-flatcontainer/";
+        private const int maxRedirects = 5; // HTTP client max number of redirects allowed
+        private const int timeout = 10; // HTTP client timeout in seconds
         private static readonly Dictionary<Tuple<string, string>, Package> _requestCache = new Dictionary<Tuple<string, string>, Package>();
         private static readonly Dictionary<Tuple<string, string>, string> _licenseFileCache = new Dictionary<Tuple<string, string>, string>();
         /// <summary>
@@ -33,10 +35,14 @@ namespace NugetUtility
         {
             if (_httpClient is null)
             {
-                _httpClient = new HttpClient
+                _httpClient = new HttpClient(new HttpClientHandler
+                {
+                    AllowAutoRedirect = true,
+                    MaxAutomaticRedirections = maxRedirects
+                })
                 {
                     BaseAddress = new Uri(nugetUrl),
-                    Timeout = TimeSpan.FromSeconds(10)
+                    Timeout = TimeSpan.FromSeconds(timeout)
                 };
             }
 
@@ -731,16 +737,6 @@ public IEnumerable<string> GetProjectReferences(string projectPath)
                     continue;
                 }
 
-                // Correct some uris
-                if (source.StartsWith("https://github.com", StringComparison.Ordinal) && source.Contains("/blob/", StringComparison.Ordinal))
-                {
-                    source = source.Replace("/blob/", "/raw/", StringComparison.Ordinal);
-                }
-                if (source.StartsWith("https://github.com", StringComparison.Ordinal) && source.Contains("/dotnet/corefx/", StringComparison.Ordinal))
-                {
-                    source = source.Replace("/dotnet/corefx/", "/dotnet/runtime/", StringComparison.Ordinal);
-                }
-
                 do
                 {
                     WriteOutput(() => $"Attempting to download {source} to {outpath}", logLevel: LogLevel.Verbose);
@@ -753,14 +749,19 @@ public IEnumerable<string> GetProjectReferences(string projectPath)
                             break;
                         }
 
-                        // Somebody redirected us to github. Correct the uri and try again
-                        var realRequestUri = response.RequestMessage.RequestUri.AbsoluteUri;
-                        if (
-                            IsGithub(realRequestUri)
-                            && !IsGithub(source))
+                        // Detect a redirect
+                        if (response.RequestMessage.RequestUri.AbsoluteUri != source)
                         {
                             WriteOutput(() => " Redirect detected", logLevel: LogLevel.Verbose);
-                            source = CorrectUri(realRequestUri);
+                            source = response.RequestMessage.RequestUri.AbsoluteUri;
+                            continue;
+                        }
+
+                        // Modify the URL if required
+                        if (CorrectUri(source) != source)
+                        {
+                            WriteOutput(() => " Fixing URL", logLevel: LogLevel.Verbose);
+                            source = CorrectUri(source);
                             continue;
                         }
 
