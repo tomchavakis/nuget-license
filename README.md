@@ -85,22 +85,3 @@ dotnet-project-licenses -i projectFolder -u -o -j
 ```ps
 dotnet-project-licenses -i projectFolder --export-license-texts
 ```
-
-
-## CONTRIBUTORS 
-
-* bmcdavid
-
-* mersadk
-
-* devproffesional
-
-* fjaouani
-
-* mkuckert
-
-* sensslen
-
-* amis92
-
-* rafntor
