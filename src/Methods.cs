@@ -206,19 +206,17 @@ namespace NugetUtility
             return licenses;
         }
 
-        public string GetProjectExtension(bool withWildcard = false)
-        {
-            return !withWildcard
-                ? ".csproj"
-                : "*.csproj";
-        }
+        public string[] GetProjectExtensions(bool withWildcard = false) =>
+            withWildcard
+                ? new[] { "*.csproj", "*.fsproj" }
+                : new[] { ".csproj", ".fsproj" };
 
-        /// <summary>
-        /// Retreive the project references from csproj file
-        /// </summary>
-        /// <param name="projectPath">The Project Path</param>
-        /// <returns></returns>
-        public IEnumerable<string> GetProjectReferences(string projectPath)
+/// <summary>
+/// Retreive the project references from csproj or fsproj file
+/// </summary>
+/// <param name="projectPath">The Project Path</param>
+/// <returns></returns>
+public IEnumerable<string> GetProjectReferences(string projectPath)
         {
             WriteOutput(() => $"Starting {nameof(GetProjectReferences)}...", logLevel: LogLevel.Verbose);
             if (string.IsNullOrWhiteSpace(projectPath))
@@ -226,7 +224,7 @@ namespace NugetUtility
                 throw new ArgumentNullException(projectPath);
             }
 
-            if (!projectPath.EndsWith(GetProjectExtension()))
+            if (!GetProjectExtensions().Any(projExt => projectPath.EndsWith(projExt)))
             {
                 projectPath = GetValidProjects(projectPath).GetAwaiter().GetResult().FirstOrDefault();
             }
@@ -640,17 +638,20 @@ namespace NugetUtility
         private async Task<IEnumerable<string>> GetValidProjects(string projectPath)
         {
             var pathInfo = new FileInfo(projectPath);
-            var extension = GetProjectExtension();
+            var extensions = GetProjectExtensions();
             IEnumerable<string> validProjects;
             switch (pathInfo.Extension)
             {
                 case ".sln":
                     validProjects = (await ParseSolution(pathInfo.FullName))
                         .Select(p => new FileInfo(Path.Combine(pathInfo.Directory.FullName, p)))
-                        .Where(p => p.Exists && p.Extension == extension)
+                        .Where(p => p.Exists && extensions.Contains(p.Extension))
                         .Select(p => p.FullName);
                     break;
                 case ".csproj":
+                    validProjects = new string[] { projectPath };
+                    break;
+                case ".fsproj":
                     validProjects = new string[] { projectPath };
                     break;
                 case ".json":
@@ -659,8 +660,11 @@ namespace NugetUtility
                         .ToList();
                     break;
                 default:
-                    validProjects = Directory
-                        .EnumerateFiles(projectPath, GetProjectExtension(withWildcard: true), SearchOption.AllDirectories);
+                    validProjects =
+                        GetProjectExtensions(withWildcard: true)
+                        .SelectMany(wildcardExtension =>
+                            Directory.EnumerateFiles(projectPath, wildcardExtension, SearchOption.AllDirectories)
+                        );
                     break;
             }
 
