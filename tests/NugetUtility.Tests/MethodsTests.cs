@@ -27,9 +27,9 @@ namespace NugetUtility.Tests
         }
 
         [Test]
-        public void GetProjectExtension_Should_Be_Csproj()
+        public void GetProjectExtension_Should_Be_CsprojOrFsProj()
         {
-            _methods.GetProjectExtension().Should().Be(".csproj");
+            _methods.GetProjectExtensions().Should().Contain(".csproj", ".fsproj");
         }
 
         [Test]
