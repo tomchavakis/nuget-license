@@ -644,7 +644,14 @@ namespace NugetUtility
         }
 
 
-        private async Task downloadNpkgFile(string package, string licenseFile, string version)
+        /// <summary>
+        /// Downloads the nuget package file and read the licence file
+        /// </summary>
+        /// <param name="package"></param>
+        /// <param name="licenseFile"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        private async Task GetLicenceFromNpkgFile(string package, string licenseFile, string version)
         {
             var nupkgEndpoint = new Uri(string.Format(fallbackPackageUrl, package, version));
             WriteOutput(() => "Attempting to download: " + nupkgEndpoint.ToString(), logLevel: LogLevel.Verbose);
@@ -656,7 +663,7 @@ namespace NugetUtility
                 if (!packageResponse.IsSuccessStatusCode)
                 {
                     WriteOutput($"{packageRequest.RequestUri} failed due to {packageResponse.StatusCode}!", logLevel: LogLevel.Warning);
-                    // return null;
+                    return;
                 }
 
                 using (var fileStream = File.OpenWrite(outpath))
@@ -664,7 +671,6 @@ namespace NugetUtility
                     await packageResponse.Content.CopyToAsync(fileStream);
                 }
 
-                //TODO: check if you can open from response
                 using (ZipArchive archive = ZipFile.OpenRead(outpath))
                 {
                     var sample = archive.GetEntry(licenseFile);
@@ -681,9 +687,10 @@ namespace NugetUtility
                         }
                     }
                 }
+
+                File.Delete(outpath);
             }
         }
-
 
         public async Task ExportLicenseTexts(List<LibraryInfo> infos)
         {
@@ -694,7 +701,19 @@ namespace NugetUtility
 
                 if (source == "https://aka.ms/deprecateLicenseUrl")
                 {
-                    await downloadNpkgFile(info.PackageName, info.LicenseType, info.PackageVersion);
+                    await GetLicenceFromNpkgFile(info.PackageName, info.LicenseType, info.PackageVersion);
+                    continue;
+                }
+
+                if (source == "http://go.microsoft.com/fwlink/?LinkId=329770" || source == "https://dotnet.microsoft.com/en/dotnet_library_license.htm")
+                {
+                    await GetLicenceFromNpkgFile(info.PackageName, "dotnet_library_license.txt", info.PackageVersion);
+                    continue;
+                }
+
+                if (source.StartsWith("https://licenses.nuget.org"))
+                {
+                    await GetLicenceFromNpkgFile(info.PackageName, "License.txt", info.PackageVersion);
                     continue;
                 }
 
