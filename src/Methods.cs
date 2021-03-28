@@ -336,7 +336,7 @@ namespace NugetUtility
                 Projects = _packageOptions.IncludeProjectFile ? projectFile : null
             };
         }
-       
+
         public IValidationResult<KeyValuePair<string, Package>> ValidateLicenses(Dictionary<string, PackageList> projectPackages)
         {
             if (_packageOptions.AllowedLicenseType.Count == 0)
@@ -667,7 +667,8 @@ namespace NugetUtility
                     if (sample != null)
                     {
                         var t = sample.Open();
-                        if (t != null && t.CanRead) {
+                        if (t != null && t.CanRead)
+                        {
                             var libTxt = outpath.Replace(".nupkg.zip", ".txt");
                             using (var fileStream = File.OpenWrite(libTxt))
                             {
@@ -763,7 +764,7 @@ namespace NugetUtility
             {
                 uri = uri.Replace("/dotnet/corefx/", "/dotnet/runtime/", StringComparison.Ordinal);
             }
-         
+
             return uri;
         }
 
