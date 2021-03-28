@@ -25,6 +25,8 @@ namespace NugetUtility
         /// See https://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
         /// </summary>
         private static HttpClient _httpClient;
+        private const int maxRedirects = 5; // HTTP client max number of redirects allowed
+        private const int timeout = 10; // HTTP client timeout in seconds
         private readonly IReadOnlyDictionary<string, string> _licenseMappings;
         private readonly PackageOptions _packageOptions;
         private readonly XmlSerializer _serializer;
@@ -33,11 +35,16 @@ namespace NugetUtility
         {
             if (_httpClient is null)
             {
-                _httpClient = new HttpClient
+                _httpClient = new HttpClient(new HttpClientHandler
+                {
+                    AllowAutoRedirect = true,
+                    MaxAutomaticRedirections = maxRedirects
+                })
                 {
                     BaseAddress = new Uri(nugetUrl),
-                    Timeout = TimeSpan.FromSeconds(10)
+                    Timeout = TimeSpan.FromSeconds(timeout)
                 };
+
             }
 
             _serializer = new XmlSerializer(typeof(Package));
@@ -155,6 +162,7 @@ namespace NugetUtility
         {
             if (_serializer.Deserialize(new NamespaceIgnorantXmlTextReader(textReader)) is Package result)
             {
+
                 licenses.Add(packageWithVersion, result);
                 await this.AddTransitivePackages(project, licenses, result);
                 _requestCache[lookupKey] = result;
@@ -207,12 +215,12 @@ namespace NugetUtility
                 ? new[] { "*.csproj", "*.fsproj" }
                 : new[] { ".csproj", ".fsproj" };
 
-/// <summary>
-/// Retreive the project references from csproj or fsproj file
-/// </summary>
-/// <param name="projectPath">The Project Path</param>
-/// <returns></returns>
-public IEnumerable<string> GetProjectReferences(string projectPath)
+        /// <summary>
+        /// Retreive the project references from csproj or fsproj file
+        /// </summary>
+        /// <param name="projectPath">The Project Path</param>
+        /// <returns></returns>
+        public IEnumerable<string> GetProjectReferences(string projectPath)
         {
             WriteOutput(() => $"Starting {nameof(GetProjectReferences)}...", logLevel: LogLevel.Verbose);
             if (string.IsNullOrWhiteSpace(projectPath))
@@ -328,79 +336,12 @@ public IEnumerable<string> GetProjectReferences(string projectPath)
                 Projects = _packageOptions.IncludeProjectFile ? projectFile : null
             };
         }
-
-        public void PrintLicenses(List<LibraryInfo> libraries)
-        {
-            if (libraries is null) { throw new ArgumentNullException(nameof(libraries)); }
-            if (!libraries.Any()) { return; }
-
-            WriteOutput(Environment.NewLine + "References:", logLevel: LogLevel.Always);
-            WriteOutput(libraries.ToStringTable(new[] { "Reference", "Version", "License Type", "License" },
-                                                            a => a.PackageName ?? "---",
-                                                            a => a.PackageVersion ?? "---",
-                                                            a => a.LicenseType ?? "---",
-                                                            a => a.LicenseUrl ?? "---"), logLevel: LogLevel.Always);
-        }
-
-        public void SaveAsJson(List<LibraryInfo> libraries)
-        {
-            if (!libraries.Any() || !_packageOptions.JsonOutput) { return; }
-            JsonSerializerSettings jsonSettings = new JsonSerializerSettings
-            {
-                NullValueHandling = _packageOptions.IncludeProjectFile ? NullValueHandling.Include : NullValueHandling.Ignore
-            };
-
-            using (var fileStream = new FileStream(GetOutputFilename("licenses.json"), FileMode.Create))
-            using (var streamWriter = new StreamWriter(fileStream))
-            {
-                streamWriter.Write(JsonConvert.SerializeObject(libraries, jsonSettings));
-                streamWriter.Flush();
-            }
-        }
-
-        public void SaveAsTextFile(List<LibraryInfo> libraries)
-        {
-            if (!libraries.Any() || !_packageOptions.TextOutput) { return; }
-            StringBuilder sb = new StringBuilder(256);
-            foreach (var lib in libraries)
-            {
-                sb.Append(new string('#', 100));
-                sb.AppendLine();
-                sb.Append("Package:");
-                sb.Append(lib.PackageName);
-                sb.AppendLine();
-                sb.Append("Version:");
-                sb.Append(lib.PackageVersion);
-                sb.AppendLine();
-                sb.Append("project URL:");
-                sb.Append(lib.PackageUrl);
-                sb.AppendLine();
-                sb.Append("Description:");
-                sb.Append(lib.Description);
-                sb.AppendLine();
-                sb.Append("licenseUrl:");
-                sb.Append(lib.LicenseUrl);
-                sb.AppendLine();
-                sb.Append("license Type:");
-                sb.Append(lib.LicenseType);
-                sb.AppendLine();
-                if (_packageOptions.IncludeProjectFile)
-                {
-                    sb.Append("Project:");
-                    sb.Append(lib.Projects);
-                    sb.AppendLine();
-                }
-                sb.AppendLine();
-            }
-
-            File.WriteAllText(GetOutputFilename("licenses.txt"), sb.ToString());
-        }
-
+       
         public IValidationResult<KeyValuePair<string, Package>> ValidateLicenses(Dictionary<string, PackageList> projectPackages)
         {
             if (_packageOptions.AllowedLicenseType.Count == 0)
             {
-                return new ValidationResult<KeyValuePair<string,Package>> { IsValid = true };
+                return new ValidationResult<KeyValuePair<string, Package>> { IsValid = true };
             }
 
             WriteOutput(() => $"Starting {nameof(ValidateLicenses)}...", logLevel: LogLevel.Verbose);
@@ -598,7 +539,7 @@ public IEnumerable<string> GetProjectReferences(string projectPath)
                          ?.Select(refElem => GetProjectReferenceFromElement(refElem))
                          ?? Array.Empty<string>();
         }
-         
+
         private string GetProjectReferenceFromElement(XElement refElem)
         {
             string version, package = refElem.Attribute("Include")?.Value ?? "";
@@ -698,22 +639,46 @@ public IEnumerable<string> GetProjectReferences(string projectPath)
             return projectFiles;
         }
 
-        private void WriteOutput(Func<string> line, Exception exception = null, LogLevel logLevel = LogLevel.Information)
+
+        private async Task downloadNpkgFile(string package, string licenseFile, string version)
         {
-            if ((int)logLevel < (int)_packageOptions.LogLevelThreshold)
+            var nupkgEndpoint = new Uri(string.Format(fallbackPackageUrl, package, version));
+            WriteOutput(() => "Attempting to download: " + nupkgEndpoint.ToString(), logLevel: LogLevel.Verbose);
+            using (var packageRequest = new HttpRequestMessage(HttpMethod.Get, nupkgEndpoint))
+            using (var packageResponse = await _httpClient.SendAsync(packageRequest, CancellationToken.None))
             {
-                return;
-            }
+                var directory = GetOutputDirectory();
+                var outpath = Path.Combine(directory, package + version + ".nupkg.zip");
+                if (!packageResponse.IsSuccessStatusCode)
+                {
+                    WriteOutput($"{packageRequest.RequestUri} failed due to {packageResponse.StatusCode}!", logLevel: LogLevel.Warning);
+                    // return null;
+                }
 
-            Console.WriteLine(line.Invoke());
+                using (var fileStream = File.OpenWrite(outpath))
+                {
+                    await packageResponse.Content.CopyToAsync(fileStream);
+                }
 
-            if (exception is object)
-            {
-                Console.WriteLine(exception.ToString());
+                //TODO: check if you can open from response
+                using (ZipArchive archive = ZipFile.OpenRead(outpath))
+                {
+                    var sample = archive.GetEntry(licenseFile);
+                    if (sample != null)
+                    {
+                        var t = sample.Open();
+                        if (t != null && t.CanRead) {
+                            var libTxt = outpath.Replace(".nupkg.zip", ".txt");
+                            using (var fileStream = File.OpenWrite(libTxt))
+                            {
+                                await t.CopyToAsync(fileStream);
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        private void WriteOutput(string line, Exception exception = null, LogLevel logLevel = LogLevel.Information) => WriteOutput(() => line, exception, logLevel);
 
         public async Task ExportLicenseTexts(List<LibraryInfo> infos)
         {
@@ -721,22 +686,18 @@ public IEnumerable<string> GetProjectReferences(string projectPath)
             foreach (var info in infos.Where(i => !string.IsNullOrEmpty(i.LicenseUrl)))
             {
                 var source = info.LicenseUrl;
+
+                if (source == "https://aka.ms/deprecateLicenseUrl")
+                {
+                    await downloadNpkgFile(info.PackageName, info.LicenseType, info.PackageVersion);
+                    continue;
+                }
+
                 var outpath = Path.Combine(directory, info.PackageName + info.PackageVersion + ".txt");
                 if (File.Exists(outpath))
                 {
                     continue;
                 }
-
-                // Correct some uris
-                if (source.StartsWith("https://github.com", StringComparison.Ordinal) && source.Contains("/blob/", StringComparison.Ordinal))
-                {
-                    source = source.Replace("/blob/", "/raw/", StringComparison.Ordinal);
-                }
-                if (source.StartsWith("https://github.com", StringComparison.Ordinal) && source.Contains("/dotnet/corefx/", StringComparison.Ordinal))
-                {
-                    source = source.Replace("/dotnet/corefx/", "/dotnet/runtime/", StringComparison.Ordinal);
-                }
-
                 do
                 {
                     WriteOutput(() => $"Attempting to download {source} to {outpath}", logLevel: LogLevel.Verbose);
@@ -749,16 +710,22 @@ public IEnumerable<string> GetProjectReferences(string projectPath)
                             break;
                         }
 
-                        // Somebody redirected us to github. Correct the uri and try again
-                        var realRequestUri = response.RequestMessage.RequestUri.AbsoluteUri;
-                        if (
-                            IsGithub(realRequestUri)
-                            && !IsGithub(source))
+                        // Detect a redirect 302
+                        if (response.RequestMessage.RequestUri.AbsoluteUri != source)
                         {
                             WriteOutput(() => " Redirect detected", logLevel: LogLevel.Verbose);
-                            source = CorrectUri(realRequestUri);
+                            source = response.RequestMessage.RequestUri.AbsoluteUri;
                             continue;
                         }
+
+                        // Modify the URL if required
+                        if (CorrectUri(source) != source)
+                        {
+                            WriteOutput(() => " Fixing URL", logLevel: LogLevel.Verbose);
+                            source = CorrectUri(source);
+                            continue;
+                        }
+
 
                         using (var fileStream = File.OpenWrite(outpath))
                         {
@@ -775,6 +742,11 @@ public IEnumerable<string> GetProjectReferences(string projectPath)
             return uri.StartsWith("https://github.com", StringComparison.Ordinal);
         }
 
+        /// <summary>
+        /// make the appropriate changes to the URI to get the raw text of the license.
+        /// </summary>
+        /// <param name="uri">URI</param>
+        /// <returns>Returns the raw URL to get the raw text of the library</returns>
         private string CorrectUri(string uri)
         {
             if (!IsGithub(uri))
@@ -786,12 +758,97 @@ public IEnumerable<string> GetProjectReferences(string projectPath)
             {
                 uri = uri.Replace("/blob/", "/raw/", StringComparison.Ordinal);
             }
+
             if (uri.Contains("/dotnet/corefx/", StringComparison.Ordinal))
             {
                 uri = uri.Replace("/dotnet/corefx/", "/dotnet/runtime/", StringComparison.Ordinal);
             }
-
+         
             return uri;
         }
+
+        public void PrintLicenses(List<LibraryInfo> libraries)
+        {
+            if (libraries is null) { throw new ArgumentNullException(nameof(libraries)); }
+            if (!libraries.Any()) { return; }
+
+            WriteOutput(Environment.NewLine + "References:", logLevel: LogLevel.Always);
+            WriteOutput(libraries.ToStringTable(new[] { "Reference", "Version", "License Type", "License" },
+                                                            a => a.PackageName ?? "---",
+                                                            a => a.PackageVersion ?? "---",
+                                                            a => a.LicenseType ?? "---",
+                                                            a => a.LicenseUrl ?? "---"), logLevel: LogLevel.Always);
+        }
+
+        public void SaveAsJson(List<LibraryInfo> libraries)
+        {
+            if (!libraries.Any() || !_packageOptions.JsonOutput) { return; }
+            JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = _packageOptions.IncludeProjectFile ? NullValueHandling.Include : NullValueHandling.Ignore
+            };
+
+            using (var fileStream = new FileStream(GetOutputFilename("licenses.json"), FileMode.Create))
+            using (var streamWriter = new StreamWriter(fileStream))
+            {
+                streamWriter.Write(JsonConvert.SerializeObject(libraries, jsonSettings));
+                streamWriter.Flush();
+            }
+        }
+
+        public void SaveAsTextFile(List<LibraryInfo> libraries)
+        {
+            if (!libraries.Any() || !_packageOptions.TextOutput) { return; }
+            StringBuilder sb = new StringBuilder(256);
+            foreach (var lib in libraries)
+            {
+                sb.Append(new string('#', 100));
+                sb.AppendLine();
+                sb.Append("Package:");
+                sb.Append(lib.PackageName);
+                sb.AppendLine();
+                sb.Append("Version:");
+                sb.Append(lib.PackageVersion);
+                sb.AppendLine();
+                sb.Append("project URL:");
+                sb.Append(lib.PackageUrl);
+                sb.AppendLine();
+                sb.Append("Description:");
+                sb.Append(lib.Description);
+                sb.AppendLine();
+                sb.Append("licenseUrl:");
+                sb.Append(lib.LicenseUrl);
+                sb.AppendLine();
+                sb.Append("license Type:");
+                sb.Append(lib.LicenseType);
+                sb.AppendLine();
+                if (_packageOptions.IncludeProjectFile)
+                {
+                    sb.Append("Project:");
+                    sb.Append(lib.Projects);
+                    sb.AppendLine();
+                }
+                sb.AppendLine();
+            }
+
+            File.WriteAllText(GetOutputFilename("licenses.txt"), sb.ToString());
+        }
+
+        private void WriteOutput(Func<string> line, Exception exception = null, LogLevel logLevel = LogLevel.Information)
+        {
+            if ((int)logLevel < (int)_packageOptions.LogLevelThreshold)
+            {
+                return;
+            }
+
+            Console.WriteLine(line.Invoke());
+
+            if (exception is object)
+            {
+                Console.WriteLine(exception.ToString());
+            }
+        }
+
+        private void WriteOutput(string line, Exception exception = null, LogLevel logLevel = LogLevel.Information) => WriteOutput(() => line, exception, logLevel);
     }
 }

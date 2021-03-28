@@ -53,7 +53,7 @@ namespace NugetUtility
         [Option('p', "print", Default = true, HelpText = "Print licenses.")]
         public bool? Print { get; set; }
 
-        [Option("export-license-texts", Default = false, HelpText = "Exports the raw license texts")]
+        [Option('e', "export-license-texts", Default = false, HelpText = "Exports the raw license texts")]
         public bool ExportLicenseTexts { get; set; }
 
         [Option("include-transitive", Default = false, HelpText = "Include distinct transitive package licenses per project file.")]
