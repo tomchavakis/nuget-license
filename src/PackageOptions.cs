@@ -17,9 +17,6 @@ namespace NugetUtility
         [Option("allowed-license-types", Default = null, HelpText = "Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed")]
         public string AllowedLicenseTypesOption { get; set; }
 
-        [Option('j', "json", Default = false, HelpText = "Saves licenses list in a json file (licenses.json)")]
-        public bool JsonOutput { get; set; }
-
         [Option("include-project-file", Default = false, HelpText = "Adds project file path to information when enabled.")]
         public bool IncludeProjectFile { get; set; }
 
@@ -52,6 +49,9 @@ namespace NugetUtility
 
         [Option('p', "print", Default = true, HelpText = "Print licenses.")]
         public bool? Print { get; set; }
+
+        [Option('j', "json", Default = false, HelpText = "Saves licenses list in a json file (licenses.json)")]
+        public bool JsonOutput { get; set; }
 
         [Option('e', "export-license-texts", Default = false, HelpText = "Exports the raw license texts")]
         public bool ExportLicenseTexts { get; set; }

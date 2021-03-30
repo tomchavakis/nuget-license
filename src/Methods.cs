@@ -19,6 +19,7 @@ namespace NugetUtility
     {
         private const string fallbackPackageUrl = "https://www.nuget.org/api/v2/package/{0}/{1}";
         private const string nugetUrl = "https://api.nuget.org/v3-flatcontainer/";
+        private const string deprecateNugetLicense = "https://aka.ms/deprecateLicenseUrl";
         private static readonly Dictionary<Tuple<string, string>, Package> _requestCache = new Dictionary<Tuple<string, string>, Package>();
         private static readonly Dictionary<Tuple<string, string>, string> _licenseFileCache = new Dictionary<Tuple<string, string>, string>();
         /// <summary>
@@ -692,6 +693,25 @@ namespace NugetUtility
             }
         }
 
+        /// <summary>
+        /// HandleMSFTLicenses handle deprecate MSFT nuget licenses
+        /// </summary>
+        /// <param name="libraries">List<LibraryInfo></param>
+        /// <returns>A List of LibraryInfo</returns>
+        public List<LibraryInfo> HandleDeprecateMSFTLicense(List<LibraryInfo> libraries)
+        {
+            List<LibraryInfo> result = libraries;
+
+            foreach (var item in result)
+            {
+                if (item.LicenseUrl == deprecateNugetLicense)
+                {
+                    item.LicenseUrl = string.Format("https://www.nuget.org/packages/{0}/{1}/License", item.PackageName, item.PackageVersion);
+                }
+            }
+            return result;
+        }
+
         public async Task ExportLicenseTexts(List<LibraryInfo> infos)
         {
             var directory = GetOutputDirectory();
@@ -699,7 +719,7 @@ namespace NugetUtility
             {
                 var source = info.LicenseUrl;
 
-                if (source == "https://aka.ms/deprecateLicenseUrl")
+                if (source == deprecateNugetLicense)
                 {
                     await GetLicenceFromNpkgFile(info.PackageName, info.LicenseType, info.PackageVersion);
                     continue;
