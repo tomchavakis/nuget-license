@@ -139,6 +139,21 @@ namespace NugetUtility.Tests {
         }
 
         [Test]
+        public async Task GetPackages_RegexPackagesFilter_Should_Remove_CommandLineParser()
+        {
+            var methods = new Methods(new PackageOptions
+            {
+                PackagesFilterOption = "/CommandLine*/",
+                ProjectDirectory = TestSetup.ThisProjectSolutionPath
+            });
+
+            var result = await methods.GetPackages();
+
+            result.Should().NotBeEmpty()
+                .And.NotContainKey("CommandLineParser");
+        }
+
+        [Test]
         public async Task GetPackages_AllowedLicenses_Should_Throw_On_MIT () {
             var methods = new Methods (new PackageOptions {
                 ProjectsFilterOption = @"../../../SampleProjectFilters.json",

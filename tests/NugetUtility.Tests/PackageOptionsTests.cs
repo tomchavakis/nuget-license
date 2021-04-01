@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -35,5 +36,26 @@ namespace NugetUtility.Tests
             options.UniqueOnly.Should().BeTrue();
         }
 
+        [Test]
+        public void PackagesFilterOption_IncorrectRegexPackagesFilter_Should_Throw_ArgumentException()
+        {
+            var options = new PackageOptions
+            {
+                PackagesFilterOption = "/(?/",
+            };
+
+            Assert.Throws(typeof(ArgumentException), () => { var regex = options.PackageRegex; });
+        }
+
+        [Test]
+        public void PackagesFilterOption_IncorrectPackagesFilterPath_Should_Throw_FileNotFoundException () {
+            
+            var options = new PackageOptions
+            {
+                PackagesFilterOption = @"../../../DoesNotExist.json",
+            };
+
+            Assert.Throws(typeof(FileNotFoundException), () => { var regex = options.PackageFilter; });
+        }
     }
 }

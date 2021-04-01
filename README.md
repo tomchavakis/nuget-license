@@ -37,7 +37,7 @@ Usage: dotnet-project-licenses [options]
 | `-o, --output` | (Default: false) Saves as text file (licenses.txt) |
 | `--outfile` | Output filename |
 | `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj' |
-| `--packages-filter` | Simple json file of a text array of packages to skip. |
+| `--packages-filter` | Simple json file of a text array of packages to skip. Or a regular expression defined between two forward slashes '`/regex/`'. |
 | `-u, --unique` | (Default: false) Unique licenses list by Id/Version |
 | `-p, --print` | (Default: true) Print licenses. |
 | `--export-license-texts` | Exports the raw license texts |
@@ -84,4 +84,10 @@ dotnet-project-licenses -i projectFolder -u -o -j
 
 ```ps
 dotnet-project-licenses -i projectFolder --export-license-texts
+```
+
+### Exports all license texts in the current directory excluding all Microsoft packages
+
+```ps
+dotnet-project-licenses -i projectFolder --export-license-texts --packages-filter '/Microsoft.*/'
 ```

@@ -1,18 +1,23 @@
 using CommandLine;
 using CommandLine.Text;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using static NugetUtility.Utilties;
 
 namespace NugetUtility
 {
     public class PackageOptions
     {
-        private ICollection<string> _allowedLicenseTypes;
-        private ICollection<LibraryInfo> _manualInformation;
-        private ICollection<string> _projectFilter;
-        private ICollection<string> _packagesFilter;
-        private Dictionary<string, string> _customLicenseToUrlMappings;
+        private readonly Regex UserRegexRegex = new Regex("^\\/(.+)\\/$");
+
+        private ICollection<string> _allowedLicenseTypes = new Collection<string>();
+        private ICollection<LibraryInfo> _manualInformation = new Collection<LibraryInfo>();
+        private ICollection<string> _projectFilter = new Collection<string>();
+        private ICollection<string> _packagesFilter = new Collection<string>();
+        private Dictionary<string, string> _customLicenseToUrlMappings = new Dictionary<string, string>();
 
         [Option("allowed-license-types", Default = null, HelpText = "Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed")]
         public string AllowedLicenseTypesOption { get; set; }
@@ -44,7 +49,7 @@ namespace NugetUtility
         [Option("projects-filter", Default = null, HelpText = "Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj'")]
         public string ProjectsFilterOption { get; set; }
 
-        [Option("packages-filter", Default = null, HelpText = "Simple json file of a text array of packages to skip.")]
+        [Option("packages-filter", Default = null, HelpText = "Simple json file of a text array of packages to skip, or a regular expression defined between two forward slashes.")]
         public string PackagesFilterOption { get; set; }
 
         [Option('u', "unique", Default = false, HelpText = "Unique licenses list by Id/Version")]
@@ -83,7 +88,7 @@ namespace NugetUtility
         {
             get
             {
-                if (_allowedLicenseTypes is object) { return _allowedLicenseTypes; }
+                if (_allowedLicenseTypes.Any()) { return _allowedLicenseTypes; }
 
                 return _allowedLicenseTypes = ReadListFromFile<string>(AllowedLicenseTypesOption);
             }
@@ -93,7 +98,7 @@ namespace NugetUtility
         {
             get
             {
-                if (_manualInformation is object) { return _manualInformation; }
+                if (_manualInformation.Any()) { return _manualInformation; }
 
                 return _manualInformation = ReadListFromFile<LibraryInfo>(ManualInformationOption);
             }
@@ -103,7 +108,7 @@ namespace NugetUtility
         {
             get
             {
-                if (_projectFilter is object) { return _projectFilter; }
+                if (_projectFilter.Any()) { return _projectFilter; }
 
                 return _projectFilter = ReadListFromFile<string>(ProjectsFilterOption)
                     .Select(x => x.EnsureCorrectPathCharacter())
@@ -111,11 +116,42 @@ namespace NugetUtility
             }
         }
 
+        public Regex? PackageRegex
+        {
+            get
+            {
+                if (PackagesFilterOption == null) return null;
+
+                // Check if the input is a regular expression that is defined between two forward slashes '/';
+                if (UserRegexRegex.IsMatch(PackagesFilterOption))
+                {
+                    var userRegexString = UserRegexRegex.Replace(PackagesFilterOption, "$1");
+                    // Try parse regular expression between forward slashes
+                    try
+                    {
+                        var parsedExpression = new Regex(userRegexString, RegexOptions.IgnoreCase);
+                        return parsedExpression;
+                    }
+                    // Catch and suppress Argument exception thrown when pattern is invalid
+                    catch (ArgumentException e) {
+                        throw new ArgumentException($"Cannot parse regex '{userRegexString}'", e);
+                    }
+                }
+                
+                return null;
+            }
+        }
+
         public ICollection<string> PackageFilter
         {
             get
             {
-                if (_packagesFilter is object) { return _packagesFilter; }
+                // If we've already found package filters, or the user input is a regular expression,
+                // Return the packagesFilter
+                if (_packagesFilter.Any() ||
+                    (PackagesFilterOption != null && UserRegexRegex.IsMatch(PackagesFilterOption))) { 
+                        return _packagesFilter;
+                }
 
                 return _packagesFilter = ReadListFromFile<string>(PackagesFilterOption);
             }
@@ -125,7 +161,7 @@ namespace NugetUtility
         {
             get
             {
-                if (_customLicenseToUrlMappings is object) { return _customLicenseToUrlMappings; }
+                if (_customLicenseToUrlMappings.Any()) { return _customLicenseToUrlMappings; }
 
                 return _customLicenseToUrlMappings = ReadDictionaryFromFile(LicenseToUrlMappingsOption, LicenseToUrlMappings.Default);
             }
