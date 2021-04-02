@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NugetUtility": {
+      "commandName": "Project",
+      "commandLineArgs": "-i C:\\Projects\\github\\nuget-license -u -o --export-license-texts --log-level Verbose "
+    }
+  }
+}

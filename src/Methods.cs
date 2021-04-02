@@ -11,6 +11,8 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
 using Newtonsoft.Json;
+using NuGet;
+using NuGet.Packaging;
 using static NugetUtility.Utilties;
 
 namespace NugetUtility
@@ -51,6 +53,133 @@ namespace NugetUtility
             _serializer = new XmlSerializer(typeof(Package));
             _packageOptions = packageOptions;
             _licenseMappings = packageOptions.LicenseToUrlMappingsDictionary;
+        }
+
+        public async Task<PackageList> GetNugetFromCommands(string project, IEnumerable<PackageNameAndVersion> packages)
+        {
+            WriteOutput(Environment.NewLine + "project:" + project + Environment.NewLine, logLevel: LogLevel.Information);
+            var licenses = new PackageList();
+            foreach (var packageWithVersion in packages)
+            {
+                var versions = packageWithVersion.Version.Trim(new char[] { '[', ']', '(', ')' }).Split(",");
+                foreach (var version in versions)
+                {
+                    try
+                    {
+                        if (string.IsNullOrWhiteSpace(packageWithVersion.Name) || string.IsNullOrWhiteSpace(version))
+                        {
+                            WriteOutput($"Skipping invalid entry {packageWithVersion}", logLevel: LogLevel.Verbose);
+                            continue;
+                        }
+
+                        if (_packageOptions.PackageFilter.Any(p => string.Compare(p, packageWithVersion.Name, StringComparison.OrdinalIgnoreCase) == 0))
+                        {
+                            WriteOutput(packageWithVersion.Name + " skipped by filter.", logLevel: LogLevel.Verbose);
+                            continue;
+                        }
+
+                        var lookupKey = Tuple.Create(packageWithVersion.Name, version);
+
+                        if (_requestCache.TryGetValue(lookupKey, out var package))
+                        {
+                            WriteOutput(packageWithVersion + " obtained from request cache.", logLevel: LogLevel.Information);
+                            licenses.TryAdd($"{packageWithVersion.Name},{version}", package);
+                            continue;
+                        }
+
+                        // Search nuspec in local cache
+                        string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                        var nuspecPath = Path.Combine(userDir, ".nuget", "packages", packageWithVersion.Name, version, packageWithVersion.Name + ".nuspec");
+                        if (File.Exists(nuspecPath))
+                        {
+                            try
+                            {
+                                using (var textReader = new StreamReader(nuspecPath))
+                                {
+                                    await ReadNuspecFile(project, licenses, packageWithVersion.Name, version, lookupKey, textReader);
+                                }
+                                continue;
+                            }
+                            catch
+                            {
+                                // Ignore errors in local cache, try online call
+                            }
+                        }
+
+                        // Use nuget commands
+
+
+
+                        // Try dowload nuspec
+                        using (var request = new HttpRequestMessage(HttpMethod.Get, $"{packageWithVersion.Name}/{version}/{packageWithVersion.Name}.nuspec"))
+                        using (var response = await _httpClient.SendAsync(request))
+                        {
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Warning);
+                                var fallbackResult = await GetNuGetPackageFileResult<Package>(packageWithVersion.Name, version, $"{packageWithVersion.Name}.nuspec");
+                                if (fallbackResult is Package)
+                                {
+                                    licenses.Add($"{packageWithVersion.Name},{version}", fallbackResult);
+                                    await this.AddTransitivePackages(project, licenses, fallbackResult);
+                                    _requestCache[lookupKey] = fallbackResult;
+                                    await HandleLicensing(fallbackResult);
+                                }
+                                else
+                                {
+                                    licenses.Add($"{packageWithVersion.Name},{version}", new Package { Metadata = new Metadata { Version = version, Id = packageWithVersion.Name } });
+                                }
+
+                                continue;
+                            }
+
+
+                            WriteOutput($"Successfully received {request.RequestUri}", logLevel: LogLevel.Information);
+                            using (var responseText = await response.Content.ReadAsStreamAsync())
+                            {
+                                var reader = new NuGet.Packaging.NuspecReader(responseText);
+
+
+                                /*LicenseMetadata meta  = reader.GetLicenseMetadata();
+                                string n = string.Format($"{reader.GetIdentity().Id},{reader.GetIdentity().Id}");
+                                Metadata m = new Metadata()
+                                {
+                                    License = new License { Text = meta.License, Type = meta.Type.ToString() },
+                                    LicenseUrl = meta.LicenseUrl.AbsoluteUri,
+                                    Id = reader.GetIdentity().Id,
+                                    Version = meta.Version.Build.ToString(),
+                                };
+                                licenses.Add(n, new Package()
+                                {
+                                    Metadata = m
+                                });*/
+                            }
+                        }
+
+
+                            /*using (var textReader = new StreamReader(responseText))
+                            {
+                                try
+                                {
+                                    await ReadNuspecFile(project, licenses, packageWithVersion.Name, version, lookupKey, textReader);
+                                }
+                                catch (Exception e)
+                                {
+                                    WriteOutput(e.Message, e, LogLevel.Error);
+                                    throw;
+                                }
+                            }*/
+                        //}
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteOutput(ex.Message, ex, LogLevel.Error);
+                    }
+                }
+            }
+
+            return licenses;
+
         }
 
         /// <summary>
@@ -170,6 +299,7 @@ namespace NugetUtility
             }
         }
 
+
         private async Task AddTransitivePackages(string project, PackageList licenses, Package result)
         {
             var groups = result.Metadata?.Dependencies?.Group;
@@ -208,7 +338,8 @@ namespace NugetUtility
                     var split = package.Split(',');
                     return new PackageNameAndVersion { Name = split[0], Version = split[1] };
                 });
-                var currentProjectLicenses = await this.GetNugetInformationAsync(projectFile, referencedPackages);
+                //var currentProjectLicenses = await this.GetNugetInformationAsync(projectFile, referencedPackages);
+                var currentProjectLicenses = await this.GetNugetFromCommands(projectFile, referencedPackages);
                 licenses[projectFile] = currentProjectLicenses;
             }
 
