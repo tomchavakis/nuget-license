@@ -88,7 +88,8 @@ namespace NugetUtility
                         }
 
                         // Search nuspec in local cache
-                        string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                        // TODO: Change ReadNuspecFile
+/*                        string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                         var nuspecPath = Path.Combine(userDir, ".nuget", "packages", packageWithVersion.Name, version, packageWithVersion.Name + ".nuspec");
                         if (File.Exists(nuspecPath))
                         {
@@ -104,7 +105,7 @@ namespace NugetUtility
                             {
                                 // Ignore errors in local cache, try online call
                             }
-                        }
+                        }*/
 
                         // Use nuget commands
 
@@ -139,20 +140,27 @@ namespace NugetUtility
                             {
                                 var reader = new NuGet.Packaging.NuspecReader(responseText);
 
+                                if (reader != null) {
+                                    string key = string.Empty;
+                                    Metadata m = new Metadata();
+                                    if (reader.GetIdentity() != null)
+                                    {
+                                        key = string.Format($"{reader.GetIdentity().Id},{reader.GetIdentity().Id}");
+                                        m.Id = reader.GetIdentity().Id;
+                                    }
 
-                                /*LicenseMetadata meta  = reader.GetLicenseMetadata();
-                                string n = string.Format($"{reader.GetIdentity().Id},{reader.GetIdentity().Id}");
-                                Metadata m = new Metadata()
-                                {
-                                    License = new License { Text = meta.License, Type = meta.Type.ToString() },
-                                    LicenseUrl = meta.LicenseUrl.AbsoluteUri,
-                                    Id = reader.GetIdentity().Id,
-                                    Version = meta.Version.Build.ToString(),
-                                };
-                                licenses.Add(n, new Package()
-                                {
-                                    Metadata = m
-                                });*/
+                                    LicenseMetadata meta = reader.GetLicenseMetadata();
+                                    if (meta != null)
+                                    {
+                                        m.LicenseUrl = meta.LicenseUrl != null ? meta.LicenseUrl.AbsoluteUri : string.Empty;
+                                        m.Version = meta.Version.Build.ToString();
+                                      
+                                        licenses.Add(key, new Package()
+                                        {
+                                            Metadata = m
+                                        });
+                                    }
+                                }
                             }
                         }
 
