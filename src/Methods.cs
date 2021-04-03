@@ -76,9 +76,9 @@ namespace NugetUtility
                             continue;
                         }
 
-                        if (_packageOptions.PackageFilter.Any(p => string.Compare(p, packageWithVersion.Name, StringComparison.OrdinalIgnoreCase) == 0))
-                        {
-                            WriteOutput(packageWithVersion.Name + " skipped by filter.", logLevel: LogLevel.Verbose);
+                        if (_packageOptions.PackageFilter.Any(p => string.Compare(p, packageWithVersion.Name, StringComparison.OrdinalIgnoreCase) == 0) ||
+                            _packageOptions.PackageRegex?.IsMatch(packageWithVersion.Name) == true) {
+                            WriteOutput (packageWithVersion.Name + " skipped by filter.", logLevel : LogLevel.Verbose);
                             continue;
                         }
 
