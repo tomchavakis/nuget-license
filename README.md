@@ -36,6 +36,7 @@ Usage: dotnet-project-licenses [options]
 | `--include-transitive` | Include distinct transitive package licenses per project file. |
 | `-o, --output` | (Default: false) Saves as text file (licenses.txt) |
 | `--outfile` | Output filename |
+| `-f, --output-directory` | Set Output Directory/Folder |
 | `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj' |
 | `--packages-filter` | Simple json file of a text array of packages to skip. Or a regular expression defined between two forward slashes '`/regex/`'. |
 | `-u, --unique` | (Default: false) Unique licenses list by Id/Version |
@@ -84,6 +85,12 @@ dotnet-project-licenses -i projectFolder -u -o -j
 
 ```ps
 dotnet-project-licenses -i projectFolder --export-license-texts
+```
+
+### Exports all license texts in ~/Projects/github directory and output json in ~/Projects/output.json
+
+```ps
+dotnet-project-licenses -i projectFolder -o -j -f ~/Projects/github --outfile ~/Projects/output.json --export-license-texts
 ```
 
 ### Exports all license texts in the current directory excluding all Microsoft packages

@@ -61,8 +61,8 @@ namespace NugetUtility {
                             continue;
                         }
 
-                        if (_packageOptions.PackageFilter.Any(p => string.Compare(p, packageWithVersion.Name, StringComparison.OrdinalIgnoreCase) == 0) ||
-                            _packageOptions.PackageRegex?.IsMatch(packageWithVersion.Name) == true) {
+                        if (_packageOptions.PackageFilter.Any (p => string.Compare (p, packageWithVersion.Name, StringComparison.OrdinalIgnoreCase) == 0) ||
+                            _packageOptions.PackageRegex?.IsMatch (packageWithVersion.Name) == true) {
                             WriteOutput (packageWithVersion.Name + " skipped by filter.", logLevel : LogLevel.Verbose);
                             continue;
                         }
@@ -481,19 +481,29 @@ namespace NugetUtility {
         }
 
         private string GetOutputFilename (string defaultName) {
+            string outputDir = GetExportDirectory ();
+
             return string.IsNullOrWhiteSpace (_packageOptions.OutputFileName) ?
-                defaultName :
-                _packageOptions.OutputFileName;
+                Path.Combine (outputDir, defaultName) :
+                Path.Combine (outputDir, _packageOptions.OutputFileName);
         }
 
-        private string GetOutputDirectory () {
-            var outputDirectory = string.IsNullOrWhiteSpace (_packageOptions.OutputFileName) ?
-                Environment.CurrentDirectory :
-                Path.GetDirectoryName (_packageOptions.OutputFileName);
+        private string GetExportDirectory () {
+            string outputDirectory = string.Empty;
+            if (!string.IsNullOrWhiteSpace (_packageOptions.OutputDirectory)) {
+                if (_packageOptions.OutputDirectory.EndsWith ('/')) {
+                    outputDirectory = Path.GetDirectoryName (_packageOptions.OutputDirectory);
+                } else {
+                    outputDirectory = Path.GetDirectoryName (_packageOptions.OutputDirectory + "/");
 
-            if (!Directory.Exists (outputDirectory)) {
-                Directory.CreateDirectory (outputDirectory);
+                }
+                if (!Directory.Exists (outputDirectory)) {
+                    Directory.CreateDirectory (outputDirectory);
+                }
             }
+
+            outputDirectory = string.IsNullOrWhiteSpace (outputDirectory) ? Environment.CurrentDirectory : outputDirectory;
+
             return outputDirectory;
         }
 
@@ -618,7 +628,7 @@ namespace NugetUtility {
         private void WriteOutput (string line, Exception exception = null, LogLevel logLevel = LogLevel.Information) => WriteOutput (() => line, exception, logLevel);
 
         public async Task ExportLicenseTexts (List<LibraryInfo> infos) {
-            var directory = GetOutputDirectory ();
+            var directory = GetExportDirectory ();
             foreach (var info in infos.Where (i => !string.IsNullOrEmpty (i.LicenseUrl))) {
                 var source = info.LicenseUrl;
                 var outpath = Path.Combine (directory, info.PackageName + info.PackageVersion + ".txt");
