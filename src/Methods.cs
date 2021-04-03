@@ -517,7 +517,7 @@ namespace NugetUtility
                 Path.Combine (outputDir, _packageOptions.OutputFileName);
         }
 
-        private string GetExportDirectory () {
+        public string GetExportDirectory () {
             string outputDirectory = string.Empty;
             if (!string.IsNullOrWhiteSpace (_packageOptions.OutputDirectory)) {
                 if (_packageOptions.OutputDirectory.EndsWith ('/')) {
@@ -674,7 +674,7 @@ namespace NugetUtility
                     return false;
                 }
 
-                var directory = GetOutputDirectory();
+                var directory = GetExportDirectory();
                 var outpath = Path.Combine(directory, package + "_" + version + ".nupkg.zip");
 
                 using (var fileStream = File.OpenWrite(outpath))

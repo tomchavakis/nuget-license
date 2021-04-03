@@ -206,7 +206,7 @@ namespace NugetUtility.Tests {
                 LicenseType = licenseType,
             });
             await methods.ExportLicenseTexts(infos);
-            var directory = methods.GetOutputDirectory();
+            var directory = methods.GetExportDirectory();
             var outpath = Path.Combine(directory, packageName + "_" + packageVersion + ".txt");
             Assert.That(File.Exists(outpath));
         }
