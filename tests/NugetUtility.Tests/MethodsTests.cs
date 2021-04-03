@@ -176,7 +176,7 @@ namespace NugetUtility.Tests {
         [TestCase("System.Memory", "4.5.4", "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT", "MIT")]
         [TestCase("System.Text.RegularExpressions", "4.3.0", "http://go.microsoft.com/fwlink/?LinkId=329770", "MS-EULA")]
         [Test]
-        public async Task GetLicenceFromNpkgFile(string packageName, string packageVersion, string licenseUrl, string licenseType)
+        public async Task ExportLicenseTexts_Should_Export_File(string packageName, string packageVersion, string licenseUrl, string licenseType)
         {
             var methods = new Methods(new PackageOptions
             {
@@ -194,6 +194,19 @@ namespace NugetUtility.Tests {
             var directory = methods.GetOutputDirectory();
             var outpath = Path.Combine(directory, packageName + "_" + packageVersion + ".txt");
             Assert.That(File.Exists(outpath));
+        }
+
+        [TestCase("BenchmarkDotNet", "License.txt", "10.12.1")]
+        [Test]
+        public async Task GetLicenceFromNpkgFile_Should_Return_False(string packageName, string licenseFile, string packageVersion)
+        {
+            var methods = new Methods(new PackageOptions
+            {
+                ExportLicenseTexts = true,
+            });
+
+            var result = await methods.GetLicenceFromNpkgFile(packageName, licenseFile, packageVersion);
+            Assert.False(result);
         }
     }
 }
