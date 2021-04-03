@@ -98,3 +98,14 @@ dotnet-project-licenses -i projectFolder -o -j -f ~/Projects/github --outfile ~/
 ```ps
 dotnet-project-licenses -i projectFolder --export-license-texts --packages-filter '/Microsoft.*/'
 ```
+
+## Docker
+
+### Build the image
+```
+docker build . -t nuget-license
+```
+### Run the image and export the licenses locally
+```
+docker run -it -v projectName:/tmp nuget-license -i /tmp -f /tmp --export-license-texts -l Verbose
+```
