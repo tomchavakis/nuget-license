@@ -516,7 +516,7 @@ namespace NugetUtility
                 _packageOptions.OutputFileName;
         }
 
-        private string GetOutputDirectory()
+        public string GetOutputDirectory()
         {
             var outputDirectory = string.IsNullOrWhiteSpace(_packageOptions.OutputFileName) ?
                 Environment.CurrentDirectory :
@@ -652,24 +652,35 @@ namespace NugetUtility
         /// <param name="licenseFile"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        private async Task GetLicenceFromNpkgFile(string package, string licenseFile, string version)
+        public async Task<bool> GetLicenceFromNpkgFile(string package, string licenseFile, string version)
         {
+            bool result = false;
             var nupkgEndpoint = new Uri(string.Format(fallbackPackageUrl, package, version));
             WriteOutput(() => "Attempting to download: " + nupkgEndpoint.ToString(), logLevel: LogLevel.Verbose);
             using (var packageRequest = new HttpRequestMessage(HttpMethod.Get, nupkgEndpoint))
             using (var packageResponse = await _httpClient.SendAsync(packageRequest, CancellationToken.None))
             {
-                var directory = GetOutputDirectory();
-                var outpath = Path.Combine(directory, package + version + ".nupkg.zip");
+                
                 if (!packageResponse.IsSuccessStatusCode)
                 {
                     WriteOutput($"{packageRequest.RequestUri} failed due to {packageResponse.StatusCode}!", logLevel: LogLevel.Warning);
-                    return;
+                    return false;
                 }
+
+                var directory = GetOutputDirectory();
+                var outpath = Path.Combine(directory, package + "_" + version + ".nupkg.zip");
 
                 using (var fileStream = File.OpenWrite(outpath))
                 {
-                    await packageResponse.Content.CopyToAsync(fileStream);
+                    try
+                    {
+                        await packageResponse.Content.CopyToAsync(fileStream);
+                    }
+                    catch (Exception)
+                    {
+                        return false;
+                    }
+                    
                 }
 
                 using (ZipArchive archive = ZipFile.OpenRead(outpath))
@@ -683,13 +694,23 @@ namespace NugetUtility
                             var libTxt = outpath.Replace(".nupkg.zip", ".txt");
                             using (var fileStream = File.OpenWrite(libTxt))
                             {
-                                await t.CopyToAsync(fileStream);
+                                try
+                                {
+                                    await t.CopyToAsync(fileStream);
+                                    result = true;
+                                }
+                                catch (Exception)
+                                {
+                                    return false;
+                                }
+
                             }
                         }
                     }
                 }
 
                 File.Delete(outpath);
+                return result;
             }
         }
 
@@ -718,30 +739,29 @@ namespace NugetUtility
             foreach (var info in infos.Where(i => !string.IsNullOrEmpty(i.LicenseUrl)))
             {
                 var source = info.LicenseUrl;
-
-                if (source == deprecateNugetLicense)
-                {
-                    await GetLicenceFromNpkgFile(info.PackageName, info.LicenseType, info.PackageVersion);
-                    continue;
-                }
-
-                if (source == "http://go.microsoft.com/fwlink/?LinkId=329770" || source == "https://dotnet.microsoft.com/en/dotnet_library_license.htm")
-                {
-                    await GetLicenceFromNpkgFile(info.PackageName, "dotnet_library_license.txt", info.PackageVersion);
-                    continue;
-                }
-
-                if (source.StartsWith("https://licenses.nuget.org"))
-                {
-                    await GetLicenceFromNpkgFile(info.PackageName, "License.txt", info.PackageVersion);
-                    continue;
-                }
-
-                var outpath = Path.Combine(directory, info.PackageName + info.PackageVersion + ".txt");
+                var outpath = Path.Combine(directory, info.PackageName + "_" + info.PackageVersion + ".txt");
                 if (File.Exists(outpath))
                 {
                     continue;
                 }
+                if (source == deprecateNugetLicense)
+                {
+                    if (await GetLicenceFromNpkgFile(info.PackageName, info.LicenseType, info.PackageVersion))
+                        continue;
+                }
+
+                if (source == "http://go.microsoft.com/fwlink/?LinkId=329770" || source == "https://dotnet.microsoft.com/en/dotnet_library_license.htm")
+                {
+                    if (await GetLicenceFromNpkgFile(info.PackageName, "dotnet_library_license.txt", info.PackageVersion))
+                        continue;
+                }
+
+                if (source.StartsWith("https://licenses.nuget.org"))
+                {
+                    if (await GetLicenceFromNpkgFile(info.PackageName, "License.txt", info.PackageVersion))
+                        continue;
+                }
+
                 do
                 {
                     WriteOutput(() => $"Attempting to download {source} to {outpath}", logLevel: LogLevel.Verbose);
@@ -803,10 +823,10 @@ namespace NugetUtility
                 uri = uri.Replace("/blob/", "/raw/", StringComparison.Ordinal);
             }
 
-            if (uri.Contains("/dotnet/corefx/", StringComparison.Ordinal))
+          /*  if (uri.Contains("/dotnet/corefx/", StringComparison.Ordinal))
             {
                 uri = uri.Replace("/dotnet/corefx/", "/dotnet/runtime/", StringComparison.Ordinal);
-            }
+            }*/
 
             return uri;
         }
