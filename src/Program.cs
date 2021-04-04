@@ -37,6 +37,8 @@ namespace NugetUtility
                     await methods.ExportLicenseTexts(mappedLibraryInfo);
                 }
 
+                mappedLibraryInfo = methods.HandleDeprecateMSFTLicense(mappedLibraryInfo);
+
                 if (options.Print == true)
                 {
                     Console.WriteLine();
@@ -61,6 +63,8 @@ namespace NugetUtility
                 return -1;
             }
         }
+
+
 
         private static void HandleInvalidLicenses(Methods methods, List<LibraryInfo> libraries, ICollection<string> allowedLicenseType)
         {
