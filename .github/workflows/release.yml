@@ -43,13 +43,13 @@ jobs:
       run: dotnet publish -c Release -o ./artifacts
     # publish the package to package folder
     - name: Publish the artifact
-      run: dotnet publish -c Release -o ./package
+      run: dotnet publish -f net5.0 -c Release -o ./package
     # Add nuget package
     - name: Nuget package
       run: dotnet pack -c Release -o ./artifacts
     # Zip Artifacts
     - name: Zip artifacts
-      uses: montudor/action-zip@v0.1.0
+      uses: tomchavakis/action-zip@v0.1.0
       with:
         args: zip -qq -r ./release.zip ./artifacts
     - name: Create release
