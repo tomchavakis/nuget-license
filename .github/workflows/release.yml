@@ -40,7 +40,7 @@ jobs:
       run: dotnet pack --configuration Release
     # publish the package
     - name: Publish the artifact
-      run: dotnet publish -c Release -o ./artifacts
+      run: dotnet publish -f net5.0 -c Release -o ./artifacts
     # publish the package to package folder
     - name: Publish the artifact
       run: dotnet publish -f net5.0 -c Release -o ./package
