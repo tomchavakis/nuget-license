@@ -20,6 +20,12 @@ jobs:
         dotnet-version: '3.1.100' # SDK Version to use.
       env:
         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    - name: Setup dotnet 5.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x' # SDK Version to use (x uses the latest version).
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
     # dotnet restore
     - name: restore
       run: dotnet restore
