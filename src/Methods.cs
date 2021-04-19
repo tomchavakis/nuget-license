@@ -36,16 +36,21 @@ namespace NugetUtility
         {
             if (_httpClient is null)
             {
-                _httpClient = new HttpClient(new HttpClientHandler
+                var httpClientHandler = new HttpClientHandler
                 {
                     AllowAutoRedirect = true,
                     MaxAutomaticRedirections = maxRedirects
-                })
+                };
+                if (packageOptions.IgnoreSslCertificateErrors)
+                {
+                    httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true;
+                }
+
+                _httpClient = new HttpClient(httpClientHandler)
                 {
                     BaseAddress = new Uri(nugetUrl),
                     Timeout = TimeSpan.FromSeconds(timeout)
                 };
-
             }
 
             _serializer = new XmlSerializer(typeof(Package));
