@@ -67,9 +67,6 @@ namespace NugetUtility
         [Option('t', "include-transitive", Default = false, HelpText = "Include distinct transitive package licenses per project file.")]
         public bool IncludeTransitive { get; set; }
 
-        [Option("ignore-ssl-certificate-errors", Default = false, HelpText = "Ignore SSL certificate errors in HttpClient.")]
-        public bool IgnoreSslCertificateErrors { get; set; }
-
         [Usage(ApplicationAlias = "dotnet-project-licenses")]
         public static IEnumerable<Example> Examples
         {

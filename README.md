@@ -44,7 +44,6 @@ Usage: dotnet-project-licenses [options]
 | `--export-license-texts` | Exports the raw license texts |
 | `--help` | Display this help screen. |
 | `--version` | Display version information. |
-| `--ignore-ssl-certificate-errors` | Ignore SSL certificate errors in `HttpClient`. |
 
 ## Example tool commands
 
