@@ -26,11 +26,15 @@ namespace NugetUtility
         /// See https://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
         /// </summary>
         private static HttpClient _httpClient;
+
         private const int maxRedirects = 5; // HTTP client max number of redirects allowed
         private const int timeout = 10; // HTTP client timeout in seconds
         private readonly IReadOnlyDictionary<string, string> _licenseMappings;
         private readonly PackageOptions _packageOptions;
         private readonly XmlSerializer _serializer;
+
+        internal static bool IgnoreSslCertificateErrorCallback(HttpRequestMessage message, System.Security.Cryptography.X509Certificates.X509Certificate2 cert, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
+            => true;
 
         public Methods(PackageOptions packageOptions)
         {
@@ -43,7 +47,7 @@ namespace NugetUtility
                 };
                 if (packageOptions.IgnoreSslCertificateErrors)
                 {
-                    httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true;
+                    httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => IgnoreSslCertificateErrorCallback(message, cert, chain, sslPolicyErrors);
                 }
 
                 _httpClient = new HttpClient(httpClientHandler)
