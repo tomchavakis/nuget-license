@@ -223,5 +223,23 @@ namespace NugetUtility.Tests {
             var result = await methods.GetLicenceFromNpkgFile(packageName, licenseFile, packageVersion);
             Assert.False(result);
         }
+
+        [Test]
+        public void HttpClient_IgnoreSslError_CallbackTest()
+        {
+            Assert.True(Methods.IgnoreSslCertificateErrorCallback(null, null, null, System.Net.Security.SslPolicyErrors.None));
+        }
+
+        [TestCase("System.Linq", "(4.1.0,)")]
+        [TestCase("BCrypt.Net-Next", "2.1.3")]
+        [Test]
+        public void HttpClient_IgnoreSslError_GetNugetInformationAsync(string package, string version)
+        {
+            var methods = new Methods(new PackageOptions { ProjectDirectory = _projectPath, IgnoreSslCertificateErrors = true });
+
+            var referencedpackages = new PackageNameAndVersion[] { new PackageNameAndVersion { Name = package, Version = version } };
+
+            Assert.DoesNotThrowAsync(async () => await _methods.GetNugetInformationAsync(_projectPath, referencedpackages));
+        }
     }
 }

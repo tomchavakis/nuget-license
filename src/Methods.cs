@@ -26,26 +26,35 @@ namespace NugetUtility
         /// See https://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
         /// </summary>
         private static HttpClient _httpClient;
+
         private const int maxRedirects = 5; // HTTP client max number of redirects allowed
         private const int timeout = 10; // HTTP client timeout in seconds
         private readonly IReadOnlyDictionary<string, string> _licenseMappings;
         private readonly PackageOptions _packageOptions;
         private readonly XmlSerializer _serializer;
 
+        internal static bool IgnoreSslCertificateErrorCallback(HttpRequestMessage message, System.Security.Cryptography.X509Certificates.X509Certificate2 cert, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
+            => true;
+
         public Methods(PackageOptions packageOptions)
         {
             if (_httpClient is null)
             {
-                _httpClient = new HttpClient(new HttpClientHandler
+                var httpClientHandler = new HttpClientHandler
                 {
                     AllowAutoRedirect = true,
                     MaxAutomaticRedirections = maxRedirects
-                })
+                };
+                if (packageOptions.IgnoreSslCertificateErrors)
+                {
+                    httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => IgnoreSslCertificateErrorCallback(message, cert, chain, sslPolicyErrors);
+                }
+
+                _httpClient = new HttpClient(httpClientHandler)
                 {
                     BaseAddress = new Uri(nugetUrl),
                     Timeout = TimeSpan.FromSeconds(timeout)
                 };
-
             }
 
             _serializer = new XmlSerializer(typeof(Package));
@@ -91,61 +100,66 @@ namespace NugetUtility
                             continue;
                         }
 
-                        // Search nuspec in local cache
+                        // Search nuspec in local cache (Fix for linux distro)
                         string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                        var nuspecPath = Path.Combine(userDir, ".nuget", "packages", packageWithVersion.Name, version, packageWithVersion.Name + ".nuspec");
+
+                        //Linux: package file name is lowercase
+                        var packageNameTmp = IsLinux() ? packageWithVersion.Name?.ToLowerInvariant() : packageWithVersion.Name;
+
+                        var nuspecPath = Path.Combine(userDir, ".nuget", "packages", packageNameTmp, version, $"{packageNameTmp}.nuspec");
                         if (File.Exists(nuspecPath))
                         {
                             try
                             {
-                                using (var textReader = new StreamReader(nuspecPath))
-                                {
-                                    await ReadNuspecFile(project, licenses, packageWithVersion.Name, version, lookupKey, textReader);
-                                }
+                                using var textReader = new StreamReader(nuspecPath);
+                                await ReadNuspecFile(project, licenses, packageWithVersion.Name, version, lookupKey, textReader);
                                 continue;
                             }
-                            catch
+                            catch(Exception exc)
                             {
                                 // Ignore errors in local cache, try online call
+                                WriteOutput($"ReadNuspecFile error, package '{packageWithVersion.Name}'", exc, LogLevel.Verbose);
                             }
+                        }
+                        else
+                        {
+                            WriteOutput($"Package '{packageWithVersion.Name}' not found in local cache ({nuspecPath})..", logLevel: LogLevel.Verbose);
                         }
 
                         // Try dowload nuspec
-                        using (var request = new HttpRequestMessage(HttpMethod.Get, $"{packageWithVersion.Name}/{version}/{packageWithVersion.Name}.nuspec"))
-                        using (var response = await _httpClient.SendAsync(request))
+                        using var request = new HttpRequestMessage(HttpMethod.Get, $"{packageWithVersion.Name}/{version}/{packageWithVersion.Name}.nuspec");
+                        using var response = await _httpClient.SendAsync(request);
+                        if (!response.IsSuccessStatusCode)
                         {
-                            if (!response.IsSuccessStatusCode)
+                            WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Warning);
+                            var fallbackResult = await GetNuGetPackageFileResult<Package>(packageWithVersion.Name, version, $"{packageWithVersion.Name}.nuspec");
+                            if (fallbackResult is Package)
                             {
-                                WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Warning);
-                                var fallbackResult = await GetNuGetPackageFileResult<Package>(packageWithVersion.Name, version, $"{packageWithVersion.Name}.nuspec");
-                                if (fallbackResult is Package)
-                                {
-                                    licenses.Add($"{packageWithVersion.Name},{version}", fallbackResult);
-                                    await this.AddTransitivePackages(project, licenses, fallbackResult);
-                                    _requestCache[lookupKey] = fallbackResult;
-                                    await HandleLicensing(fallbackResult);
-                                }
-                                else
-                                {
-                                    licenses.Add($"{packageWithVersion.Name},{version}", new Package { Metadata = new Metadata { Version = version, Id = packageWithVersion.Name } });
-                                }
-
-                                continue;
+                                licenses.Add($"{packageWithVersion.Name},{version}", fallbackResult);
+                                await this.AddTransitivePackages(project, licenses, fallbackResult);
+                                _requestCache[lookupKey] = fallbackResult;
+                                await HandleLicensing(fallbackResult);
+                            }
+                            else
+                            {
+                                licenses.Add($"{packageWithVersion.Name},{version}", new Package { Metadata = new Metadata { Version = version, Id = packageWithVersion.Name } });
                             }
 
-                            WriteOutput($"Successfully received {request.RequestUri}", logLevel: LogLevel.Information);
-                            using (var responseText = await response.Content.ReadAsStreamAsync())
-                            using (var textReader = new StreamReader(responseText))
+                            continue;
+                        }
+
+                        WriteOutput($"Successfully received {request.RequestUri}", logLevel: LogLevel.Information);
+                        using (var responseText = await response.Content.ReadAsStreamAsync())
+                        using (var textReader = new StreamReader(responseText))
+                        {
+                            try
                             {
-                                try
-                                {
-                                    await ReadNuspecFile(project, licenses, packageWithVersion.Name, version, lookupKey, textReader);
-                                }
-                                catch (Exception e)
-                                {
-                                    WriteOutput(e.Message, e, LogLevel.Error);
-                                    throw;
-                                }
+                                await ReadNuspecFile(project, licenses, packageWithVersion.Name, version, lookupKey, textReader);
+                            }
+                            catch (Exception e)
+                            {
+                                WriteOutput(e.Message, e, LogLevel.Error);
+                                throw;
                             }
                         }
                     }
@@ -157,6 +171,15 @@ namespace NugetUtility
             }
 
             return licenses;
+
+            static bool IsLinux()
+            {
+#if NET5_0_OR_GREATER
+                return OperatingSystem.IsLinux();
+#else
+                return System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux);
+#endif
+            }
         }
 
         private async Task ReadNuspecFile(string project, PackageList licenses, string package, string version, Tuple<string, string> lookupKey, StreamReader textReader)
@@ -425,49 +448,41 @@ namespace NugetUtility
             if (string.IsNullOrWhiteSpace(packageName) || string.IsNullOrWhiteSpace(versionNumber)) { return await Task.FromResult<T>(null); }
             var fallbackEndpoint = new Uri(string.Format(fallbackPackageUrl, packageName, versionNumber));
             WriteOutput(() => "Attempting to download: " + fallbackEndpoint.ToString(), logLevel: LogLevel.Verbose);
-            using (var packageRequest = new HttpRequestMessage(HttpMethod.Get, fallbackEndpoint))
-            using (var packageResponse = await _httpClient.SendAsync(packageRequest, CancellationToken.None))
+            using var packageRequest = new HttpRequestMessage(HttpMethod.Get, fallbackEndpoint);
+            using var packageResponse = await _httpClient.SendAsync(packageRequest, CancellationToken.None);
+            if (!packageResponse.IsSuccessStatusCode)
             {
-                if (!packageResponse.IsSuccessStatusCode)
+                WriteOutput($"{packageRequest.RequestUri} failed due to {packageResponse.StatusCode}!", logLevel: LogLevel.Warning);
+                return null;
+            }
+
+            using var fileStream = new MemoryStream();
+            await packageResponse.Content.CopyToAsync(fileStream);
+
+            using var archive = new ZipArchive(fileStream, ZipArchiveMode.Read);
+            var entry = archive.GetEntry(fileInPackage);
+            if (entry is null)
+            {
+                WriteOutput(() => $"{fileInPackage} was not found in NuGet Package: {packageName}", logLevel: LogLevel.Verbose);
+                return null;
+            }
+            WriteOutput(() => $"Attempting to read: {fileInPackage}", logLevel: LogLevel.Verbose);
+            using var entryStream = entry.Open();
+            using var textReader = new StreamReader(entryStream);
+            var typeT = typeof(T);
+            if (typeT == typeof(Package))
+            {
+                if (_serializer.Deserialize(new NamespaceIgnorantXmlTextReader(textReader)) is T result)
                 {
-                    WriteOutput($"{packageRequest.RequestUri} failed due to {packageResponse.StatusCode}!", logLevel: LogLevel.Warning);
-                    return null;
-                }
-
-                using (var fileStream = new MemoryStream())
-                {
-                    await packageResponse.Content.CopyToAsync(fileStream);
-
-                    using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Read))
-                    {
-                        var entry = archive.GetEntry(fileInPackage);
-                        if (entry is null)
-                        {
-                            WriteOutput(() => $"{fileInPackage} was not found in NuGet Package: ", logLevel: LogLevel.Verbose);
-                            return null;
-                        }
-                        WriteOutput(() => "Attempting to read: " + fileInPackage, logLevel: LogLevel.Verbose);
-                        using (var entryStream = entry.Open())
-                        using (var textReader = new StreamReader(entryStream))
-                        {
-                            var typeT = typeof(T);
-                            if (typeT == typeof(Package))
-                            {
-                                if (_serializer.Deserialize(new NamespaceIgnorantXmlTextReader(textReader)) is T result)
-                                {
-                                    return (T)result;
-                                }
-                            }
-                            else if (typeT == typeof(string))
-                            {
-                                return await textReader.ReadToEndAsync() as T;
-                            }
-
-                            throw new ArgumentException($"{typeT.FullName} isn't supported!");
-                        }
-                    }
+                    return (T)result;
                 }
             }
+            else if (typeT == typeof(string))
+            {
+                return await textReader.ReadToEndAsync() as T;
+            }
+
+            throw new ArgumentException($"{typeT.FullName} isn't supported!");
         }
 
         private IEnumerable<string> GetFilteredProjects(IEnumerable<string> projects)
@@ -482,7 +497,7 @@ namespace NugetUtility
                   project.Contains(projectToSkip, StringComparison.OrdinalIgnoreCase)
                )).ToList();
 
-            WriteOutput(() => "Filtered Project Files" + Environment.NewLine, logLevel: LogLevel.Verbose);
+            WriteOutput(() => $"Filtered Project Files {Environment.NewLine}", logLevel: LogLevel.Verbose);
             WriteOutput(() => string.Join(Environment.NewLine, filteredProjects.ToArray()), logLevel: LogLevel.Verbose);
 
             return filteredProjects;
@@ -554,7 +569,7 @@ namespace NugetUtility
 
         private string GetProjectReferenceFromElement(XElement refElem)
         {
-            string version, package = refElem.Attribute("Include")?.Value ?? "";
+            string version, package = refElem.Attribute("Include")?.Value ?? string.Empty;
 
             var versionAttribute = refElem.Attribute("Version");
 
@@ -563,7 +578,7 @@ namespace NugetUtility
             else // no version attribute, look for child element
                 version = refElem.Elements()
                 .Where(elem => elem.Name.LocalName == "Version")
-                .FirstOrDefault()?.Value ?? "";
+                .FirstOrDefault()?.Value ?? string.Empty;
 
             return $"{package},{version}";
         }
@@ -585,7 +600,7 @@ namespace NugetUtility
                 return packagesConfig?
                     .Element("packages")?
                     .Elements("package")?
-                    .Select(refElem => (refElem.Attribute("id")?.Value ?? "") + "," + (refElem.Attribute("version")?.Value ?? ""));
+                    .Select(refElem => (refElem.Attribute("id")?.Value ?? string.Empty) + "," + (refElem.Attribute("version")?.Value ?? string.Empty));
             }
 
             return Array.Empty<string>();
@@ -624,7 +639,7 @@ namespace NugetUtility
                     break;
             }
 
-            WriteOutput(() => "Discovered Project Files" + Environment.NewLine, logLevel: LogLevel.Verbose);
+            WriteOutput(() => $"Discovered Project Files {Environment.NewLine}", logLevel: LogLevel.Verbose);
             WriteOutput(() => string.Join(Environment.NewLine, validProjects.ToArray()), logLevel: LogLevel.Verbose);
 
             return GetFilteredProjects(validProjects);
@@ -663,62 +678,56 @@ namespace NugetUtility
         {
             bool result = false;
             var nupkgEndpoint = new Uri(string.Format(fallbackPackageUrl, package, version));
-            WriteOutput(() => "Attempting to download: " + nupkgEndpoint.ToString(), logLevel: LogLevel.Verbose);
-            using (var packageRequest = new HttpRequestMessage(HttpMethod.Get, nupkgEndpoint))
-            using (var packageResponse = await _httpClient.SendAsync(packageRequest, CancellationToken.None))
+            WriteOutput(() => $"Attempting to download: {nupkgEndpoint}", logLevel: LogLevel.Verbose);
+            using var packageRequest = new HttpRequestMessage(HttpMethod.Get, nupkgEndpoint);
+            using var packageResponse = await _httpClient.SendAsync(packageRequest, CancellationToken.None);
+
+            if (!packageResponse.IsSuccessStatusCode)
             {
-                
-                if (!packageResponse.IsSuccessStatusCode)
+                WriteOutput($"{packageRequest.RequestUri} failed due to {packageResponse.StatusCode}!", logLevel: LogLevel.Warning);
+                return false;
+            }
+
+            var directory = GetExportDirectory();
+            var outpath = Path.Combine(directory, $"{package}_{version}.nupkg.zip");
+
+            using (var fileStream = File.OpenWrite(outpath))
+            {
+                try
                 {
-                    WriteOutput($"{packageRequest.RequestUri} failed due to {packageResponse.StatusCode}!", logLevel: LogLevel.Warning);
+                    await packageResponse.Content.CopyToAsync(fileStream);
+                }
+                catch (Exception)
+                {
                     return false;
                 }
+            }
 
-                var directory = GetExportDirectory();
-                var outpath = Path.Combine(directory, package + "_" + version + ".nupkg.zip");
-
-                using (var fileStream = File.OpenWrite(outpath))
+            using (ZipArchive archive = ZipFile.OpenRead(outpath))
+            {
+                var sample = archive.GetEntry(licenseFile);
+                if (sample != null)
                 {
-                    try
+                    var t = sample.Open();
+                    if (t != null && t.CanRead)
                     {
-                        await packageResponse.Content.CopyToAsync(fileStream);
-                    }
-                    catch (Exception)
-                    {
-                        return false;
-                    }
-                    
-                }
-
-                using (ZipArchive archive = ZipFile.OpenRead(outpath))
-                {
-                    var sample = archive.GetEntry(licenseFile);
-                    if (sample != null)
-                    {
-                        var t = sample.Open();
-                        if (t != null && t.CanRead)
+                        var libTxt = outpath.Replace(".nupkg.zip", ".txt");
+                        using var fileStream = File.OpenWrite(libTxt);
+                        try
                         {
-                            var libTxt = outpath.Replace(".nupkg.zip", ".txt");
-                            using (var fileStream = File.OpenWrite(libTxt))
-                            {
-                                try
-                                {
-                                    await t.CopyToAsync(fileStream);
-                                    result = true;
-                                }
-                                catch (Exception)
-                                {
-                                    return false;
-                                }
-
-                            }
+                            await t.CopyToAsync(fileStream);
+                            result = true;
+                        }
+                        catch (Exception)
+                        {
+                            return false;
                         }
                     }
                 }
-
-                File.Delete(outpath);
-                return result;
             }
+
+            File.Delete(outpath);
+            return result;
         }
 
         /// <summary>
@@ -744,7 +753,7 @@ namespace NugetUtility
             var directory = GetExportDirectory ();
             foreach (var info in infos.Where (i => !string.IsNullOrEmpty (i.LicenseUrl))) {
                 var source = info.LicenseUrl;
-                var outpath = Path.Combine(directory, info.PackageName + "_" + info.PackageVersion + ".txt");
+                var outpath = Path.Combine(directory, $"{info.PackageName}_{info.PackageVersion}.txt");
                 if (File.Exists(outpath))
                 {
                     continue;
@@ -770,38 +779,33 @@ namespace NugetUtility
                 do
                 {
                     WriteOutput(() => $"Attempting to download {source} to {outpath}", logLevel: LogLevel.Verbose);
-                    using (var request = new HttpRequestMessage(HttpMethod.Get, source))
-                    using (var response = await _httpClient.SendAsync(request))
+                    using var request = new HttpRequestMessage(HttpMethod.Get, source);
+                    using var response = await _httpClient.SendAsync(request);
+                    if (!response.IsSuccessStatusCode)
                     {
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Error);
-                            break;
-                        }
-
-                        // Detect a redirect 302
-                        if (response.RequestMessage.RequestUri.AbsoluteUri != source)
-                        {
-                            WriteOutput(() => " Redirect detected", logLevel: LogLevel.Verbose);
-                            source = response.RequestMessage.RequestUri.AbsoluteUri;
-                            continue;
-                        }
-
-                        // Modify the URL if required
-                        if (CorrectUri(source) != source)
-                        {
-                            WriteOutput(() => " Fixing URL", logLevel: LogLevel.Verbose);
-                            source = CorrectUri(source);
-                            continue;
-                        }
-
-
-                        using (var fileStream = File.OpenWrite(outpath))
-                        {
-                            await response.Content.CopyToAsync(fileStream);
-                        }
+                        WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Error);
                         break;
                     }
+
+                    // Detect a redirect 302
+                    if (response.RequestMessage.RequestUri.AbsoluteUri != source)
+                    {
+                        WriteOutput(() => " Redirect detected", logLevel: LogLevel.Verbose);
+                        source = response.RequestMessage.RequestUri.AbsoluteUri;
+                        continue;
+                    }
+
+                    // Modify the URL if required
+                    if (CorrectUri(source) != source)
+                    {
+                        WriteOutput(() => " Fixing URL", logLevel: LogLevel.Verbose);
+                        source = CorrectUri(source);
+                        continue;
+                    }
+
+                    using var fileStream = File.OpenWrite(outpath);
+                    await response.Content.CopyToAsync(fileStream);
+                    break;
                 } while (true);
             }
         }
@@ -857,12 +861,10 @@ namespace NugetUtility
                 NullValueHandling = _packageOptions.IncludeProjectFile ? NullValueHandling.Include : NullValueHandling.Ignore
             };
 
-            using (var fileStream = new FileStream(GetOutputFilename("licenses.json"), FileMode.Create))
-            using (var streamWriter = new StreamWriter(fileStream))
-            {
-                streamWriter.Write(JsonConvert.SerializeObject(libraries, jsonSettings));
-                streamWriter.Flush();
-            }
+            using var fileStream = new FileStream(GetOutputFilename("licenses.json"), FileMode.Create);
+            using var streamWriter = new StreamWriter(fileStream);
+            streamWriter.Write(JsonConvert.SerializeObject(libraries, jsonSettings));
+            streamWriter.Flush();
         }
 
         public void SaveAsTextFile(List<LibraryInfo> libraries)

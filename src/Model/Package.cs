@@ -107,7 +107,7 @@ using System.Xml;
 
 		public override string NamespaceURI
 		{
-			get { return ""; }
+			get => string.Empty;
 		}
 	}
 
