@@ -103,10 +103,18 @@ namespace NugetUtility
                         // Search nuspec in local cache (Fix for linux distro)
                         string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-                        //Linux: package file name is lowercase
-                        var packageNameTmp = IsLinux() ? packageWithVersion.Name?.ToLowerInvariant() : packageWithVersion.Name;
+                        var nuspecPath = CreateNuSpecPath(userDir, version, packageWithVersion.Name);
+                        //Linux: package file name could be lowercase
+                        if (IsLinux())
+                        {
+                            //Check package file
+                            if(!File.Exists(nuspecPath))
+                            {
+                                //Try lowercase
+                                nuspecPath = CreateNuSpecPath(userDir, version, packageWithVersion.Name?.ToLowerInvariant());
+                            }
+                        }
 
-                        var nuspecPath = Path.Combine(userDir, ".nuget", "packages", packageNameTmp, version, $"{packageNameTmp}.nuspec");
                         if (File.Exists(nuspecPath))
                         {
                             try
@@ -180,6 +188,9 @@ namespace NugetUtility
                 return System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux);
 #endif
             }
+
+            static string CreateNuSpecPath(string userDir, string version, string packageName)
+                => Path.Combine(userDir, ".nuget", "packages", packageName, version, $"{packageName}.nuspec");
         }
 
         private async Task ReadNuspecFile(string project, PackageList licenses, string package, string version, Tuple<string, string> lookupKey, StreamReader textReader)
