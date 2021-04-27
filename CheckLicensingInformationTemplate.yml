@@ -10,7 +10,7 @@ jobs:
 - job: 'license'
   displayName: 'Check Licensing Information'
   steps:
-  - task: FileList@0
+  - task: FileList@1
     displayName: 'Generate list of involved projects'
     inputs:
       RootFolder: '$(Build.SourcesDirectory)'
