@@ -28,6 +28,10 @@ jobs:
       downloadType: 'single'
       artifactName: 'NugetLicense'
       downloadPath: '$(Pipeline.Workspace)'
+      
+  - powershell: |
+      New-Item -Path "$(Build.ArtifactStagingDirectory)" -Name "LicenseInformation" -ItemType "directory"
+    displayName: 'Create license information folder'
 
   - task: DotNetCoreCLI@2
     displayName: 'Validate licenses of used Nuget packages'
