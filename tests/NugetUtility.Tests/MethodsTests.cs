@@ -23,6 +23,10 @@ namespace NugetUtility.Tests {
             _methods = new Methods (new PackageOptions { UniqueOnly = true, ProjectDirectory = _projectPath });
         }
 
+        private void AddUniquePackageNameOption () {
+            _methods = new Methods (new PackageOptions { UniqueByPackageName = true, ProjectDirectory = _projectPath });
+        }
+
         [Test]
         public void GetProjectExtension_Should_Be_CsprojOrFsProj () {
             _methods.GetProjectExtensions ().Should ().Contain (".csproj", ".fsproj");
@@ -106,10 +110,64 @@ namespace NugetUtility.Tests {
                 }
             });
 
+            list.Add ("log4net3", new Package {
+                Metadata = new Metadata {
+                    Id = "log4net",
+                        License = new License {
+                            Text = "MIT",
+                                Type = "Open"
+                        },
+                        Version = "2.1.0",
+                },
+            });
+
             var packages = new Dictionary<string, PackageList> ();
             packages.Add ("packages", list);
             var info = _methods.MapPackagesToLibraryInfo (packages);
-            info.Count.Should ().Equals (1);
+            info.Count.Should ().Be (2);
+        }
+
+        [Test]
+        public void MapPackagesToLibraryInfo_UniquePackageNames_Should_Return_One_Result () {
+            AddUniquePackageNameOption ();
+            PackageList list = new PackageList ();
+            list.Add ("log4net", new Package {
+                Metadata = new Metadata {
+                    Id = "log4net",
+                        License = new License {
+                            Text = "MIT",
+                                Type = "Open"
+                        },
+                        Version = "2.0.8",
+                },
+            });
+
+            list.Add ("log4net2", new Package {
+                Metadata = new Metadata {
+                    Id = "log4net",
+                        License = new License {
+                            Text = "MIT",
+                                Type = "Open"
+                        },
+                        Version = "2.0.8",
+                }
+            });
+
+            list.Add ("log4net3", new Package {
+                Metadata = new Metadata {
+                    Id = "log4net",
+                        License = new License {
+                            Text = "MIT",
+                                Type = "Open"
+                        },
+                        Version = "2.1.0",
+                },
+            });
+
+            var packages = new Dictionary<string, PackageList> ();
+            packages.Add ("packages", list);
+            var info = _methods.MapPackagesToLibraryInfo (packages);
+            info.Count.Should ().Be (1);
         }
 
         [Test]
@@ -140,18 +198,16 @@ namespace NugetUtility.Tests {
         }
 
         [Test]
-        public async Task GetPackages_RegexPackagesFilter_Should_Remove_CommandLineParser()
-        {
-            var methods = new Methods(new PackageOptions
-            {
+        public async Task GetPackages_RegexPackagesFilter_Should_Remove_CommandLineParser () {
+            var methods = new Methods (new PackageOptions {
                 PackagesFilterOption = "/CommandLine*/",
-                ProjectDirectory = TestSetup.ThisProjectSolutionPath
+                    ProjectDirectory = TestSetup.ThisProjectSolutionPath
             });
 
-            var result = await methods.GetPackages();
+            var result = await methods.GetPackages ();
 
-            result.Should().NotBeEmpty()
-                .And.NotContainKey("CommandLineParser");
+            result.Should ().NotBeEmpty ()
+                .And.NotContainKey ("CommandLineParser");
         }
 
         [Test]
@@ -185,61 +241,53 @@ namespace NugetUtility.Tests {
             validationResult.InvalidPackages.Count.Should ().Be (3);
         }
 
-
-        [TestCase("BenchmarkDotNet", "0.12.1", "https://licenses.nuget.org/MIT", "MIT")]
-        [TestCase("BCrypt.Net-Next", "2.1.3", "https://github.com/BcryptNet/bcrypt.net/blob/master/licence.txt", "")]
-        [TestCase("System.Memory", "4.5.4", "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT", "MIT")]
-        [TestCase("System.Text.RegularExpressions", "4.3.0", "http://go.microsoft.com/fwlink/?LinkId=329770", "MS-EULA")]
+        [TestCase ("BenchmarkDotNet", "0.12.1", "https://licenses.nuget.org/MIT", "MIT")]
+        [TestCase ("BCrypt.Net-Next", "2.1.3", "https://github.com/BcryptNet/bcrypt.net/blob/master/licence.txt", "")]
+        [TestCase ("System.Memory", "4.5.4", "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT", "MIT")]
+        [TestCase ("System.Text.RegularExpressions", "4.3.0", "http://go.microsoft.com/fwlink/?LinkId=329770", "MS-EULA")]
         [Test]
-        public async Task ExportLicenseTexts_Should_Export_File(string packageName, string packageVersion, string licenseUrl, string licenseType)
-        {
-            var methods = new Methods(new PackageOptions
-            {
+        public async Task ExportLicenseTexts_Should_Export_File (string packageName, string packageVersion, string licenseUrl, string licenseType) {
+            var methods = new Methods (new PackageOptions {
                 ExportLicenseTexts = true,
             });
-            List<LibraryInfo> infos = new List<LibraryInfo>();
-            infos.Add(new LibraryInfo()
-            {
+            List<LibraryInfo> infos = new List<LibraryInfo> ();
+            infos.Add (new LibraryInfo () {
                 PackageName = packageName,
-                PackageVersion = packageVersion,
-                LicenseUrl = licenseUrl,
-                LicenseType = licenseType,
+                    PackageVersion = packageVersion,
+                    LicenseUrl = licenseUrl,
+                    LicenseType = licenseType,
             });
-            await methods.ExportLicenseTexts(infos);
-            var directory = methods.GetExportDirectory();
-            var outpath = Path.Combine(directory, packageName + "_" + packageVersion + ".txt");
-            Assert.That(File.Exists(outpath));
+            await methods.ExportLicenseTexts (infos);
+            var directory = methods.GetExportDirectory ();
+            var outpath = Path.Combine (directory, packageName + "_" + packageVersion + ".txt");
+            Assert.That (File.Exists (outpath));
         }
 
-        [TestCase("BenchmarkDotNet", "License.txt", "10.12.1")]
+        [TestCase ("BenchmarkDotNet", "License.txt", "10.12.1")]
         [Test]
-        public async Task GetLicenceFromNpkgFile_Should_Return_False(string packageName, string licenseFile, string packageVersion)
-        {
-            var methods = new Methods(new PackageOptions
-            {
+        public async Task GetLicenceFromNpkgFile_Should_Return_False (string packageName, string licenseFile, string packageVersion) {
+            var methods = new Methods (new PackageOptions {
                 ExportLicenseTexts = true,
             });
 
-            var result = await methods.GetLicenceFromNpkgFile(packageName, licenseFile, packageVersion);
-            Assert.False(result);
+            var result = await methods.GetLicenceFromNpkgFile (packageName, licenseFile, packageVersion);
+            Assert.False (result);
         }
 
         [Test]
-        public void HttpClient_IgnoreSslError_CallbackTest()
-        {
-            Assert.True(Methods.IgnoreSslCertificateErrorCallback(null, null, null, System.Net.Security.SslPolicyErrors.None));
+        public void HttpClient_IgnoreSslError_CallbackTest () {
+            Assert.True (Methods.IgnoreSslCertificateErrorCallback (null, null, null, System.Net.Security.SslPolicyErrors.None));
         }
 
-        [TestCase("System.Linq", "(4.1.0,)")]
-        [TestCase("BCrypt.Net-Next", "2.1.3")]
+        [TestCase ("System.Linq", "(4.1.0,)")]
+        [TestCase ("BCrypt.Net-Next", "2.1.3")]
         [Test]
-        public void HttpClient_IgnoreSslError_GetNugetInformationAsync(string package, string version)
-        {
-            var methods = new Methods(new PackageOptions { ProjectDirectory = _projectPath, IgnoreSslCertificateErrors = true });
+        public void HttpClient_IgnoreSslError_GetNugetInformationAsync (string package, string version) {
+            var methods = new Methods (new PackageOptions { ProjectDirectory = _projectPath, IgnoreSslCertificateErrors = true });
 
             var referencedpackages = new PackageNameAndVersion[] { new PackageNameAndVersion { Name = package, Version = version } };
 
-            Assert.DoesNotThrowAsync(async () => await _methods.GetNugetInformationAsync(_projectPath, referencedpackages));
+            Assert.DoesNotThrowAsync (async () => await _methods.GetNugetInformationAsync (_projectPath, referencedpackages));
         }
     }
 }

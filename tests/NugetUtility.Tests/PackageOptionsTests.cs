@@ -1,61 +1,57 @@
-﻿using FluentAssertions;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using FluentAssertions;
+using Newtonsoft.Json;
+using NUnit.Framework;
 
-namespace NugetUtility.Tests
-{
+namespace NugetUtility.Tests {
     [TestFixture]
-    public class PackageOptionsTests
-    {
+    public class PackageOptionsTests {
         [Test]
-        public void LicenseToUrlMappingsOption_When_Set_Should_Replace_Default_Mappings()
-        {
-            var testMappings = new Dictionary<string, string>
-            {
-                {"url1","license1" },
-                {"url2","license1" },
-            };
+        public void LicenseToUrlMappingsOption_When_Set_Should_Replace_Default_Mappings () {
+            var testMappings = new Dictionary<string, string> { { "url1", "license1" },
+                    { "url2", "license1" },
+                };
             var testFile = "test-mappings.json";
-            File.WriteAllText(testFile, JsonConvert.SerializeObject(testMappings));
+            File.WriteAllText (testFile, JsonConvert.SerializeObject (testMappings));
 
             var options = new PackageOptions { LicenseToUrlMappingsOption = testFile };
 
-            options.LicenseToUrlMappingsDictionary.Should().HaveCount(2)
-                .And.BeEquivalentTo(testMappings);
+            options.LicenseToUrlMappingsDictionary.Should ().HaveCount (2)
+                .And.BeEquivalentTo (testMappings);
         }
 
-
         [Test]
-        public void UniqueMappingsOption_When_Set_Should_Replace_Default_Mappings()
-        {
+        public void UniqueMappingsOption_When_Set_Should_Replace_Default_Mappings () {
             var options = new PackageOptions { UniqueOnly = true };
-            
-            options.UniqueOnly.Should().BeTrue();
+
+            options.UniqueOnly.Should ().BeTrue ();
         }
 
         [Test]
-        public void PackagesFilterOption_IncorrectRegexPackagesFilter_Should_Throw_ArgumentException()
-        {
-            var options = new PackageOptions
-            {
+        public void UniqueByPackageNameOption_When_Set_Should_Replice_Default_Mappings () {
+            var options = new PackageOptions { UniqueByPackageName = true };
+            options.UniqueByPackageName.Should ().BeTrue ();
+        }
+
+        [Test]
+        public void PackagesFilterOption_IncorrectRegexPackagesFilter_Should_Throw_ArgumentException () {
+            var options = new PackageOptions {
                 PackagesFilterOption = "/(?/",
             };
 
-            Assert.Throws(typeof(ArgumentException), () => { var regex = options.PackageRegex; });
+            Assert.Throws (typeof (ArgumentException), () => { var regex = options.PackageRegex; });
         }
 
         [Test]
         public void PackagesFilterOption_IncorrectPackagesFilterPath_Should_Throw_FileNotFoundException () {
-            
-            var options = new PackageOptions
-            {
+
+            var options = new PackageOptions {
                 PackagesFilterOption = @"../../../DoesNotExist.json",
             };
 
-            Assert.Throws(typeof(FileNotFoundException), () => { var regex = options.PackageFilter; });
+            Assert.Throws (typeof (FileNotFoundException), () => { var regex = options.PackageFilter; });
         }
     }
 }
