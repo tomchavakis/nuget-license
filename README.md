@@ -39,7 +39,8 @@ Usage: dotnet-project-licenses [options]
 | `-f, --output-directory` | Set Output Directory/Folder |
 | `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj' |
 | `--packages-filter` | Simple json file of a text array of packages to skip. Or a regular expression defined between two forward slashes '`/regex/`'. |
-| `-u, --unique` | (Default: false) Unique licenses list by Id/Version |
+| `-u, --unique` | (Default: false) Unique licenses list by Package Name(Id)/Version |
+| `--unique-by-package-name` | (Default: false) Unique licenses list only by Package Name (Id) |
 | `-p, --print` | (Default: true) Print licenses. |
 | `--export-license-texts` | Exports the raw license texts |
 | `--help` | Display this help screen. |
@@ -56,12 +57,20 @@ dotnet-project-licenses --help
 dotnet-project-licenses -i projectFolder
 ```
 
-### Print unique licenses
+### Print unique licenses (Package Name/Version)
 
 Values for the input may include a folder path, a Visual Studio '.sln' file, a '.csproj' or a '.fsproj' file.
 
 ```ps
 dotnet-project-licenses -i projectFolder -u
+```
+
+### Print unique licenses (only Package Name)
+
+Values for the input may include a folder path, a Visual Studio '.sln' file, a '.csproj' or a '.fsproj' file.
+
+```ps
+dotnet-project-licenses -i projectFolder --unique-by-package-name
 ```
 
 ### Creates output file of unique licenses in a plain text 'licenses.txt' file in current directory

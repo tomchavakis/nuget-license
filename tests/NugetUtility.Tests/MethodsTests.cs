@@ -124,7 +124,7 @@ namespace NugetUtility.Tests {
             var packages = new Dictionary<string, PackageList> ();
             packages.Add ("packages", list);
             var info = _methods.MapPackagesToLibraryInfo (packages);
-            info.Count.Should ().Equals (1);
+            info.Count.Should ().Be (2);
         }
 
         [Test]
@@ -167,7 +167,7 @@ namespace NugetUtility.Tests {
             var packages = new Dictionary<string, PackageList> ();
             packages.Add ("packages", list);
             var info = _methods.MapPackagesToLibraryInfo (packages);
-            info.Count.Should ().Equals (1);
+            info.Count.Should ().Be (1);
         }
 
         [Test]

@@ -50,10 +50,10 @@ namespace NugetUtility {
         [Option ("packages-filter", Default = null, HelpText = "Simple json file of a text array of packages to skip, or a regular expression defined between two forward slashes.")]
         public string PackagesFilterOption { get; set; }
 
-        [Option ('u', "unique", Default = false, HelpText = "Unique licenses list by Id/Version")]
+        [Option ('u', "unique", Default = false, HelpText = "Unique licenses list by Package Name(Id)/Version")]
         public bool UniqueOnly { get; set; }
 
-        [Option ("unique-by-package-name", Default = false, HelpText = "Unique licenses list by Name")]
+        [Option ("unique-by-package-name", Default = false, HelpText = "Unique licenses list only by Package Name (Id)")]
         public bool UniqueByPackageName { get; set; }
 
         [Option ('p', "print", Default = true, HelpText = "Print licenses.")]
