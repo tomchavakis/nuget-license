@@ -49,7 +49,7 @@ namespace NugetUtility
         [Option("projects-filter", Default = null, HelpText = "Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj'")]
         public string ProjectsFilterOption { get; set; }
 
-        [Option("proxy", HelpText = "The proxy to be used for license text downloads.")]
+        [Option("proxy", HelpText = "Proxy for HTTP communications")]
         public string Proxy { get; set; }
 
         [Option("packages-filter", Default = null, HelpText = "Simple json file of a text array of packages to skip, or a regular expression defined between two forward slashes.")]
