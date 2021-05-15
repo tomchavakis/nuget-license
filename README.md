@@ -38,6 +38,7 @@ Usage: dotnet-project-licenses [options]
 | `--outfile` | Output filename |
 | `-f, --output-directory` | Set Output Directory/Folder |
 | `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj' |
+| `--proxy` | Set the proxy for license text downloads. |
 | `--packages-filter` | Simple json file of a text array of packages to skip. Or a regular expression defined between two forward slashes '`/regex/`'. |
 | `-u, --unique` | (Default: false) Unique licenses list by Id/Version |
 | `-p, --print` | (Default: true) Print licenses. |
