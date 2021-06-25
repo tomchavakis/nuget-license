@@ -1,5 +1,6 @@
 [
   "GE.Heimdall.Cumulocity.RestClientSdk",
   "Griesser.CA.TextRessources.DCA",
-  "Griesser.DataFramework"
+  "Griesser.DataFramework",
+  "Griesser.CA.Configuration"
 ]
