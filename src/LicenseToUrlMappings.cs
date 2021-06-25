@@ -37,9 +37,9 @@ namespace NugetUtility
 
             private static string GetProtocolLessUrl(string url)
             {
-                if (string.IsNullOrEmpty(url)) return "";
-                if (!url.Contains(":")) return "";
-                return url.Substring(url.IndexOf(':'));
+                if (string.IsNullOrEmpty(url)) return string.Empty;
+                if (!url.Contains(":")) return string.Empty;
+                return url[url.IndexOf(':')..];
             }
         }
 
