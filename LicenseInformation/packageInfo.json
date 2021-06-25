@@ -46,5 +46,13 @@
     "Description": "Writes Serilog events to one or more text files.",
     "LicenseUrl": "https://github.com/serilog/serilog-sinks-file/blob/dev/LICENSE",
     "LicenseType": "Apache-2.0"
+  },
+  {
+    "PackageName": "LiteDB",
+    "PackageVersion": "5.0.10",
+    "PackageUrl": "https://www.litedb.org/",
+    "Description": "A lightweight embedded .NET NoSQL document store in a single datafile",
+    "LicenseUrl": "https://www.nuget.org/packages/LiteDB/5.0.10/License",
+    "LicenseType": "MIT"
   }
 ]
