@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -275,6 +276,19 @@ namespace NugetUtility
             if (projectPath is null)
             {
                 throw new FileNotFoundException();
+            }
+
+            if (_packageOptions.UseProjectAssetsJson)
+            {
+                // Use only project.assets.json.
+                var assetsFile = Path.Combine(Path.GetDirectoryName(projectPath) ?? ".", "obj", "project.assets.json");
+                if (!File.Exists(assetsFile))
+                {
+                    WriteOutput(() => $"Cannot find {assetsFile}", logLevel: LogLevel.Warning);
+                    return Array.Empty<string>();
+                }
+
+                return GetProjectReferencesFromAssetsFile(assetsFile);
             }
 
             // First try to get references from new project file format
@@ -615,6 +629,41 @@ namespace NugetUtility
             }
 
             return Array.Empty<string>();
+        }
+
+        /// <summary>
+        /// Gets project references from a project.assets.json file.
+        /// </summary>
+        /// <param name="assetsPath">The assets file</param>
+        /// <returns></returns>
+        private IEnumerable<string> GetProjectReferencesFromAssetsFile(string assetsPath)
+        {
+            WriteOutput(() => $"Reading assets file {assetsPath}", logLevel: LogLevel.Verbose);
+            using var assetsFileStream = File.OpenRead(assetsPath);
+            var doc = JsonDocument.Parse(assetsFileStream);
+            assetsFileStream.Dispose();
+
+            if (!doc.RootElement.TryGetProperty("targets", out var targets))
+            {
+                WriteOutput(() => $"No \"targets\" property found in {assetsPath}", logLevel: LogLevel.Warning);
+                yield break;
+            }
+
+            foreach (var target in targets.EnumerateObject())
+            {
+                WriteOutput(() => $"Reading dependencies for target {target.Name}", logLevel: LogLevel.Verbose);
+                foreach (var dep in target.Value.EnumerateObject())
+                {
+                    var depName = dep.Name.Split('/');
+                    if (depName.Length != 2)
+                    {
+                        WriteOutput(() => $"Unexpected package name: {dep.Name}", logLevel: LogLevel.Warning);
+                        continue;
+                    }
+
+                    yield return string.Join(",", depName);
+                }
+            }
         }
 
         private async Task<IEnumerable<string>> GetValidProjects(string projectPath)

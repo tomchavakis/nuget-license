@@ -70,6 +70,9 @@ namespace NugetUtility
         [Option("ignore-ssl-certificate-errors", Default = false, HelpText = "Ignore SSL certificate errors in HttpClient.")]
         public bool IgnoreSslCertificateErrors { get; set; }
 
+        [Option("use-project-assets-json", Default = false, HelpText = "Use the resolved project.assets.json file for each project as the source of package information. Requires the -t option. Requires `nuget restore` or `dotnet restore` to be run first.")]
+        public bool UseProjectAssetsJson { get; set; }
+
         [Usage(ApplicationAlias = "dotnet-project-licenses")]
         public static IEnumerable<Example> Examples
         {
