@@ -278,9 +278,11 @@ namespace NugetUtility
                 throw new FileNotFoundException();
             }
 
+            IEnumerable<string> references = Array.Empty<string>();
+         
+            // First use project.assets.json, if this option is enabled.
             if (_packageOptions.UseProjectAssetsJson)
             {
-                // Use only project.assets.json.
                 var assetsFile = Path.Combine(Path.GetDirectoryName(projectPath) ?? ".", "obj", "project.assets.json");
                 if (!File.Exists(assetsFile))
                 {
@@ -288,11 +290,14 @@ namespace NugetUtility
                     return Array.Empty<string>();
                 }
 
-                return GetProjectReferencesFromAssetsFile(assetsFile);
+                references = GetProjectReferencesFromAssetsFile(assetsFile);
             }
 
-            // First try to get references from new project file format
-            var references = GetProjectReferencesFromNewProjectFile(projectPath);
+            // Then try to get references from new project file format
+            if (!references.Any())
+            {
+                references = GetProjectReferencesFromNewProjectFile(projectPath);
+            }
 
             // Then if needed from old packages.config
             if (!references.Any())
