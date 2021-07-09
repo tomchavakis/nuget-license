@@ -287,10 +287,11 @@ namespace NugetUtility
                 if (!File.Exists(assetsFile))
                 {
                     WriteOutput(() => $"Cannot find {assetsFile}", logLevel: LogLevel.Warning);
-                    return Array.Empty<string>();
                 }
-
-                references = GetProjectReferencesFromAssetsFile(assetsFile);
+                else
+                {
+                    references = GetProjectReferencesFromAssetsFile(assetsFile);
+                }
             }
 
             // Then try to get references from new project file format
