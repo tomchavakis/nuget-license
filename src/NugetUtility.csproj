@@ -21,6 +21,7 @@
 		<PackageReference Include="CommandLineParser" Version="2.7.82" />
 		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
 		<PackageReference Include="System.IO.Compression" Version="4.3.0" />
+		<PackageReference Include="HtmlAgilityPack" Version="1.11.34" />
 	</ItemGroup>
 
 	<ItemGroup>
