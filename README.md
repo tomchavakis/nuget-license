@@ -109,5 +109,11 @@ docker build . -t nuget-license
 ```
 ### Run the image and export the licenses locally
 ```
-docker run -it -v projectName:/tmp nuget-license -i /tmp -f /tmp --export-license-texts -l Verbose
+docker run -it -v projectPath:/tmp nuget-license -i /tmp -f /tmp --export-license-texts -l Verbose
+
+where projectPath is the path of the project that you want to export the licenses. 
+You can also add the command parameters of the tool.
+
+ex.
+docker run -it -v ~/Projects/github/nuget-license:/tmp nuget-license -i /tmp -o --export-license-texts -l Verbose
 ```

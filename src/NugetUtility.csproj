@@ -9,7 +9,7 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageId>dotnet-project-licenses</PackageId>
 		<ToolCommandName>dotnet-project-licenses</ToolCommandName>
-		<Version>2.3.3</Version>
+		<Version>2.3.4</Version>
 		<Authors>Tom Chavakis</Authors>
 		<Company>-</Company>
 		<Title>.NET Core Tool to print a list of the licenses of a projects</Title>
