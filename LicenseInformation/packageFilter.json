@@ -3,5 +3,7 @@
   "Griesser.CA.TextRessources.DCA",
   "Griesser.DataFramework",
   "Griesser.CA.Configuration",
-  "Griesser.CA.Configuration.Ets"
+  "Griesser.CA.Configuration.Ets",
+  "Griesser.CA.DeviceCommunication",
+  "Griesser.CA.DeviceCommunication.Ets"
 ]
