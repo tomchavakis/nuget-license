@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
 WORKDIR /src
 
 
@@ -7,10 +7,10 @@ RUN dotnet restore
 
 
 COPY . ./
-RUN dotnet publish -c Release -o out
+RUN dotnet publish -f net5.0 -c Release -o out
 
 
-FROM mcr.microsoft.com/dotnet/runtime:3.1
+FROM mcr.microsoft.com/dotnet/runtime:5.0
 WORKDIR /src
 COPY --from=build-env /src/out .
 ENTRYPOINT ["dotnet", "NugetUtility.dll"]
