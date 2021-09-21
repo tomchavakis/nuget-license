@@ -99,7 +99,7 @@ stages:
             displayName: 'prepare application for publishing'
             inputs:
               SourceFolder: '$(agent.builddirectory)'
-              Contents: '**/src/**/Release/net5.0/**'
+              Contents: '**/src/bin/Release/net5.0/**'
               TargetFolder: '$(Build.ArtifactStagingDirectory)'
               CleanTargetFolder: true
               flattenFolders: true
