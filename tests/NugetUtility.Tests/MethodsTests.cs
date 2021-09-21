@@ -60,7 +60,7 @@ namespace NugetUtility.Tests {
                 .BeEquivalentTo (information.Select (x => x.Value.Metadata.Id));
         }
 
-        [TestCase ("FluentValidation", "5.1.0.0")]
+        [TestCase ("FluentValidation", "10.3.3")]
         [TestCase ("System.Linq", "(4.1.0,)")]
         [TestCase ("System.Linq", "[4.1.0]")]
         [TestCase ("System.Linq", "(,4.1.0]")]
@@ -217,7 +217,7 @@ namespace NugetUtility.Tests {
         [TestCase("BenchmarkDotNet", "0.12.1", "https://licenses.nuget.org/MIT", "MIT")]
         [TestCase("BCrypt.Net-Next", "2.1.3", "https://github.com/BcryptNet/bcrypt.net/blob/master/licence.txt", "")]
         [TestCase("System.Memory", "4.5.4", "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT", "MIT")]
-        [TestCase("System.Text.RegularExpressions", "4.3.0", "http://go.microsoft.com/fwlink/?LinkId=329770", "MS-EULA")]
+        [TestCase("System.Text.RegularExpressions", "4.3.1", "http://go.microsoft.com/fwlink/?LinkId=329770", "MS-EULA")]
         [Test]
         public async Task ExportLicenseTexts_Should_Export_File(string packageName, string packageVersion, string licenseUrl, string licenseType)
         {

@@ -15,7 +15,7 @@
 		<Title>.NET Core Tool to print a list of the licenses of a projects</Title>
 		<PackageProjectUrl>https://github.com/tomchavakis/nuget-license</PackageProjectUrl>
 		<GeneratePackageOnBuild Condition="'$(GeneratePackageOnBuild)' == ''">false</GeneratePackageOnBuild>
-	<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+	    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 	</PropertyGroup>
 
 	<ItemGroup>
