@@ -94,18 +94,12 @@ stages:
               command: 'build'
               projects: '**/src/*.csproj'
               arguments: '-p:Version=$(version) -c Release /p:CopyOutputSymbolsToPublishDirectory=false --no-restore'
-          - powershell: Get-ChildItem -Path '.' -recurse
-          - task: MSBuild@1
-            inputs:
-              solution: '**/src/*.csproj'
-              configuration: 'Release'
-              clean: true
-          - powershell: Get-ChildItem -Path '.' -recurse
+
           - task: CopyFiles@2
             displayName: 'prepare application for publishing'
             inputs:
               SourceFolder: '$(agent.builddirectory)'
-              Contents: '**/src/**/Release/net5/**'
+              Contents: '**/src/**/Release/net5.0/**'
               TargetFolder: '$(Build.ArtifactStagingDirectory)'
               CleanTargetFolder: true
               flattenFolders: true
