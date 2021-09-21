@@ -45,6 +45,7 @@ Usage: dotnet-project-licenses [options]
 | `--help` | Display this help screen. |
 | `--version` | Display version information. |
 | `--ignore-ssl-certificate-errors` | Ignores SSL certificate errors in HttpClient. |
+| `--use-project-assets-json` | Use the resolved project.assets.json file for each project as the source of package information. Requires the `-t` option since this always includes transitive references. Requires `nuget restore` or `dotnet restore` to be run first. |
 
 ## Example tool commands
 

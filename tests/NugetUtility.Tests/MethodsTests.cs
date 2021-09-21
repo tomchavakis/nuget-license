@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using CommandLine.Text;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -185,6 +187,32 @@ namespace NugetUtility.Tests {
             validationResult.InvalidPackages.Count.Should ().Be (3);
         }
 
+        [Test]
+        public async Task GetProjectReferencesFromAssetsFile_Should_Resolve_Transitive_Assets()
+        {
+            var methods = new Methods(new PackageOptions
+            {
+                UseProjectAssetsJson = true,
+                IncludeTransitive = true,
+                ProjectDirectory = @"../../../",
+            });
+
+            var packages = await methods.GetPackages();
+            packages.Should().ContainKey("../../../NugetUtility.Tests.csproj");
+            packages.Should().HaveCount(1);
+            var list = packages.Values.First();
+
+            // Just look for a few expected packages. First-order refs:
+            list.Should().ContainKey($"dotnet-project-licenses,{typeof(Methods).Assembly.GetName().Version.ToString(3)}");
+            list.Should().ContainKey($"NUnit,{typeof(TestAttribute).Assembly.GetName().Version.ToString(3)}");
+
+            // Some second-order refs:
+            list.Should().ContainKey($"CommandLineParser,{typeof(UsageAttribute).Assembly.GetName().Version.ToString(3)}");
+            list.Should().ContainKey("System.IO.Compression,4.3.0");
+
+            // Some third-order refs:
+            list.Should().ContainKey("System.Buffers,4.3.0");
+        }
 
         [TestCase("BenchmarkDotNet", "0.12.1", "https://licenses.nuget.org/MIT", "MIT")]
         [TestCase("BCrypt.Net-Next", "2.1.3", "https://github.com/BcryptNet/bcrypt.net/blob/master/licence.txt", "")]

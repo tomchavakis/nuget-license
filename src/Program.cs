@@ -25,6 +25,14 @@ namespace NugetUtility
                 return 1;
             }
 
+            if (options.UseProjectAssetsJson && !options.IncludeTransitive)
+            {
+                Console.WriteLine("ERROR(S):");
+                Console.WriteLine("--use-project-assets-json\tThis option always includes transitive references, so you must also provide the -t option.");
+
+                return 1;
+            }
+
             try
             {
                 Methods methods = new Methods(options);

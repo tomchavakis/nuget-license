@@ -5,27 +5,29 @@ on: [push, pull_request]
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  ci:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-    - name: Setup dotnet 3.0.100
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.100' # SDK Version to use.
-    - name: Setup dotnet 5.0.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '5.0.x' # SDK Version to use (x uses the latest version).
-    # dotnet restore
-    - name: restore
-      run: dotnet restore
-    # dotnet build and publish
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
-    # dotnet test
-    - name: test
-      run: dotnet test
-    
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Setup dotnet 3.0.100
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "3.1.100" # SDK Version to use.
+      - name: Setup dotnet 5.0.x
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "5.0.x" # SDK Version to use (x uses the latest version).
+      # dotnet restore
+      - name: restore
+        run: dotnet restore
+      # dotnet build and publish
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
+      # dotnet test
+      - name: test
+        run: dotnet test
