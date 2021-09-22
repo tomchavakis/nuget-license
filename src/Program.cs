@@ -33,6 +33,14 @@ namespace NugetUtility
                 return 1;
             }
 
+            if (options.Timeout < 1)
+            {
+                Console.WriteLine("ERROR(S):");
+                Console.WriteLine("--timeout\tThe timeout must be a positive number.");
+
+                return 1;
+            }
+
             try
             {
                 Methods methods = new Methods(options);
