@@ -25,6 +25,16 @@ namespace NugetUtility.Tests {
             status.Should ().Be (1);
         }
 
+        [TestCase (0)]
+        [TestCase (-15)]
+        [Test]
+        public async Task Main_Should_Error_With_Invalid_Timeout (int timeout)
+        {
+            var status = await Program.Main($"--timeout {timeout}".Split(' '));
+
+            status.Should().Be(1);
+        }
+
         [TestCase ("-i " + TestSetup.ThisProjectSolutionPath + @" --allowed-license-types ../../../SampleAllowedLicenses.json")]
         [Test]
         public async Task Main_Should_ReturnNegative_When_InvalidLicenses (string args) {

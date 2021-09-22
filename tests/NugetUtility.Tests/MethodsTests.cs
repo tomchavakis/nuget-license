@@ -18,7 +18,7 @@ namespace NugetUtility.Tests {
         [SetUp]
         public void Setup () {
             _projectPath = @"../../../";
-            _methods = new Methods (new PackageOptions { ProjectDirectory = _projectPath });
+            _methods = new Methods (new PackageOptions { ProjectDirectory = _projectPath, Timeout = 10 });
         }
 
         private void AddUniquePackageOption () {

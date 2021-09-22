@@ -29,7 +29,6 @@ namespace NugetUtility
         private static HttpClient _httpClient;
 
         private const int maxRedirects = 5; // HTTP client max number of redirects allowed
-        private const int timeout = 10; // HTTP client timeout in seconds
         private readonly IReadOnlyDictionary<string, string> _licenseMappings;
         private readonly PackageOptions _packageOptions;
         private readonly XmlSerializer _serializer;
@@ -54,7 +53,7 @@ namespace NugetUtility
                 _httpClient = new HttpClient(httpClientHandler)
                 {
                     BaseAddress = new Uri(nugetUrl),
-                    Timeout = TimeSpan.FromSeconds(timeout)
+                    Timeout = TimeSpan.FromSeconds(packageOptions.Timeout)
                 };
             }
 
