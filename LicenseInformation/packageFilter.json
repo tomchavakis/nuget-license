@@ -6,5 +6,6 @@
   "Griesser.CA.Configuration.Ets",
   "Griesser.CA.DeviceCommunication",
   "Griesser.CA.DeviceCommunication.Ets",
-  "GE.Heimdall.IPC"
+  "GE.Heimdall.IPC",
+  "GE.Heimdall.CommunicationSDK"
 ]
