@@ -22,6 +22,11 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: "5.0.x" # SDK Version to use (x uses the latest version).
+      - name: Setup dotnet 6.0.x
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "6.0.x" # SDK Version to use (x uses the latest version).
+          include-prerelease: true
       # dotnet restore
       - name: restore
         run: dotnet restore
