@@ -1,9 +1,9 @@
 name: release
 
-on: 
+on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -12,96 +12,103 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-    - name: Setup dotnet 3.0.100
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.100' # SDK Version to use.
-      env:
-        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    - name: Setup dotnet 5.0.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '5.0.x' # SDK Version to use (x uses the latest version).
-      env:
-        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    # dotnet restore
-    - name: restore
-      run: dotnet restore
-    # dotnet build and publish
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
-    # dotnet test
-    - name: test
-      run: dotnet test
-    # dotnet create package
-    - name: Create the package
-      run: dotnet pack --configuration Release
-    # publish the package
-    - name: Publish the artifact
-      run: dotnet publish -f net5.0 -c Release -o ./artifacts
-    # publish the package to package folder
-    - name: Publish the artifact
-      run: dotnet publish -f net5.0 -c Release -o ./package
-    # Add nuget package
-    - name: Nuget package
-      run: dotnet pack -c Release -o ./artifacts
-    # Zip Artifacts
-    - name: Zip artifacts
-      uses: tomchavakis/action-zip@v0.1.0
-      with:
-        args: zip -qq -r ./release.zip ./artifacts
-    - name: Create release
-      id: create_release
-      uses: actions/create-release@v1.0.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-    - name: Upload Release Asset
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1.0.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release.zip
-        asset_name: release.zip
-        asset_content_type: application/zip
-      # Publish
-    - name: publish on version change
-      id: publish_nuget
-      uses: rohith/publish-nuget@v2
-      with:
-        # Filepath of the project to be packaged, relative to root of repository
-        PROJECT_FILE_PATH: src/NugetUtility.csproj
-        
-        # NuGet package id, used for version detection & defaults to project name
-        PACKAGE_NAME: dotnet-project-licenses
-        
-        # Filepath with version info, relative to root of repository & defaults to PROJECT_FILE_PATH
-        # VERSION_FILE_PATH: Directory.Build.props
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Setup dotnet 3.0.100
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "3.1.100" # SDK Version to use.
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Setup dotnet 5.0.x
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "5.0.x" # SDK Version to use (x uses the latest version).
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Setup dotnet 6.0.x
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "6.0.x" # SDK Version to use (x uses the latest version).
+          include-prerelease: true
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      # dotnet restore
+      - name: restore
+        run: dotnet restore
+      # dotnet build and publish
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
+      # dotnet test
+      - name: test
+        run: dotnet test
+      # dotnet create package
+      - name: Create the package
+        run: dotnet pack --configuration Release
+      # publish the package
+      - name: Publish the artifact
+        run: dotnet publish -f net5.0 -c Release -o ./artifacts
+      # publish the package to package folder
+      - name: Publish the artifact
+        run: dotnet publish -f net5.0 -c Release -o ./package
+      # Add nuget package
+      - name: Nuget package
+        run: dotnet pack -c Release -o ./artifacts
+      # Zip Artifacts
+      - name: Zip artifacts
+        uses: tomchavakis/action-zip@v0.1.0
+        with:
+          args: zip -qq -r ./release.zip ./artifacts
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release.zip
+          asset_name: release.zip
+          asset_content_type: application/zip
+        # Publish
+      - name: publish on version change
+        id: publish_nuget
+        uses: rohith/publish-nuget@v2
+        with:
+          # Filepath of the project to be packaged, relative to root of repository
+          PROJECT_FILE_PATH: src/NugetUtility.csproj
 
-        # Regex pattern to extract version info in a capturing group
-        VERSION_REGEX: <Version>(.*)<\/Version>
-        
-        # Useful with external providers like Nerdbank.GitVersioning, ignores VERSION_FILE_PATH & VERSION_REGEX
-        # VERSION_STATIC: 1.0.0
+          # NuGet package id, used for version detection & defaults to project name
+          PACKAGE_NAME: dotnet-project-licenses
 
-        # Flag to toggle git tagging, enabled by default
-        # TAG_COMMIT: true
+          # Filepath with version info, relative to root of repository & defaults to PROJECT_FILE_PATH
+          # VERSION_FILE_PATH: Directory.Build.props
 
-        # Format of the git tag, [*] gets replaced with actual version
-        # TAG_FORMAT: v*
+          # Regex pattern to extract version info in a capturing group
+          VERSION_REGEX: <Version>(.*)<\/Version>
 
-        # API key to authenticate with NuGet server
-        NUGET_KEY: ${{secrets.NUGET_KEY}}
+          # Useful with external providers like Nerdbank.GitVersioning, ignores VERSION_FILE_PATH & VERSION_REGEX
+          # VERSION_STATIC: 1.0.0
 
-        # NuGet server uri hosting the packages, defaults to https://api.nuget.org
-        NUGET_SOURCE: https://api.nuget.org
+          # Flag to toggle git tagging, enabled by default
+          # TAG_COMMIT: true
 
-        # Flag to toggle pushing symbo
+          # Format of the git tag, [*] gets replaced with actual version
+          # TAG_FORMAT: v*
+
+          # API key to authenticate with NuGet server
+          NUGET_KEY: ${{secrets.NUGET_KEY}}
+
+          # NuGet server uri hosting the packages, defaults to https://api.nuget.org
+          NUGET_SOURCE: https://api.nuget.org
+
+          # Flag to toggle pushing symbo
