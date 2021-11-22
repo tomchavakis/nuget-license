@@ -38,7 +38,7 @@ jobs:
     inputs:
       command: 'custom'
       custom: '$(Pipeline.Workspace)/NugetLicense/NugetUtility.dll'
-      arguments: '-i $(Agent.TempDirectory)/projects.json --allowed-license-types $(Pipeline.Workspace)/NugetLicense/LicenseInformation/allowedLicences.json -j --include-project-file --include-transitive --outfile $(Build.ArtifactStagingDirectory)/LicenseInformation/licenses.json --packages-filter $(Pipeline.Workspace)/NugetLicense/LicenseInformation/packageFilter.json -u --export-license-texts --licenseurl-to-license-mappings $(Pipeline.Workspace)/NugetLicense/LicenseInformation/urlToLicenseMapping.json --manual-package-information $(Pipeline.Workspace)/NugetLicense/LicenseInformation/packageInfo.json'
+      arguments: '-i $(Agent.TempDirectory)/projects.json --allowed-license-types $(Pipeline.Workspace)/NugetLicense/LicenseInformation/allowedLicences.json -j --include-project-file --include-transitive --outfile $(Build.ArtifactStagingDirectory)/LicenseInformation/licenses.json --packages-filter $(Pipeline.Workspace)/NugetLicense/LicenseInformation/packageFilter.json -u --export-license-texts --licenseurl-to-license-mappings $(Pipeline.Workspace)/NugetLicense/LicenseInformation/urlToLicenseMapping.json -l 500 --manual-package-information $(Pipeline.Workspace)/NugetLicense/LicenseInformation/packageInfo.json'
   - task: PublishBuildArtifacts@1
     displayName: 'Publish license information'
     inputs:
