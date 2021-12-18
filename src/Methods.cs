@@ -251,8 +251,8 @@ namespace NugetUtility
 
         public string[] GetProjectExtensions(bool withWildcard = false) =>
             withWildcard ?
-            new[] { "*.csproj", "*.fsproj" } :
-            new[] { ".csproj", ".fsproj" };
+            new[] { "*.csproj", "*.fsproj", "*.vbproj" } :
+            new[] { ".csproj", ".fsproj", ".vbproj" };
 
         /// <summary>
         /// Retreive the project references from csproj or fsproj file
