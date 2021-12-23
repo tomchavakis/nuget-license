@@ -690,6 +690,9 @@ namespace NugetUtility
                 case ".fsproj":
                     validProjects = new string[] { projectPath };
                     break;
+                case ".vbproj":
+                    validProjects = new string[] { projectPath };
+                    break;
                 case ".json":
                     validProjects = ReadListFromFile<string>(projectPath)
                         .Select(x => x.EnsureCorrectPathCharacter())
