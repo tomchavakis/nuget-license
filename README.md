@@ -37,7 +37,7 @@ Usage: dotnet-project-licenses [options]
 | `-o, --output` | (Default: false) Saves as text file (licenses.txt) |
 | `--outfile` | Output filename |
 | `-f, --output-directory` | Set Output Directory/Folder |
-| `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj' |
+| `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj, Tests.vbproj, Tests.fsproj' |
 | `--packages-filter` | Simple json file of a text array of packages to skip. Or a regular expression defined between two forward slashes '`/regex/`'. |
 | `-u, --unique` | (Default: false) Unique licenses list by Id/Version |
 | `-p, --print` | (Default: true) Print licenses. |
@@ -60,7 +60,7 @@ dotnet-project-licenses -i projectFolder
 
 ### Print unique licenses
 
-Values for the input may include a folder path, a Visual Studio '.sln' file, a '.csproj' or a '.fsproj' file.
+Values for the input may include a folder path, a Visual Studio '.sln' file, a '.csproj' or a '.fsproj' file or a '.vbproj' file.
 
 ```ps
 dotnet-project-licenses -i projectFolder -u
