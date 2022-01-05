@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -40,6 +41,10 @@ namespace NugetUtility
         {
             if (_httpClient is null)
             {
+                if (packageOptions.DefaultProxy)
+                {
+                    HttpClient.DefaultProxy.Credentials = CredentialCache.DefaultCredentials;
+                }
                 var httpClientHandler = new HttpClientHandler
                 {
                     AllowAutoRedirect = true,

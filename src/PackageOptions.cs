@@ -76,6 +76,9 @@ namespace NugetUtility
         [Option("timeout", Default = 10, HelpText = "Set HttpClient timeout in seconds.")]
         public int Timeout { get; set; }
 
+        [Option("default-proxy", Default = false, HelpText = "Set the default proxy from the system environment in HttpClient.")]
+        public bool DefaultProxy { get; set; }
+
         [Usage(ApplicationAlias = "dotnet-project-licenses")]
         public static IEnumerable<Example> Examples
         {
