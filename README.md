@@ -47,7 +47,8 @@ Usage: dotnet-project-licenses [options]
 | `--ignore-ssl-certificate-errors` | Ignores SSL certificate errors in HttpClient. |
 | `--use-project-assets-json` | Use the resolved project.assets.json file for each project as the source of package information. Requires the `-t` option since this always includes transitive references. Requires `nuget restore` or `dotnet restore` to be run first. |
 | `--timeout` | Set HttpClient timeout in seconds. |
-| `--default-proxy` | Set the default proxy from the system environment in HttpClient. |
+| `--proxy-url` | Set a proxy server URL to be used by HttpClient. |
+| `--proxy-system-auth` | Use the system credentials for proxy authentication. |
 
 ## Example tool commands
 
@@ -102,6 +103,19 @@ dotnet-project-licenses -i projectFolder -o -j -f ~/Projects/github --outfile ~/
 ```ps
 dotnet-project-licenses -i projectFolder --export-license-texts --packages-filter '/Microsoft.*/'
 ```
+
+### Use a proxy server when getting nuget package information via http requests
+
+```ps
+dotnet-project-licenses -i projectFolder --proxy-url "http://my.proxy.com:8080"
+```
+
+### Use a proxy server requiring authentication with the system credentials
+
+```ps
+dotnet-project-licenses -i projectFolder --proxy-url "http://my.proxy.com:8080" --proxy-system-auth
+```
+
 
 ## Docker
 

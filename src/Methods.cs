@@ -41,15 +41,22 @@ namespace NugetUtility
         {
             if (_httpClient is null)
             {
-                if (packageOptions.DefaultProxy)
-                {
-                    HttpClient.DefaultProxy.Credentials = CredentialCache.DefaultCredentials;
-                }
                 var httpClientHandler = new HttpClientHandler
                 {
                     AllowAutoRedirect = true,
                     MaxAutomaticRedirections = maxRedirects
                 };
+
+                if (!string.IsNullOrWhiteSpace(packageOptions.ProxyURL))
+                {
+                    var myProxy = new WebProxy(new Uri(packageOptions.ProxyURL));
+                    if (packageOptions.ProxySystemAuth)
+                    {
+                        myProxy.Credentials = CredentialCache.DefaultCredentials;
+                    }
+                    httpClientHandler.Proxy = myProxy;
+                }
+                
                 if (packageOptions.IgnoreSslCertificateErrors)
                 {
                     httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => IgnoreSslCertificateErrorCallback(message, cert, chain, sslPolicyErrors);
