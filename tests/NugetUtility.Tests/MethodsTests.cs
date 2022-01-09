@@ -8,137 +8,211 @@ using CommandLine.Text;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace NugetUtility.Tests {
+namespace NugetUtility.Tests
+{
     [ExcludeFromCodeCoverage]
     [TestFixture]
-    public class MethodTests {
-        private string _projectPath;
+    public class MethodTests
+    {
+        private string _projectPath = @"../../../";
         private Methods _methods;
 
-        [SetUp]
-        public void Setup () {
-            _projectPath = @"../../../";
-            _methods = new Methods (new PackageOptions { ProjectDirectory = _projectPath, Timeout = 10 });
+        public void AddMethods()
+        {
+            _methods = new Methods(new PackageOptions { ProjectDirectory = _projectPath, Timeout = 10 });
         }
 
-        private void AddUniquePackageOption () {
-            _methods = new Methods (new PackageOptions { UniqueOnly = true, ProjectDirectory = _projectPath });
-        }
-
-        [Test]
-        public void GetProjectExtension_Should_Be_CsprojOrFsProj () {
-            _methods.GetProjectExtensions ().Should ().Contain (".csproj", ".fsproj");
+        private void AddUniquePackageOption()
+        {
+            _methods = new Methods(new PackageOptions { UniqueOnly = true, ProjectDirectory = _projectPath });
         }
 
         [Test]
-        public void GetProjectReferences_Should_Resolve_Projects () {
-            var packages = _methods.GetProjectReferences (_projectPath);
-
-            packages.Should ().NotBeEmpty ();
+        public void GetProjectExtension_Should_Be_CsprojOrFsProj()
+        {
+            AddMethods();
+            _methods.GetProjectExtensions().Should().Contain(".csproj", ".fsproj");
         }
 
         [Test]
-        public async Task GetNugetInformationAsync_Should_Resolve_Projects () {
-            var packages = _methods.GetProjectReferences (_projectPath);
-            var referencedpackages = packages.Select (p => { var split = p.Split (","); return new PackageNameAndVersion { Name = split[0], Version = split[1] }; });
-            var information = await _methods.GetNugetInformationAsync (_projectPath, referencedpackages);
+        public void GetProjectReferences_Should_Resolve_Projects()
+        {
+            AddMethods();
+            var packages = _methods.GetProjectReferences(_projectPath);
 
-            packages.Select (x => x.Split (',') [0].ToLower ())
-                .Should ()
-                .BeEquivalentTo (information.Select (x => x.Value.Metadata.Id.ToLower ()));
+            packages.Should().NotBeEmpty();
         }
 
-        [TestCase ("FluentValidation,5.1.0.0")]
         [Test]
-        public async Task GetNugetInformationAsync_Should_Resolve_Missing_NuSpec_File (string package) {
-            var packages = package.Split (';', System.StringSplitOptions.RemoveEmptyEntries);
-            var referencedpackages = packages.Select (p => { var split = p.Split (","); return new PackageNameAndVersion { Name = split[0], Version = split[1] }; });
-            var information = await _methods.GetNugetInformationAsync (_projectPath, referencedpackages);
+        public async Task GetNugetInformationAsync_Should_Resolve_Projects()
+        {
+            AddMethods();
+            var packages = _methods.GetProjectReferences(_projectPath);
+            var referencedpackages = packages.Select(p => { var split = p.Split(","); return new PackageNameAndVersion { Name = split[0], Version = split[1] }; });
+            var information = await _methods.GetNugetInformationAsync(_projectPath, referencedpackages);
 
-            packages.Select (x => x.Split (',') [0])
-                .Should ()
-                .BeEquivalentTo (information.Select (x => x.Value.Metadata.Id));
+            packages.Select(x => x.Split(',')[0].ToLower())
+                .Should()
+                .BeEquivalentTo(information.Select(x => x.Value.Metadata.Id.ToLower()));
         }
 
-        [TestCase ("FluentValidation", "5.1.0.0")]
-        [TestCase ("System.Linq", "(4.1.0,)")]
-        [TestCase ("System.Linq", "[4.1.0]")]
-        [TestCase ("System.Linq", "(,4.1.0]")]
-        [TestCase ("System.Linq", "(,4.1.0)")]
-        [TestCase ("System.Linq", "[4.1.0,4.3.0]")]
-        [TestCase ("System.Linq", "(4.1.0,4.3.0)")]
-        [TestCase ("System.Linq", "[4.1.0,4.3.0)")]
-        [TestCase ("BCrypt.Net-Next", "2.1.3")]
+        [TestCase("FluentValidation,5.1.0.0")]
         [Test]
-        public async Task GetNugetInformationAsync_Should_Properly_TreatAllAllowedNuSpecReferenceTypes (string package,
-            string version) {
+        public async Task GetNugetInformationAsync_Should_Resolve_Missing_NuSpec_File(string package)
+        {
+            AddMethods();
+            var packages = package.Split(';', System.StringSplitOptions.RemoveEmptyEntries);
+            var referencedpackages = packages.Select(p => { var split = p.Split(","); return new PackageNameAndVersion { Name = split[0], Version = split[1] }; });
+            var information = await _methods.GetNugetInformationAsync(_projectPath, referencedpackages);
+
+            packages.Select(x => x.Split(',')[0])
+                .Should()
+                .BeEquivalentTo(information.Select(x => x.Value.Metadata.Id));
+        }
+
+        [TestCase("FluentValidation", "5.1.0.0")]
+        [TestCase("System.Linq", "(4.1.0,)")]
+        [TestCase("System.Linq", "[4.1.0]")]
+        [TestCase("System.Linq", "(,4.1.0]")]
+        [TestCase("System.Linq", "(,4.1.0)")]
+        [TestCase("System.Linq", "[4.1.0,4.3.0]")]
+        [TestCase("System.Linq", "(4.1.0,4.3.0)")]
+        [TestCase("System.Linq", "[4.1.0,4.3.0)")]
+        [TestCase("BCrypt.Net-Next", "2.1.3")]
+        [Test]
+        public async Task GetNugetInformationAsync_Should_Properly_TreatAllAllowedNuSpecReferenceTypes(string package,
+            string version)
+        {
+            AddMethods();
             var referencedpackages = new PackageNameAndVersion[] { new PackageNameAndVersion { Name = package, Version = version } };
-            var information = await _methods.GetNugetInformationAsync (_projectPath, referencedpackages);
+            var information = await _methods.GetNugetInformationAsync(_projectPath, referencedpackages);
 
-            var expectation = version.Trim (new char[] { '[', '(', ']', ')' })
-                .Split (",", System.StringSplitOptions.RemoveEmptyEntries).Select (v => $"{package},{v}");
-            expectation.Should ().BeEquivalentTo (information.Select (x => x.Key));
-            expectation.Should ()
-                .BeEquivalentTo (information.Select (x => $"{x.Value.Metadata.Id},{x.Value.Metadata.Version}"));
+            var expectation = version.Trim(new char[] { '[', '(', ']', ')' })
+                .Split(",", System.StringSplitOptions.RemoveEmptyEntries).Select(v => $"{package},{v}");
+            expectation.Should().BeEquivalentTo(information.Select(x => x.Key));
+            expectation.Should()
+                .BeEquivalentTo(information.Select(x => $"{x.Value.Metadata.Id},{x.Value.Metadata.Version}"));
         }
 
         [Test]
-        public void MapPackagesToLibraryInfo_Unique_Should_Return_One_Result () {
-            AddUniquePackageOption ();
-            PackageList list = new PackageList ();
-            list.Add ("log4net", new Package {
-                Metadata = new Metadata {
+        public void MapPackagesToLibraryInfo_Unique_Should_Return_One_Result()
+        {
+            AddUniquePackageOption();
+            PackageList list = new PackageList();
+            list.Add("log4net", new Package
+            {
+                Metadata = new Metadata
+                {
                     Id = "log4net",
-                        License = new License {
-                            Text = "MIT",
-                                Type = "Open"
-                        },
-                        Version = "2.0.8",
+                    License = new License
+                    {
+                        Text = "MIT",
+                        Type = "Open"
+                    },
+                    Version = "2.0.8",
                 },
             });
 
-            list.Add ("log4net2", new Package {
-                Metadata = new Metadata {
+            list.Add("log4net2", new Package
+            {
+                Metadata = new Metadata
+                {
                     Id = "log4net",
-                        License = new License {
-                            Text = "MIT",
-                                Type = "Open"
-                        },
-                        Version = "2.0.8",
+                    License = new License
+                    {
+                        Text = "MIT",
+                        Type = "Open"
+                    },
+                    Version = "2.0.8",
                 }
             });
 
-            var packages = new Dictionary<string, PackageList> ();
-            packages.Add ("packages", list);
-            var info = _methods.MapPackagesToLibraryInfo (packages);
-            info.Count.Should ().Equals (1);
+            var packages = new Dictionary<string, PackageList>();
+            packages.Add("packages", list);
+            var info = _methods.MapPackagesToLibraryInfo(packages);
+            info.Count.Should().Equals(1);
         }
 
         [Test]
-        public async Task GetPackages_ProjectsFilter_Should_Remove_Test_Projects () {
-            var methods = new Methods (new PackageOptions {
+        public async Task MapPackagesToLibraryInfo_Proxy_Should_Return_License()
+        {
+
+            var methods = new Methods(
+                new PackageOptions
+                {
+                    ProjectDirectory = _projectPath,
+                    ProxyURL = "http://localhost:8080",
+                    ProxySystemAuth = true
+                });
+
+
+            PackageList list = new PackageList();
+            list.Add("log4net", new Package
+            {
+                Metadata = new Metadata
+                {
+                    Id = "log4net",
+                    License = new License
+                    {
+                        Text = "MIT",
+                        Type = "Open"
+                    },
+                    Version = "2.0.8",
+                },
+
+            });
+
+            list.Add("Newtonsoft.Json", new Package
+            {
+                Metadata = new Metadata
+                {
+                    Id = "Newtonsoft.Json",
+                    License = new License
+                    {
+                        Text = "MIT",
+                        Type = "Open"
+                    },
+                    Version = "6.0.9",
+                }
+            });
+
+            var packages = new Dictionary<string, PackageList>();
+            packages.Add("packages", list);
+            var info = methods.MapPackagesToLibraryInfo(packages);
+            info.Count.Should().Equals(2);
+        }
+
+
+
+        [Test]
+        public async Task GetPackages_ProjectsFilter_Should_Remove_Test_Projects()
+        {
+            var methods = new Methods(new PackageOptions
+            {
                 ProjectsFilterOption = @"../../../SampleProjectFilters.json",
-                    ProjectDirectory = TestSetup.ThisProjectSolutionPath
+                ProjectDirectory = TestSetup.ThisProjectSolutionPath
             });
 
-            var result = await methods.GetPackages ();
+            var result = await methods.GetPackages();
 
-            result.Should ()
-                .HaveCount (1)
-                .And.Match (kvp => kvp.First ().Key.EndsWith ("NugetUtility.csproj"));
+            result.Should()
+                .HaveCount(1)
+                .And.Match(kvp => kvp.First().Key.EndsWith("NugetUtility.csproj"));
         }
 
         [Test]
-        public async Task GetPackages_PackagesFilter_Should_Remove_CommandLineParser () {
-            var methods = new Methods (new PackageOptions {
+        public async Task GetPackages_PackagesFilter_Should_Remove_CommandLineParser()
+        {
+            var methods = new Methods(new PackageOptions
+            {
                 PackagesFilterOption = @"../../../SamplePackagesFilters.json",
-                    ProjectDirectory = TestSetup.ThisProjectSolutionPath
+                ProjectDirectory = TestSetup.ThisProjectSolutionPath
             });
 
-            var result = await methods.GetPackages ();
+            var result = await methods.GetPackages();
 
-            result.Should ().NotBeEmpty ()
-                .And.NotContainKey ("CommandLineParser");
+            result.Should().NotBeEmpty()
+                .And.NotContainKey("CommandLineParser");
         }
 
         [Test]
@@ -157,34 +231,38 @@ namespace NugetUtility.Tests {
         }
 
         [Test]
-        public async Task GetPackages_AllowedLicenses_Should_Throw_On_MIT () {
-            var methods = new Methods (new PackageOptions {
+        public async Task GetPackages_AllowedLicenses_Should_Throw_On_MIT()
+        {
+            var methods = new Methods(new PackageOptions
+            {
                 ProjectsFilterOption = @"../../../SampleProjectFilters.json",
-                    AllowedLicenseTypesOption = @"../../../SampleAllowedLicenses.json",
-                    ProjectDirectory = TestSetup.ThisProjectSolutionPath
+                AllowedLicenseTypesOption = @"../../../SampleAllowedLicenses.json",
+                ProjectDirectory = TestSetup.ThisProjectSolutionPath
             });
 
-            var result = await methods.GetPackages ();
-            var validationResult = methods.ValidateLicenses (result);
+            var result = await methods.GetPackages();
+            var validationResult = methods.ValidateLicenses(result);
 
-            result.Should ().HaveCount (1);
-            validationResult.IsValid.Should ().BeFalse ();
-            validationResult.InvalidPackages.Count.Should ().Be (3);
+            result.Should().HaveCount(1);
+            validationResult.IsValid.Should().BeFalse();
+            validationResult.InvalidPackages.Count.Should().Be(3);
         }
 
         [Test]
-        public async Task GetPackages_InputJson_Should_OnlyParseGivenProjects () {
-            var methods = new Methods (new PackageOptions {
+        public async Task GetPackages_InputJson_Should_OnlyParseGivenProjects()
+        {
+            var methods = new Methods(new PackageOptions
+            {
                 AllowedLicenseTypesOption = @"../../../SampleAllowedLicenses.json",
-                    ProjectDirectory = @"../../../SampleAllowedProjects.json"
+                ProjectDirectory = @"../../../SampleAllowedProjects.json"
             });
 
-            var result = await methods.GetPackages ();
-            var validationResult = methods.ValidateLicenses (result);
+            var result = await methods.GetPackages();
+            var validationResult = methods.ValidateLicenses(result);
 
-            result.Should ().HaveCount (1);
-            validationResult.IsValid.Should ().BeFalse ();
-            validationResult.InvalidPackages.Count.Should ().Be (3);
+            result.Should().HaveCount(1);
+            validationResult.IsValid.Should().BeFalse();
+            validationResult.InvalidPackages.Count.Should().Be(3);
         }
 
         [Test]
@@ -223,8 +301,11 @@ namespace NugetUtility.Tests {
         {
             var methods = new Methods(new PackageOptions
             {
+                ProjectDirectory = _projectPath,
+                Timeout = 10,
                 ExportLicenseTexts = true,
             });
+
             List<LibraryInfo> infos = new List<LibraryInfo>();
             infos.Add(new LibraryInfo()
             {
@@ -245,6 +326,8 @@ namespace NugetUtility.Tests {
         {
             var methods = new Methods(new PackageOptions
             {
+                ProjectDirectory = _projectPath,
+                Timeout = 10,
                 ExportLicenseTexts = true,
             });
 

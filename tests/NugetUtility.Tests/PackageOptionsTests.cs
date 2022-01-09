@@ -37,6 +37,20 @@ namespace NugetUtility.Tests
         }
 
         [Test]
+        public void ProxyOption_ProxyURL_Included()
+        {
+            var options = new PackageOptions{ ProxyURL = "http://proxy:8080"};
+            options.ProxyURL.Should().Be("http://proxy:8080");
+        }
+
+        [Test]
+        public void ProxyOption_ProxySystemAuth_Should_Be_True()
+        {
+            var options = new PackageOptions { ProxySystemAuth = true};
+            options.ProxySystemAuth.Should().Be(true);
+        }
+
+        [Test]
         public void PackagesFilterOption_IncorrectRegexPackagesFilter_Should_Throw_ArgumentException()
         {
             var options = new PackageOptions
