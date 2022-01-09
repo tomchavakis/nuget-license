@@ -76,6 +76,12 @@ namespace NugetUtility
         [Option("timeout", Default = 10, HelpText = "Set HttpClient timeout in seconds.")]
         public int Timeout { get; set; }
 
+        [Option("proxy-url", HelpText = "Set a proxy server URL to be used by HttpClient.")]
+        public string ProxyURL { get; set; }
+
+        [Option("proxy-system-auth", Default = false, HelpText = "Use the system credentials for proxy authentication.")]
+        public bool ProxySystemAuth { get; set; }
+
         [Usage(ApplicationAlias = "dotnet-project-licenses")]
         public static IEnumerable<Example> Examples
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -45,6 +46,17 @@ namespace NugetUtility
                     AllowAutoRedirect = true,
                     MaxAutomaticRedirections = maxRedirects
                 };
+
+                if (!string.IsNullOrWhiteSpace(packageOptions.ProxyURL))
+                {
+                    var myProxy = new WebProxy(new Uri(packageOptions.ProxyURL));
+                    if (packageOptions.ProxySystemAuth)
+                    {
+                        myProxy.Credentials = CredentialCache.DefaultCredentials;
+                    }
+                    httpClientHandler.Proxy = myProxy;
+                }
+                
                 if (packageOptions.IgnoreSslCertificateErrors)
                 {
                     httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => IgnoreSslCertificateErrorCallback(message, cert, chain, sslPolicyErrors);
