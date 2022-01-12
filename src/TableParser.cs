@@ -12,14 +12,16 @@ namespace NugetUtility
         public static string ToStringTable<T>(
           this IEnumerable<T> values,
           string[] columnHeaders,
+          bool asMarkDown,
           params Func<T, object>[] valueSelectors)
         {
-            return ToStringTable(values.ToArray(), columnHeaders, valueSelectors);
+            return ToStringTable(values.ToArray(), columnHeaders, asMarkDown, valueSelectors);
         }
 
         public static string ToStringTable<T>(
           this T[] values,
           string[] columnHeaders,
+          bool asMarkDown,
           params Func<T, object>[] valueSelectors)
         {
             Debug.Assert(columnHeaders.Length == valueSelectors.Length);
@@ -41,8 +43,14 @@ namespace NugetUtility
                       .Invoke(values[rowIndex - 1]).ToString();
                 }
             }
-
-            return ToStringTable(arrValues);
+            if (asMarkDown)
+            {
+                return ToMarkdownTable(arrValues);
+            }
+            else
+            {
+                return ToStringTable(arrValues);
+            }
         }
 
         public static string ToStringTable(this string[,] arrValues)
@@ -71,6 +79,49 @@ namespace NugetUtility
                 {
                     sb.AppendFormat(" |{0}| ", headerSpliter);
                     sb.AppendLine();
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        public static string ToMarkdownTable(this string[,] arrValues)
+        {
+            int[] maxColumnsWidth = GetMaxColumnsWidth(arrValues);
+            var headerSpliter = new string('-', maxColumnsWidth.Sum(i => i + 3) - 1);
+
+            var sb = new StringBuilder();
+            for (int rowIndex = 0; rowIndex < arrValues.GetLength(0); rowIndex++)
+            {
+                for (int colIndex = 0; colIndex < arrValues.GetLength(1); colIndex++)
+                {
+                    // Print cell
+                    string cell = arrValues[rowIndex, colIndex];
+                    cell = cell.PadRight(maxColumnsWidth[colIndex]);
+                    sb.Append(" | ");
+                    sb.Append(cell);
+                }
+
+                // Print end of line
+                sb.Append(" | ");
+                sb.AppendLine();
+
+                // Print splitter
+                if (rowIndex == 0)
+                {
+                    for (int colIndex = 0; colIndex < arrValues.GetLength(1); colIndex++)
+                    {
+                        // Print cell
+                        string cell = new String('-', maxColumnsWidth[colIndex]);
+                        cell = cell.PadRight(maxColumnsWidth[colIndex]);
+                        sb.Append(" | ");
+                        sb.Append(cell);
+                    }
+
+                    sb.Append(" | ");
+                    sb.AppendLine();
+                    //sb.AppendFormat(" |{0}| ", headerSpliter);
+                    //sb.AppendLine();
                 }
             }
 

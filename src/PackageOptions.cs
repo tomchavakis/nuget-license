@@ -61,6 +61,9 @@ namespace NugetUtility
         [Option('j', "json", Default = false, HelpText = "Saves licenses list in a json file (licenses.json)")]
         public bool JsonOutput { get; set; }
 
+        [Option('m', "md", Default = false, HelpText = "Saves the licenses list to a markdown file (licenses.md)")]
+        public bool MarkDownOutput { get; set; }
+
         [Option('e', "export-license-texts", Default = false, HelpText = "Exports the raw license texts")]
         public bool ExportLicenseTexts { get; set; }
 
