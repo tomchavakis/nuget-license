@@ -29,6 +29,7 @@ Usage: dotnet-project-licenses [options]
 | `-i, --input` | Project Folder |
 | `--allowed-license-types` | Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed |
 | `-j, --json` | (Default: false) Saves licenses list in a json file (licenses.json) |
+| `-m, --md` | (Default: false) Saves licenses list in a markdown file (licenses.md) |
 | `--include-project-file` | (Default: false) Adds project file path to information when enabled. |
 | `-l, --log-level` | (Default: Error) Sets log level for output display. Options: Error,Warning,Information,Verbose. |
 | `--manual-package-information` | Simple json file of an array of LibraryInfo objects for manually determined packages. |

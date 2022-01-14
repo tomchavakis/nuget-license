@@ -66,6 +66,10 @@ namespace NugetUtility
                 {
                     methods.SaveAsJson(mappedLibraryInfo);
                 }
+                else if (options.MarkDownOutput)
+                {
+                    methods.SaveAsMarkdown(mappedLibraryInfo);
+                }
                 else
                 {
                     methods.SaveAsTextFile(mappedLibraryInfo);

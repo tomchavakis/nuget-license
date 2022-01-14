@@ -926,7 +926,7 @@ namespace NugetUtility
             if (!libraries.Any()) { return; }
 
             WriteOutput(Environment.NewLine + "References:", logLevel: LogLevel.Always);
-            WriteOutput(libraries.ToStringTable(new[] { "Reference", "Version", "License Type", "License" },
+            WriteOutput(libraries.ToStringTable(new[] { "Reference", "Version", "License Type", "License" }, false,
                                                             a => a.PackageName ?? "---",
                                                             a => a.PackageVersion ?? "---",
                                                             a => a.LicenseType ?? "---",
@@ -983,6 +983,21 @@ namespace NugetUtility
             }
 
             File.WriteAllText(GetOutputFilename("licenses.txt"), sb.ToString());
+        }
+
+        public void SaveAsMarkdown(List<LibraryInfo> libraries)
+        {
+            if (libraries is null) { throw new ArgumentNullException(nameof(libraries)); }
+            if (!libraries.Any()) { return; }
+
+            WriteOutput(Environment.NewLine + "References:", logLevel: LogLevel.Always);
+            var output = (libraries.ToStringTable(new[] { "Reference", "Version", "License Type", "License" }, true,
+                                                            a => a.PackageName ?? "---",
+                                                            a => a.PackageVersion ?? "---",
+                                                            a => a.LicenseType ?? "---",
+                                                            a => a.LicenseUrl ?? "---"), logLevel: LogLevel.Always);
+
+            File.WriteAllText(GetOutputFilename("licenses.md"), output.Item1);
         }
 
         private void WriteOutput(Func<string> line, Exception exception = null, LogLevel logLevel = LogLevel.Information)
