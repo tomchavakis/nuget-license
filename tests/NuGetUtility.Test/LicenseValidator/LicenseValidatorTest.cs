@@ -272,5 +272,98 @@ namespace NuGetUtility.Test.LicenseValidator
             CollectionAssert.AreEqual(new[] { new ValidatedLicense(packageId, packageVersion, validLicense) },
                 _uut!.GetValidatedLicenses());
         }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithMatchingUrlInformation_Should_LeadToCorrectErrorsIfNotAllowed(
+            string packageId, NuGetVersion packageVersion)
+        {
+            var urlMatch = _licenseMapping!.Shuffle().First();
+            var package = SetupPackageWithLicenseUrl(packageId, packageVersion, urlMatch.Key);
+
+            await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
+
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    new LicenseValidationError(_context!, packageId, packageVersion,
+                        $"License type {urlMatch.Value.Id}({urlMatch.Value.Version}) not found in list of supported licenses")
+                }, _uut!.GetErrors());
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithMatchingUrlInformation_Should_LeadToEmptyValidArrayIfNotAllowed(
+            string packageId, NuGetVersion packageVersion)
+        {
+            var urlMatch = _licenseMapping!.Shuffle().First();
+            var package = SetupPackageWithLicenseUrl(packageId, packageVersion, urlMatch.Key);
+
+            await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
+
+            CollectionAssert.AreEqual(Enumerable.Empty<ValidatedLicense>(), _uut!.GetValidatedLicenses());
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithMatchingUrlInformation_Should_LeadToEmptyErrorArrayIfAllowed(
+            string packageId, NuGetVersion packageVersion)
+        {
+            var validLicense = _allowedLicenses!.Shuffle().First();
+            var urlMatch = _licenseMapping!.Shuffle().First();
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!,
+                _allowedLicenses!.Append(urlMatch.Value));
+            var package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, validLicense);
+
+            await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
+
+            CollectionAssert.AreEqual(Enumerable.Empty<LicenseValidationError>(), _uut!.GetErrors());
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithMatchingUrlInformation_Should_LeadToCorrectValidationArrayIfAllowed(
+            string packageId, NuGetVersion packageVersion)
+        {
+            var validLicense = _allowedLicenses!.Shuffle().First();
+            var urlMatch = _licenseMapping!.Shuffle().First();
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!,
+                _allowedLicenses!.Append(urlMatch.Value));
+            var package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, validLicense);
+
+            await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
+
+            CollectionAssert.AreEqual(new[] { new ValidatedLicense(packageId, packageVersion, validLicense) },
+                _uut!.GetValidatedLicenses());
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithNotMatchingUrlInformation_Should_LeadToCorrectErrorsIfNotAllowed(
+            string packageId, NuGetVersion packageVersion, Uri licenseUrl)
+        {
+            var package = SetupPackageWithLicenseUrl(packageId, packageVersion, licenseUrl);
+
+            await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
+
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    new LicenseValidationError(_context!, packageId, packageVersion,
+                        $"Cannot determine License type for url {licenseUrl}")
+                }, _uut!.GetErrors());
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithNotMatchingUrlInformation_Should_LeadToEmptyValidArrayIfNotAllowed(
+            string packageId, NuGetVersion packageVersion, Uri licenseUrl)
+        {
+            var package = SetupPackageWithLicenseUrl(packageId, packageVersion, licenseUrl);
+
+            await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
+
+            CollectionAssert.AreEqual(Enumerable.Empty<ValidatedLicense>(), _uut!.GetValidatedLicenses());
+        }
     }
 }
