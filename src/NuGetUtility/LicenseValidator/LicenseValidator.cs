@@ -3,7 +3,7 @@ using NuGet.Protocol.Core.Types;
 
 namespace NuGetUtility.LicenseValidator
 {
-    internal class LicenseValidator
+    public class LicenseValidator
     {
         private readonly IEnumerable<LicenseId> _allowedLicenses;
         private readonly List<LicenseValidationError> _errors = new List<LicenseValidationError>();
@@ -66,7 +66,7 @@ namespace NuGetUtility.LicenseValidator
                     break;
                 default:
                     _errors.Add(new LicenseValidationError(context, info.Identity.Id, info.Identity.Version,
-                        $"Validation for licenses of type ${info.LicenseMetadata!.Type} not yet supported"));
+                        $"Validation for licenses of type {info.LicenseMetadata!.Type} not yet supported"));
                     break;
             }
         }
@@ -117,7 +117,7 @@ namespace NuGetUtility.LicenseValidator
 
         private string GetLicenseNotAllowedMessage(string id, Version version)
         {
-            return $"License type ${id}({version}) not found in list of supported licenses";
+            return $"License type {id}({version}) not found in list of supported licenses";
         }
     }
 }
