@@ -4,7 +4,7 @@ using Microsoft.Build.Exceptions;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Locator;
-using NuGet.Versioning;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Wrapper.MsBuildWrapper
 {
@@ -33,7 +33,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
             return targetOutputs.First(e => e.Key.Equals(CollectPackageReferences)).Value.Items.Select(p =>
                 new PackageReference(p.ItemSpec,
-                    p.GetMetadata("version") == null ? null : new NuGetVersion(p.GetMetadata("version"))));
+                    p.GetMetadata("version") == null ? null : new WrappedNuGetVersion(p.GetMetadata("version"))));
         }
 
         public IProject GetProject(string projectPath)

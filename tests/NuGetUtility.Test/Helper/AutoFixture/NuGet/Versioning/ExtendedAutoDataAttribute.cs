@@ -2,7 +2,7 @@
 using AutoFixture.Kernel;
 using AutoFixture.NUnit3;
 
-namespace NuGetUtility.Test.Helper.AutoFixture
+namespace NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning
 {
     public class ExtendedAutoDataAttribute : AutoDataAttribute
     {

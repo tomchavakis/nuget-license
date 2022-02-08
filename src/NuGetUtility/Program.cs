@@ -24,7 +24,7 @@ namespace NuGetUtility
             Description = "File in json format that contains an array of all project files to be evaluated")]
         public string? InputJsonFile { get; } = null;
 
-        [Option(LongName = "include-transitive",
+        [Option(LongName = "include-transitive", ShortName = "",
             Description =
                 "If set, the whole license tree is followed in order to determine all nuget's used by the projects")]
         public bool IncludeTransitive { get; } = false;
@@ -33,7 +33,7 @@ namespace NuGetUtility
             Description = "File in json format that contains an array of all allowed license types")]
         public string? AllowedLicenses { get; } = null;
 
-        [Option(LongName = "ignored-packages",
+        [Option(LongName = "ignored-packages", ShortName = "",
             Description =
                 "File in json format that contains an array of nuget package names to completely ignore (e.g. useful for nuget packages built in-house. Note that even though the packages are ignored, their transitive dependencies are not.")]
         public string? IgnoredPackages { get; } = null;
@@ -52,10 +52,11 @@ namespace NuGetUtility
             var projects = GetProjects();
             var ignoredPackages = GetIgnoredPackages();
             var licenseMappings = GetLicenseMappings();
+            var allowedLicenses = GetAllowedLicenses();
 
             var projectReader = new ReferencedPackageReader(ignoredPackages, new MsBuildAbstraction(),
                 new LockFileFactory(), new PackageSearchMetadataBuilderFactory());
-            var validator = new LicenseValidator.LicenseValidator(licenseMappings, new LicenseId[] { });
+            var validator = new LicenseValidator.LicenseValidator(licenseMappings, allowedLicenses);
 
             foreach (var project in projects)
             {
@@ -92,6 +93,16 @@ namespace NuGetUtility
                     };
                 }).Print();
             return 0;
+        }
+
+        private IEnumerable<LicenseId> GetAllowedLicenses()
+        {
+            if (AllowedLicenses == null)
+            {
+                return Enumerable.Empty<LicenseId>();
+            }
+
+            return JsonSerializer.Deserialize<IEnumerable<LicenseId>>(File.ReadAllText(AllowedLicenses))!;
         }
 
         private Dictionary<Uri, LicenseId> GetLicenseMappings()

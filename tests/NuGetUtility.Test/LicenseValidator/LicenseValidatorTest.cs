@@ -7,7 +7,7 @@ using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using NuGetUtility.LicenseValidator;
 using NuGetUtility.Test.Helper.AsyncEnumerableExtension;
-using NuGetUtility.Test.Helper.AutoFixture;
+using NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning;
 using NuGetUtility.Test.Helper.NUnitExtension;
 using NuGetUtility.Test.Helper.ShuffelledEnumerable;
 using NUnit.Framework;

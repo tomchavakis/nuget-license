@@ -4,11 +4,10 @@ using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
-using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.ReferencedPackagesReader
 {
-    internal class ReferencedPackageReader
+    public class ReferencedPackageReader
     {
         private const string ProjectReferenceIdentifier = "project";
         private readonly IEnumerable<string> _ignoredPackages;
@@ -41,9 +40,8 @@ namespace NuGetUtility.ReferencedPackagesReader
                 if (!includeTransitive)
                 {
                     var targetFrameworkInformation = GetTargetFrameworkInformation(target, assetsFile);
-                    var directlyReferencedPackages =
-                        _msBuild.GetPackageReferencesFromProjectForFramework(projectPath,
-                            targetFrameworkInformation.ToString()!);
+                    var directlyReferencedPackages = _msBuild.GetPackageReferencesFromProjectForFramework(projectPath,
+                        targetFrameworkInformation.FrameworkName.ToString()!);
 
                     referencedLibrariesForTarget =
                         referencedLibrariesForTarget.Where(l => IsDirectlyReferenced(l, directlyReferencedPackages));
@@ -66,7 +64,7 @@ namespace NuGetUtility.ReferencedPackagesReader
         {
             return directlyReferencedPackages.Any(p =>
                 library.Name.Equals(p.PackageName, StringComparison.OrdinalIgnoreCase) && ((p.Version == null) ||
-                    library.Version.Equals(new WrappedNuGetVersion(p.Version))));
+                    library.Version.Equals(p.Version)));
         }
 
         private static ITargetFrameworkInformation GetTargetFrameworkInformation(ILockFileTarget target,
@@ -89,7 +87,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             var assetsPath = project.GetAssetsPath();
             var assetsFile = _lockFileFactory.GetFromFile(assetsPath);
 
-            if (!assetsFile.PackageSpec.IsValid() || (assetsFile.Targets == null) || !assetsFile.Targets.Any())
+            if (!assetsFile.PackageSpec.IsValid() || !(assetsFile.Targets?.Any() ?? false))
             {
                 throw new ReferencedPackageReaderException(
                     $"Failed to validate project assets for project {projectPath}");

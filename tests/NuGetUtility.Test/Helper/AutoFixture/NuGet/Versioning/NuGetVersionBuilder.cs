@@ -1,7 +1,7 @@
 ﻿using AutoFixture.Kernel;
 using NuGet.Versioning;
 
-namespace NuGetUtility.Test.Helper.AutoFixture
+namespace NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning
 {
     internal class NuGetVersionBuilder : ISpecimenBuilder
     {
