@@ -1,5 +1,6 @@
 ﻿using NuGet.Protocol.Core.Types;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
+using System.Runtime.CompilerServices;
 
 namespace NuGetUtility.PackageInformationReader
 {
@@ -24,7 +25,8 @@ namespace NuGetUtility.PackageInformationReader
         }
 
         public async IAsyncEnumerable<IPackageSearchMetadata> GetPackageInfo(
-            IEnumerable<IPackageSearchMetadata> packageMetadata, CancellationToken cancellation)
+            IEnumerable<IPackageSearchMetadata> packageMetadata,
+            [EnumeratorCancellation] CancellationToken cancellation)
         {
             foreach (var package in packageMetadata)
             {
