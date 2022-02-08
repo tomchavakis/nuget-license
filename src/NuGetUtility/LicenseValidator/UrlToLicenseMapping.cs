@@ -1,6 +1,4 @@
-﻿using NuGet.Packaging;
-
-namespace NuGetUtility.LicenseValidator
+﻿namespace NuGetUtility.LicenseValidator
 {
     public static class UrlToLicenseMapping
     {
@@ -30,66 +28,30 @@ namespace NuGetUtility.LicenseValidator
             },
             {
                 new Uri("https://github.com/Microsoft/Microsoft.IO.RecyclableMemoryStream/blob/master/LICENSE"),
-                new LicenseId(Mit, LicenseMetadata.EmptyVersion)
+                new LicenseId(Mit)
             },
-            {
-                new Uri("https://github.com/AutoMapper/AutoMapper/blob/master/LICENSE.txt"),
-                new LicenseId(Mit, LicenseMetadata.EmptyVersion)
-            },
-            {
-                new Uri("https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE"),
-                new LicenseId(Mit, LicenseMetadata.EmptyVersion)
-            },
-            {
-                new Uri("https://raw.githubusercontent.com/hey-red/markdownsharp/master/LICENSE"),
-                new LicenseId(Mit, LicenseMetadata.EmptyVersion)
-            },
-            {
-                new Uri("https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md"),
-                new LicenseId(Mit, LicenseMetadata.EmptyVersion)
-            },
-            { new Uri("https://licenses.nuget.org/MIT"), new LicenseId(Mit, LicenseMetadata.EmptyVersion) },
-            { new Uri("http://opensource.org/licenses/MIT"), new LicenseId(Mit, LicenseMetadata.EmptyVersion) },
-            {
-                new Uri("http://www.opensource.org/licenses/mit-license.php"),
-                new LicenseId(Mit, LicenseMetadata.EmptyVersion)
-            },
-            { new Uri("http://max.mit-license.org/"), new LicenseId(Mit, LicenseMetadata.EmptyVersion) },
-            {
-                new Uri("https://github.com/dotnet/corefx/blob/master/LICENSE.TXT"),
-                new LicenseId(Mit, LicenseMetadata.EmptyVersion)
-            },
+            { new Uri("https://github.com/AutoMapper/AutoMapper/blob/master/LICENSE.txt"), new LicenseId(Mit) },
+            { new Uri("https://github.com/zzzprojects/html-agility-pack/blob/master/LICENSE"), new LicenseId(Mit) },
+            { new Uri("https://raw.githubusercontent.com/hey-red/markdownsharp/master/LICENSE"), new LicenseId(Mit) },
+            { new Uri("https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md"), new LicenseId(Mit) },
+            { new Uri("https://licenses.nuget.org/MIT"), new LicenseId(Mit) },
+            { new Uri("http://opensource.org/licenses/MIT"), new LicenseId(Mit) },
+            { new Uri("http://www.opensource.org/licenses/mit-license.php"), new LicenseId(Mit) },
+            { new Uri("http://max.mit-license.org/"), new LicenseId(Mit) },
+            { new Uri("https://github.com/dotnet/corefx/blob/master/LICENSE.TXT"), new LicenseId(Mit) },
             { new Uri("http://www.gnu.org/licenses/old-licenses/gpl-2.0.html"), new LicenseId(Gpl, new Version(2, 0)) },
-            { new Uri("http://opensource.org/licenses/MS-PL"), new LicenseId(MsPl, LicenseMetadata.EmptyVersion) },
-            { new Uri("http://www.opensource.org/licenses/ms-pl"), new LicenseId(MsPl, LicenseMetadata.EmptyVersion) },
-            {
-                new Uri("https://www.microsoft.com/web/webpi/eula/aspnetmvc3update-eula.htm"),
-                new LicenseId(MsEula, LicenseMetadata.EmptyVersion)
-            },
-            {
-                new Uri("http://go.microsoft.com/fwlink/?LinkID=214339"),
-                new LicenseId(MsEula, LicenseMetadata.EmptyVersion)
-            },
-            {
-                new Uri("https://www.microsoft.com/web/webpi/eula/net_library_eula_enu.htm"),
-                new LicenseId(MsEula, LicenseMetadata.EmptyVersion)
-            },
-            {
-                new Uri("http://go.microsoft.com/fwlink/?LinkId=329770"),
-                new LicenseId(MsEula, LicenseMetadata.EmptyVersion)
-            },
-            {
-                new Uri("http://go.microsoft.com/fwlink/?LinkId=529443"),
-                new LicenseId(MsEula, LicenseMetadata.EmptyVersion)
-            },
+            { new Uri("http://opensource.org/licenses/MS-PL"), new LicenseId(MsPl) },
+            { new Uri("http://www.opensource.org/licenses/ms-pl"), new LicenseId(MsPl) },
+            { new Uri("https://www.microsoft.com/web/webpi/eula/aspnetmvc3update-eula.htm"), new LicenseId(MsEula) },
+            { new Uri("http://go.microsoft.com/fwlink/?LinkID=214339"), new LicenseId(MsEula) },
+            { new Uri("https://www.microsoft.com/web/webpi/eula/net_library_eula_enu.htm"), new LicenseId(MsEula) },
+            { new Uri("http://go.microsoft.com/fwlink/?LinkId=329770"), new LicenseId(MsEula) },
+            { new Uri("http://go.microsoft.com/fwlink/?LinkId=529443"), new LicenseId(MsEula) },
             {
                 new Uri("https://www.microsoft.com/web/webpi/eula/dotnet_library_license_non_redistributable.htm"),
-                new LicenseId(MsEulaNonRedistributable, LicenseMetadata.EmptyVersion)
+                new LicenseId(MsEulaNonRedistributable)
             },
-            {
-                new Uri("http://go.microsoft.com/fwlink/?LinkId=529444"),
-                new LicenseId(MsEulaNonRedistributable, LicenseMetadata.EmptyVersion)
-            }
+            { new Uri("http://go.microsoft.com/fwlink/?LinkId=529444"), new LicenseId(MsEulaNonRedistributable) }
         };
     }
 }

@@ -17,7 +17,7 @@ namespace Utilities
             _lengths = titles.Select(t => t.Length).ToList();
         }
 
-        public void AddRow(params object[] row)
+        public void AddRow(params object?[] row)
         {
             if (row.Length != _titles.Length)
             {
@@ -25,7 +25,7 @@ namespace Utilities
                     $"Added row length [{row.Length}] is not equal to title row length [{_titles.Length}]");
             }
 
-            _rows.Add(row.Select(o => o.ToString()).ToArray()!);
+            _rows.Add(row.Select(o => o?.ToString() ?? "").ToArray());
             for (var i = 0; i < _titles.Length; i++)
             {
                 if (_rows.Last()[i].Length > _lengths[i])

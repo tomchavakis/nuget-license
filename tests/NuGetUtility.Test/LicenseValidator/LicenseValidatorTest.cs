@@ -166,11 +166,8 @@ namespace NuGetUtility.Test.LicenseValidator
             await _uut.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
             CollectionAssert.AreEquivalent(
-                new[]
-                {
-                    new ValidatedLicense(packageId, packageVersion,
-                        new LicenseId(licenseUrl.ToString(), new Version()))
-                }, _uut.GetValidatedLicenses());
+                new[] { new ValidatedLicense(packageId, packageVersion, new LicenseId(licenseUrl.ToString())) },
+                _uut.GetValidatedLicenses());
         }
 
         [Test]

@@ -88,7 +88,7 @@ namespace NuGetUtility.LicenseValidator
             else if (!_allowedLicenses.Any())
             {
                 _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id, info.Identity.Version,
-                    new LicenseId(info.LicenseUrl.ToString(), new Version())));
+                    new LicenseId(info.LicenseUrl.ToString())));
             }
             else
             {
@@ -116,9 +116,10 @@ namespace NuGetUtility.LicenseValidator
             return false;
         }
 
-        private string GetLicenseNotAllowedMessage(string id, Version version)
+        private string GetLicenseNotAllowedMessage(string id, Version? version)
         {
-            return $"License type {id}({version}) not found in list of supported licenses";
+            var versionString = version == null ? "" : $"({version})";
+            return $"License type {id}{versionString} not found in list of supported licenses";
         }
     }
 }

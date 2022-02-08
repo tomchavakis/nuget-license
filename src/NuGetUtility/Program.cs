@@ -2,6 +2,7 @@
 
 using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
+using NuGet.Packaging;
 using NuGet.Protocol.Core.Types;
 using NuGetUtility.ConsoleUtilities;
 using NuGetUtility.LicenseValidator;
@@ -98,7 +99,8 @@ namespace NuGetUtility
                 {
                     return new object[]
                     {
-                        license.PackageId, license.PackageVersion, license.License.Id, license.License.Version
+                        license.PackageId, license.PackageVersion, license.License.Id,
+                        license.License.Version ?? LicenseMetadata.EmptyVersion
                     };
                 }).Print();
             return 0;
