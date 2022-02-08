@@ -1,16 +1,17 @@
-﻿namespace NuGetUtility.Test.Helper
+﻿namespace NuGetUtility.Test.Helper.Type
 {
     /// <summary>
     ///     credit: https://stackoverflow.com/a/29823390/1199089
     /// </summary>
     internal static class TypeExtensions
     {
-        public static bool IsOfGenericType(this Type typeToCheck, Type genericType)
+        public static bool IsOfGenericType(this System.Type typeToCheck, System.Type genericType)
         {
             return typeToCheck.IsOfGenericType(genericType, out var _);
         }
 
-        public static bool IsOfGenericType(this Type typeToCheck, Type genericType, out Type? concreteGenericType)
+        public static bool IsOfGenericType(this System.Type typeToCheck, System.Type genericType,
+            out System.Type? concreteGenericType)
         {
             while (true)
             {

@@ -2,8 +2,8 @@
 using Moq;
 using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Test.Helper.AutoFixture;
+using NuGetUtility.Test.Helper.NuGet.Protocol.Core.Types;
 using NuGetUtility.Test.Helper.ShuffelledEnumerable;
-using NuGetUtility.Test.ReferencedPackagesReader.PackageIdentityMock;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;

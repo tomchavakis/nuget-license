@@ -1,12 +1,26 @@
 ﻿using NuGet.Packaging;
+using NuGet.Packaging.Core;
+using NuGet.Packaging.Licenses;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
-using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
+using NuGet.Versioning;
+using NuGetUtility.LicenseValidator;
 
-namespace NuGetUtility.Test.ReferencedPackagesReader.PackageIdentityMock
+namespace NuGetUtility.Test.Helper.NuGet.Protocol.Core.Types
 {
-    internal record struct PackageSearchMetadataMock(PackageIdentity Id) : IPackageSearchMetadata
+    internal class PackageMetadataWithVersionInfo : IPackageSearchMetadata
     {
+        private readonly LicenseId _license;
+        private readonly string _packageId;
+        private readonly NuGetVersion _packageVersion;
+
+        public PackageMetadataWithVersionInfo(string packageId, NuGetVersion packageVersion, LicenseId license)
+        {
+            _packageId = packageId;
+            _packageVersion = packageVersion;
+            _license = license;
+        }
+
         public Task<PackageDeprecationMetadata> GetDeprecationMetadataAsync()
         {
             throw new NotImplementedException();
@@ -27,7 +41,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader.PackageIdentityMock
 
         public Uri IconUrl => throw new NotImplementedException();
 
-        public NuGet.Packaging.Core.PackageIdentity Identity => throw new NotImplementedException();
+        public PackageIdentity Identity => new PackageIdentity(_packageId, _packageVersion);
 
         public Uri LicenseUrl => throw new NotImplementedException();
 
@@ -55,7 +69,9 @@ namespace NuGetUtility.Test.ReferencedPackagesReader.PackageIdentityMock
 
         public bool PrefixReserved => throw new NotImplementedException();
 
-        public LicenseMetadata LicenseMetadata => throw new NotImplementedException();
+        public LicenseMetadata LicenseMetadata =>
+            new LicenseMetadata(LicenseType.Expression, _license.Id, NuGetLicenseExpression.Parse(_license.Id),
+                new string[] { }, _license.Version);
 
         public IEnumerable<PackageVulnerabilityMetadata> Vulnerabilities => throw new NotImplementedException();
     }

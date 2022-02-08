@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Kernel;
 using Moq;
+using NuGetUtility.Test.Helper.Type;
 
 namespace NuGetUtility.Test.Helper.AutoFixture
 {
@@ -7,7 +8,7 @@ namespace NuGetUtility.Test.Helper.AutoFixture
     {
         public object Create(object request, ISpecimenContext context)
         {
-            if (request is Type t)
+            if (request is System.Type t)
             {
                 if (t.IsOfGenericType(typeof(Mock<>)))
                 {

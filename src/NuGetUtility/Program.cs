@@ -42,9 +42,11 @@ namespace NuGetUtility
             Description = "File in json format that contains a dictionary to map license urls to licenses.")]
         public string? LicenseMapping { get; } = null;
 
-        public static async Task<int> Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            return await CommandLineApplication.ExecuteAsync<Program>(args);
+            var lifetime = new AppLifetime();
+            var returnCode = await CommandLineApplication.ExecuteAsync<Program>(args, lifetime.Token);
+            lifetime.Done(returnCode);
         }
 
         private async Task<int> OnExecuteAsync()
@@ -67,7 +69,7 @@ namespace NuGetUtility
                 using var informationReader = new PackageInformationReader.PackageInformationReader(
                     new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider,
                         Repository.Provider.GetCoreV3())), new List<CustomPackageInformation>());
-                var downloadedInfo = informationReader.GetPackageInfo(installedPackages);
+                var downloadedInfo = informationReader.GetPackageInfo(installedPackages, CancellationToken.None);
 
                 await validator.Validate(downloadedInfo, project);
             }

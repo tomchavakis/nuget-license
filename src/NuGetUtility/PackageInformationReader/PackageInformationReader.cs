@@ -24,7 +24,7 @@ namespace NuGetUtility.PackageInformationReader
         }
 
         public async IAsyncEnumerable<IPackageSearchMetadata> GetPackageInfo(
-            IEnumerable<IPackageSearchMetadata> packageMetadata)
+            IEnumerable<IPackageSearchMetadata> packageMetadata, CancellationToken cancellation)
         {
             foreach (var package in packageMetadata)
             {
@@ -35,13 +35,14 @@ namespace NuGetUtility.PackageInformationReader
                 else
                 {
                     yield return await TryGetPackageInformationFromRepositoriesOrReturnInput(_sourceRepositories,
-                        package);
+                        package, cancellation);
                 }
             }
         }
 
         private async Task<IPackageSearchMetadata> TryGetPackageInformationFromRepositoriesOrReturnInput(
-            IDisposableSourceRepository[] cachedRepositories, IPackageSearchMetadata package)
+            IDisposableSourceRepository[] cachedRepositories, IPackageSearchMetadata package,
+            CancellationToken cancellation)
         {
             foreach (var repository in cachedRepositories)
             {
@@ -51,8 +52,7 @@ namespace NuGetUtility.PackageInformationReader
                     continue;
                 }
 
-                var updatedPackageMetadata =
-                    await resource.TryGetMetadataAsync(package.Identity, CancellationToken.None);
+                var updatedPackageMetadata = await resource.TryGetMetadataAsync(package.Identity, cancellation);
 
                 if (updatedPackageMetadata != null)
                 {

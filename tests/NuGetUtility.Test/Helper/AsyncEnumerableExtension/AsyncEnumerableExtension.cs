@@ -6,5 +6,19 @@
         {
             return new AsyncEnumerable<T>(synchronous);
         }
+
+        public static async Task<IEnumerable<T>> Synchronize<T>(this IAsyncEnumerable<T> async)
+        {
+            var list = new List<T>();
+            await foreach (var item in async)
+            {
+                lock (list)
+                {
+                    list.Add(item);
+                }
+            }
+
+            return list;
+        }
     }
 }

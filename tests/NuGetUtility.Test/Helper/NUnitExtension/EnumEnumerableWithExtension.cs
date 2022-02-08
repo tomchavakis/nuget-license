@@ -7,7 +7,7 @@ namespace NuGetUtility.Test.Helper.NUnitExtension
         private readonly Array _allEnumOptions;
         private readonly object[] _exceptions;
 
-        public EnumEnumerableWithExtension(Type t, object[] exceptions)
+        public EnumEnumerableWithExtension(System.Type t, object[] exceptions)
         {
             _exceptions = exceptions;
             _allEnumOptions = Enum.GetValues(t);

@@ -6,10 +6,10 @@ namespace NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning
 {
     public class ExtendedAutoDataAttribute : AutoDataAttribute
     {
-        public ExtendedAutoDataAttribute(params Type[] customizations)
+        public ExtendedAutoDataAttribute(params System.Type[] customizations)
             : base(() => CreateFixture(customizations)) { }
 
-        private static IFixture CreateFixture(Type[] customizations)
+        private static IFixture CreateFixture(System.Type[] customizations)
         {
             var fixture = new Fixture();
 

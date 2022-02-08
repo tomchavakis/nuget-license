@@ -9,7 +9,7 @@ namespace NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning
 
         public object Create(object request, ISpecimenContext context)
         {
-            if (request is Type t)
+            if (request is System.Type t)
             {
                 if (t == typeof(NuGetVersion))
                 {
