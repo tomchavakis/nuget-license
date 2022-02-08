@@ -106,8 +106,10 @@ namespace NuGetUtility
                 return Enumerable.Empty<CustomPackageInformation>();
             }
 
+            var serializerOptions = new JsonSerializerOptions();
+            serializerOptions.Converters.Add(new NuGetVersionConverter());
             return JsonSerializer.Deserialize<IEnumerable<CustomPackageInformation>>(
-                File.ReadAllText(OverridePackageInformation))!;
+                File.ReadAllText(OverridePackageInformation), serializerOptions)!;
         }
 
         private IEnumerable<string> GetAllowedLicenses()
