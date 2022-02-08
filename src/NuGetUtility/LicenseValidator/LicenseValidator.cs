@@ -106,7 +106,8 @@ namespace NuGetUtility.LicenseValidator
 
             foreach (var allowedLicense in _allowedLicenses)
             {
-                if (allowedLicense.Id.Equals(licenseId.Id) && allowedLicense.Version.Equals(licenseId.Version))
+                if (allowedLicense.Id.Equals(licenseId.Id) &&
+                    (allowedLicense.Version?.Equals(licenseId.Version) ?? true))
                 {
                     return true;
                 }

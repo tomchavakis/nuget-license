@@ -7,6 +7,7 @@ using NuGetUtility.ConsoleUtilities;
 using NuGetUtility.LicenseValidator;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.ReferencedPackagesReader;
+using NuGetUtility.Serialization;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
@@ -131,7 +132,10 @@ namespace NuGetUtility
                 return UrlToLicenseMapping.Default;
             }
 
-            return JsonSerializer.Deserialize<Dictionary<Uri, LicenseId>>(File.ReadAllText(LicenseMapping))!;
+            var serializerOptions = new JsonSerializerOptions();
+            serializerOptions.Converters.Add(new UriDictionaryJsonConverter<LicenseId>());
+            return JsonSerializer.Deserialize<Dictionary<Uri, LicenseId>>(File.ReadAllText(LicenseMapping),
+                serializerOptions)!;
         }
 
         private IEnumerable<string> GetIgnoredPackages()
