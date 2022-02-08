@@ -42,6 +42,11 @@ namespace NuGetUtility
             Description = "File in json format that contains a dictionary to map license urls to licenses.")]
         public string? LicenseMapping { get; } = null;
 
+        [Option(LongName = "override-package-information",
+            Description =
+                "File in json format that contains a list of package and license information which should be used in favor of the online version. This option can be used to override the license type of packages that e.g. specify the license as file.")]
+        public string? OverridePackageInformation { get; } = null;
+
         public static async Task Main(string[] args)
         {
             var lifetime = new AppLifetime();
@@ -55,6 +60,7 @@ namespace NuGetUtility
             var ignoredPackages = GetIgnoredPackages();
             var licenseMappings = GetLicenseMappings();
             var allowedLicenses = GetAllowedLicenses();
+            var overridePackageInformation = GetOverridePackageInformation();
 
             var projectReader = new ReferencedPackageReader(ignoredPackages, new MsBuildAbstraction(),
                 new LockFileFactory(), new PackageSearchMetadataBuilderFactory());
@@ -68,7 +74,7 @@ namespace NuGetUtility
                 var sourceProvider = new PackageSourceProvider(settings);
                 using var informationReader = new PackageInformationReader.PackageInformationReader(
                     new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider,
-                        Repository.Provider.GetCoreV3())), new List<CustomPackageInformation>());
+                        Repository.Provider.GetCoreV3())), overridePackageInformation);
                 var downloadedInfo = informationReader.GetPackageInfo(installedPackages, CancellationToken.None);
 
                 await validator.Validate(downloadedInfo, project);
@@ -95,6 +101,17 @@ namespace NuGetUtility
                     };
                 }).Print();
             return 0;
+        }
+
+        private IEnumerable<CustomPackageInformation> GetOverridePackageInformation()
+        {
+            if (OverridePackageInformation == null)
+            {
+                return Enumerable.Empty<CustomPackageInformation>();
+            }
+
+            return JsonSerializer.Deserialize<IEnumerable<CustomPackageInformation>>(
+                File.ReadAllText(OverridePackageInformation))!;
         }
 
         private IEnumerable<LicenseId> GetAllowedLicenses()
