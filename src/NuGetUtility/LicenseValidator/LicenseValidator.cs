@@ -5,12 +5,12 @@ namespace NuGetUtility.LicenseValidator
 {
     public class LicenseValidator
     {
-        private readonly IEnumerable<LicenseId> _allowedLicenses;
+        private readonly IEnumerable<string> _allowedLicenses;
         private readonly List<LicenseValidationError> _errors = new List<LicenseValidationError>();
-        private readonly Dictionary<Uri, LicenseId> _licenseMapping;
+        private readonly Dictionary<Uri, string> _licenseMapping;
         private readonly HashSet<ValidatedLicense> _validatedLicenses = new HashSet<ValidatedLicense>();
 
-        public LicenseValidator(Dictionary<Uri, LicenseId> licenseMapping, IEnumerable<LicenseId> allowedLicenses)
+        public LicenseValidator(Dictionary<Uri, string> licenseMapping, IEnumerable<string> allowedLicenses)
         {
             _licenseMapping = licenseMapping;
             _allowedLicenses = allowedLicenses;
@@ -51,16 +51,16 @@ namespace NuGetUtility.LicenseValidator
             switch (info.LicenseMetadata!.Type)
             {
                 case LicenseType.Expression:
-                    var licenseId = new LicenseId(info.LicenseMetadata!.License, info.LicenseMetadata!.Version);
+                    var licenseId = info.LicenseMetadata!.License;
                     if (IsLicenseValid(licenseId))
                     {
                         _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id, info.Identity.Version,
-                            new LicenseId(info.LicenseMetadata.License, info.LicenseMetadata.Version)));
+                            info.LicenseMetadata.License));
                     }
                     else
                     {
                         _errors.Add(new LicenseValidationError(context, info.Identity.Id, info.Identity.Version,
-                            GetLicenseNotAllowedMessage(info.LicenseMetadata.License, info.LicenseMetadata.Version)));
+                            GetLicenseNotAllowedMessage(info.LicenseMetadata.License)));
                     }
 
                     break;
@@ -82,13 +82,13 @@ namespace NuGetUtility.LicenseValidator
                 else
                 {
                     _errors.Add(new LicenseValidationError(context, info.Identity.Id, info.Identity.Version,
-                        GetLicenseNotAllowedMessage(licenseId.Id, licenseId.Version)));
+                        GetLicenseNotAllowedMessage(licenseId)));
                 }
             }
             else if (!_allowedLicenses.Any())
             {
                 _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id, info.Identity.Version,
-                    new LicenseId(info.LicenseUrl.ToString())));
+                    info.LicenseUrl.ToString()));
             }
             else
             {
@@ -97,7 +97,7 @@ namespace NuGetUtility.LicenseValidator
             }
         }
 
-        private bool IsLicenseValid(LicenseId licenseId)
+        private bool IsLicenseValid(string licenseId)
         {
             if (!_allowedLicenses.Any())
             {
@@ -106,8 +106,7 @@ namespace NuGetUtility.LicenseValidator
 
             foreach (var allowedLicense in _allowedLicenses)
             {
-                if (allowedLicense.Id.Equals(licenseId.Id) &&
-                    (allowedLicense.Version?.Equals(licenseId.Version) ?? true))
+                if (allowedLicense.Equals(licenseId))
                 {
                     return true;
                 }
@@ -116,10 +115,9 @@ namespace NuGetUtility.LicenseValidator
             return false;
         }
 
-        private string GetLicenseNotAllowedMessage(string id, Version? version)
+        private string GetLicenseNotAllowedMessage(string license)
         {
-            var versionString = version == null ? "" : $"({version})";
-            return $"License type {id}{versionString} not found in list of supported licenses";
+            return $"License {license} not found in list of supported licenses";
         }
     }
 }

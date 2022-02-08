@@ -10,14 +10,11 @@ namespace NuGetUtility.PackageInformationReader
     {
         private readonly IPackageSearchMetadata _baseMetadata;
 
-        public PackageMetadataWithLicenseInformation(IPackageSearchMetadata baseMetadata, string licenseType,
-            string? licenseVersion)
+        public PackageMetadataWithLicenseInformation(IPackageSearchMetadata baseMetadata, string licenseType)
         {
             _baseMetadata = baseMetadata;
-            _ = Version.TryParse(licenseVersion, out var effectiveVersion);
-            effectiveVersion ??= LicenseMetadata.EmptyVersion;
             LicenseMetadata = new LicenseMetadata(LicenseType.Expression, licenseType,
-                NuGetLicenseExpression.Parse(licenseType), new string[] { }, effectiveVersion);
+                NuGetLicenseExpression.Parse(licenseType), new string[] { }, LicenseMetadata.EmptyVersion);
         }
 
         public Task<PackageDeprecationMetadata> GetDeprecationMetadataAsync()

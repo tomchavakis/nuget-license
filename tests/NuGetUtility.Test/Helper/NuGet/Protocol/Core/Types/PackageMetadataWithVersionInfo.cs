@@ -4,17 +4,16 @@ using NuGet.Packaging.Licenses;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
-using NuGetUtility.LicenseValidator;
 
 namespace NuGetUtility.Test.Helper.NuGet.Protocol.Core.Types
 {
     internal class PackageMetadataWithVersionInfo : IPackageSearchMetadata
     {
-        private readonly LicenseId _license;
+        private readonly string _license;
         private readonly string _packageId;
         private readonly NuGetVersion _packageVersion;
 
-        public PackageMetadataWithVersionInfo(string packageId, NuGetVersion packageVersion, LicenseId license)
+        public PackageMetadataWithVersionInfo(string packageId, NuGetVersion packageVersion, string license)
         {
             _packageId = packageId;
             _packageVersion = packageVersion;
@@ -70,8 +69,8 @@ namespace NuGetUtility.Test.Helper.NuGet.Protocol.Core.Types
         public bool PrefixReserved => throw new NotImplementedException();
 
         public LicenseMetadata LicenseMetadata =>
-            new LicenseMetadata(LicenseType.Expression, _license.Id, NuGetLicenseExpression.Parse(_license.Id),
-                new string[] { }, _license.Version);
+            new LicenseMetadata(LicenseType.Expression, _license, NuGetLicenseExpression.Parse(_license),
+                new string[] { }, LicenseMetadata.EmptyVersion);
 
         public IEnumerable<PackageVulnerabilityMetadata> Vulnerabilities => throw new NotImplementedException();
     }

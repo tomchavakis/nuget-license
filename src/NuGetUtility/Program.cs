@@ -2,7 +2,6 @@
 
 using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
-using NuGet.Packaging;
 using NuGet.Protocol.Core.Types;
 using NuGetUtility.ConsoleUtilities;
 using NuGetUtility.LicenseValidator;
@@ -93,16 +92,10 @@ namespace NuGetUtility
                 return -1;
             }
 
-            TablePrinterExtensions.Create("Package", "Version", "License Type", "LicenseVersion").FromValues(
-                validator.GetValidatedLicenses(),
-                license =>
-                {
-                    return new object[]
-                    {
-                        license.PackageId, license.PackageVersion, license.License.Id,
-                        license.License.Version ?? LicenseMetadata.EmptyVersion
-                    };
-                }).Print();
+            TablePrinterExtensions.Create("Package", "Version", "License Expression").FromValues(
+                    validator.GetValidatedLicenses(),
+                    license => { return new object[] { license.PackageId, license.PackageVersion, license.License }; })
+                .Print();
             return 0;
         }
 
@@ -117,17 +110,17 @@ namespace NuGetUtility
                 File.ReadAllText(OverridePackageInformation))!;
         }
 
-        private IEnumerable<LicenseId> GetAllowedLicenses()
+        private IEnumerable<string> GetAllowedLicenses()
         {
             if (AllowedLicenses == null)
             {
-                return Enumerable.Empty<LicenseId>();
+                return Enumerable.Empty<string>();
             }
 
-            return JsonSerializer.Deserialize<IEnumerable<LicenseId>>(File.ReadAllText(AllowedLicenses))!;
+            return JsonSerializer.Deserialize<IEnumerable<string>>(File.ReadAllText(AllowedLicenses))!;
         }
 
-        private Dictionary<Uri, LicenseId> GetLicenseMappings()
+        private Dictionary<Uri, string> GetLicenseMappings()
         {
             if (LicenseMapping == null)
             {
@@ -135,8 +128,8 @@ namespace NuGetUtility
             }
 
             var serializerOptions = new JsonSerializerOptions();
-            serializerOptions.Converters.Add(new UriDictionaryJsonConverter<LicenseId>());
-            return JsonSerializer.Deserialize<Dictionary<Uri, LicenseId>>(File.ReadAllText(LicenseMapping),
+            serializerOptions.Converters.Add(new UriDictionaryJsonConverter<string>());
+            return JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping),
                 serializerOptions)!;
         }
 

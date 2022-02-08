@@ -2,6 +2,5 @@
 
 namespace NuGetUtility.PackageInformationReader
 {
-    public record struct CustomPackageInformation(string Id, NuGetVersion Version, string License,
-        string? LicenseVersion = null);
+    public record struct CustomPackageInformation(string Id, NuGetVersion Version, string License);
 }

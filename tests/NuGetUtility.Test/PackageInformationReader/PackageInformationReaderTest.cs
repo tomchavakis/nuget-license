@@ -1,12 +1,10 @@
 ﻿using AutoFixture;
 using Moq;
 using NuGet.Protocol.Core.Types;
-using NuGetUtility.LicenseValidator;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Test.Helper.AsyncEnumerableExtension;
 using NuGetUtility.Test.Helper.AutoFixture;
 using NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning;
-using NuGetUtility.Test.Helper.AutoFixture.PackageInformationReader;
 using NuGetUtility.Test.Helper.NuGet.Protocol.Core.Types;
 using NuGetUtility.Test.Helper.NuGet.Versioning;
 using NuGetUtility.Test.Helper.ShuffelledEnumerable;
@@ -26,7 +24,6 @@ namespace NuGetUtility.Test.PackageInformationReader
             _customPackageInformation = Enumerable.Empty<CustomPackageInformation>().ToList();
             _fixture = new Fixture();
             _fixture.Customizations.Add(new NuGetVersionBuilder());
-            _fixture.Customizations.Add(new CustomPackageInformationBuilder());
             _fixture.Customizations.Add(new MockBuilder());
             _sourceRepositories = new List<Mock<IDisposableSourceRepository>>();
 
@@ -85,7 +82,7 @@ namespace NuGetUtility.Test.PackageInformationReader
 
             CollectionAssert.AreEquivalent(_customPackageInformation!,
                 searchedPackageInfo.Select(s => new CustomPackageInformation(s.Identity.Id, s.Identity.Version,
-                    s.LicenseMetadata.License, s.LicenseMetadata.Version.ToString())));
+                    s.LicenseMetadata.License)));
         }
 
         [Test]
@@ -107,7 +104,7 @@ namespace NuGetUtility.Test.PackageInformationReader
                     .Setup(m => m.TryGetMetadataAsync(
                         new NuGet.Packaging.Core.PackageIdentity(package.Id, package.Version),
                         It.IsAny<CancellationToken>())).ReturnsAsync(new PackageMetadataWithVersionInfo(package.Id,
-                        package.Version, new LicenseId(package.License, new Version(package.LicenseVersion!))));
+                        package.Version, package.License));
             }
 
             var searchedPackages = searchedPackagesAsPackageInformation.Select(i =>
@@ -119,7 +116,7 @@ namespace NuGetUtility.Test.PackageInformationReader
 
             CollectionAssert.AreEquivalent(searchedPackagesAsPackageInformation,
                 searchedPackageInfo.Select(s => new CustomPackageInformation(s.Identity.Id, s.Identity.Version,
-                    s.LicenseMetadata.License, s.LicenseMetadata.Version.ToString())));
+                    s.LicenseMetadata.License)));
         }
 
         [Test]

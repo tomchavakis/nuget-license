@@ -77,8 +77,7 @@ namespace NuGetUtility.PackageInformationReader
                 return false;
             }
 
-            resolved = new PackageMetadataWithLicenseInformation(package, resolvedCustomInformation.License,
-                resolvedCustomInformation.LicenseVersion);
+            resolved = new PackageMetadataWithLicenseInformation(package, resolvedCustomInformation.License);
             return true;
         }
 
