@@ -120,6 +120,52 @@ namespace NuGetUtility.Test.PackageInformationReader
         }
 
         [Test]
+        public async Task
+            GetPackageInfo_Should_IgnoreFailingPackageMetadataResourceGetting_if_IterateThroughRepositoriesToGetAdditionalInformation()
+        {
+            var shuffledRepositories = _sourceRepositories!.Shuffle();
+            var splitRepositories = shuffledRepositories.Select((repo, index) => (Index: index, Repo: repo))
+                .GroupBy(e => e.Index % 2).ToArray();
+
+            var sourceRepositoriesWithPackageMetadataResource = splitRepositories[0].Select(e => e.Repo).ToArray();
+            var sourceRepositoriesWithFailingPackageMetadataResource =
+                splitRepositories[1].Select(e => e.Repo).ToArray();
+            var packageMetadataResources = sourceRepositoriesWithPackageMetadataResource.Select(r =>
+            {
+                var metadataResource = new Mock<IPackageMetadataResource>();
+                r.Setup(m => m.GetPackageMetadataResourceAsync()).ReturnsAsync(metadataResource.Object);
+                return metadataResource;
+            }).ToArray();
+            foreach (var repo in sourceRepositoriesWithFailingPackageMetadataResource)
+            {
+                repo.Setup(m => m.GetPackageMetadataResourceAsync()).Callback(() => throw new Exception());
+            }
+
+            var searchedPackagesAsPackageInformation = _fixture.CreateMany<CustomPackageInformation>(20).ToArray();
+
+            foreach (var package in searchedPackagesAsPackageInformation)
+            {
+                var metadataReturningProperInformation = packageMetadataResources.Shuffle().First();
+                metadataReturningProperInformation
+                    .Setup(m => m.TryGetMetadataAsync(
+                        new NuGet.Packaging.Core.PackageIdentity(package.Id, package.Version),
+                        It.IsAny<CancellationToken>())).ReturnsAsync(new PackageMetadataWithVersionInfo(package.Id,
+                        package.Version, package.License));
+            }
+
+            var searchedPackages = searchedPackagesAsPackageInformation.Select(i =>
+                new PackageSearchMetadataMock(new PackageIdentity(i.Id, new WrappedNuGetVersion(i.Version))) as
+                    IPackageSearchMetadata);
+
+            var searchedPackageInfo =
+                await _uut!.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
+
+            CollectionAssert.AreEquivalent(searchedPackagesAsPackageInformation,
+                searchedPackageInfo.Select(s => new CustomPackageInformation(s.Identity.Id, s.Identity.Version,
+                    s.LicenseMetadata.License)));
+        }
+
+        [Test]
         public async Task GetPackageInfo_Should_ReturnInputForPackagesWithoutProperLicenseInformation()
         {
             var searchedPackagesAsPackageInformation = _fixture.CreateMany<CustomPackageInformation>().ToArray();
