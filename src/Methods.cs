@@ -845,7 +845,8 @@ namespace NugetUtility
             foreach (var info in infos.Where (i => !string.IsNullOrEmpty (i.LicenseUrl))) {
                 var source = info.LicenseUrl;
                 var outpath = Path.Combine(directory, $"{info.PackageName}_{info.PackageVersion}.txt");
-                if (File.Exists(outpath))
+                var outpathhtml = Path.Combine(directory, $"{info.PackageName}_{info.PackageVersion}.html");
+                if (File.Exists(outpath) || File.Exists(outpathhtml))
                 {
                     continue;
                 }
@@ -896,6 +897,11 @@ namespace NugetUtility
                             continue;
                         }
 
+                        var contentType = response.Content.Headers.GetValues("Content-Type").First().Split(';').First(); // stripping away charset if exists.
+                        if (contentType == "text/html")
+                        {
+                            outpath = outpathhtml;
+                        }
                         using var fileStream = File.OpenWrite(outpath);
                         await response.Content.CopyToAsync(fileStream);
                         break;
