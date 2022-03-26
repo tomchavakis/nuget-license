@@ -37,6 +37,9 @@ namespace NugetUtility
         internal static bool IgnoreSslCertificateErrorCallback(HttpRequestMessage message, System.Security.Cryptography.X509Certificates.X509Certificate2 cert, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
             => true;
 
+        // Search nuspec in local cache (Fix for linux distro)
+        private readonly string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
         public Methods(PackageOptions packageOptions)
         {
             if (_httpClient is null)
@@ -86,14 +89,21 @@ namespace NugetUtility
             var licenses = new PackageList();
             foreach (var packageWithVersion in packages)
             {
+                // TODO: better package range management
                 var versions = packageWithVersion.Version.Trim(new char[] { '[', ']', '(', ')' }).Split(",");
-                foreach (var version in versions)
+                foreach (var version2 in versions)
                 {
+                    WriteOutput($"Parsing version {packageWithVersion.Name}, {version2}", logLevel: LogLevel.Verbose);
+                    string version = version2;
+                    if (Version.TryParse(version2, out Version version1) && version1.Build == -1)
+                    {
+                        version = $"{version1.Major}.{version1.Minor}.0";
+                    }
                     try
                     {
                         if (string.IsNullOrWhiteSpace(packageWithVersion.Name) || string.IsNullOrWhiteSpace(version))
                         {
-                            WriteOutput($"Skipping invalid entry {packageWithVersion}", logLevel: LogLevel.Verbose);
+                            WriteOutput($"Skipping invalid entry {packageWithVersion.Name}, version {packageWithVersion.Version}, ", logLevel: LogLevel.Verbose);
                             continue;
                         }
 
@@ -107,13 +117,10 @@ namespace NugetUtility
 
                         if (_requestCache.TryGetValue(lookupKey, out var package))
                         {
-                            WriteOutput(packageWithVersion + " obtained from request cache.", logLevel: LogLevel.Information);
+                            WriteOutput(packageWithVersion.Name + ", version " + packageWithVersion.Version + " obtained from request cache.", logLevel: LogLevel.Information);
                             licenses.TryAdd($"{packageWithVersion.Name},{version}", package);
                             continue;
                         }
-
-                        // Search nuspec in local cache (Fix for linux distro)
-                        string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
                         var nuspecPath = CreateNuSpecPath(userDir, version, packageWithVersion.Name);
                         //Linux: package file name could be lowercase
@@ -138,7 +145,7 @@ namespace NugetUtility
                             catch(Exception exc)
                             {
                                 // Ignore errors in local cache, try online call
-                                WriteOutput($"ReadNuspecFile error, package '{packageWithVersion.Name}'", exc, LogLevel.Verbose);
+                                WriteOutput($"ReadNuspecFile error, package '{packageWithVersion.Name}', version {packageWithVersion.Version}", exc, LogLevel.Verbose);
                             }
                         }
                         else
@@ -219,7 +226,8 @@ namespace NugetUtility
         private async Task AddTransitivePackages(string project, PackageList licenses, Package result)
         {
             var groups = result.Metadata?.Dependencies?.Group;
-            if (_packageOptions.IncludeTransitive && groups != null)
+            if (_packageOptions.IncludeTransitive && groups != null && !_packageOptions.UseProjectAssetsJson)
+            // project.assets.json already includes all transitive packages with the right versions, no need to re-add them
             {
                 foreach (var group in groups)
                 {
@@ -678,7 +686,10 @@ namespace NugetUtility
                         continue;
                     }
 
-                    yield return string.Join(",", depName);
+                    if (dep.Value.TryGetProperty("type", out var type) && type.ValueEquals("package"))
+                    {
+                        yield return string.Join(",", depName);
+                    }
                 }
             }
         }
@@ -860,32 +871,40 @@ namespace NugetUtility
                 {
                     WriteOutput(() => $"Attempting to download {source} to {outpath}", logLevel: LogLevel.Verbose);
                     using var request = new HttpRequestMessage(HttpMethod.Get, source);
-                    using var response = await _httpClient.SendAsync(request);
-                    if (!response.IsSuccessStatusCode)
+                    try
                     {
-                        WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Error);
+                        using var response = await _httpClient.SendAsync(request);
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Error);
+                            break;
+                        }
+
+                        // Detect a redirect 302
+                        if (response.RequestMessage.RequestUri.AbsoluteUri != source)
+                        {
+                            WriteOutput(() => " Redirect detected", logLevel: LogLevel.Verbose);
+                            source = response.RequestMessage.RequestUri.AbsoluteUri;
+                            continue;
+                        }
+
+                        // Modify the URL if required
+                        if (CorrectUri(source) != source)
+                        {
+                            WriteOutput(() => " Fixing URL", logLevel: LogLevel.Verbose);
+                            source = CorrectUri(source);
+                            continue;
+                        }
+
+                        using var fileStream = File.OpenWrite(outpath);
+                        await response.Content.CopyToAsync(fileStream);
                         break;
                     }
-
-                    // Detect a redirect 302
-                    if (response.RequestMessage.RequestUri.AbsoluteUri != source)
+                    catch (HttpRequestException)
                     {
-                        WriteOutput(() => " Redirect detected", logLevel: LogLevel.Verbose);
-                        source = response.RequestMessage.RequestUri.AbsoluteUri;
-                        continue;
+                        // handled in !IsSuccessStatusCode, ignoring to continue export
+                        break;
                     }
-
-                    // Modify the URL if required
-                    if (CorrectUri(source) != source)
-                    {
-                        WriteOutput(() => " Fixing URL", logLevel: LogLevel.Verbose);
-                        source = CorrectUri(source);
-                        continue;
-                    }
-
-                    using var fileStream = File.OpenWrite(outpath);
-                    await response.Content.CopyToAsync(fileStream);
-                    break;
                 } while (true);
             }
         }
