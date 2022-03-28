@@ -40,7 +40,7 @@ namespace NugetUtility
             => true;
 
         // Search nuspec in local cache (Fix for linux distro)
-        private readonly string userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        private readonly string nugetRoot = Environment.GetEnvironmentVariable("NUGET_PACKAGES") ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".nuget", "packages");
 
         public Methods(PackageOptions packageOptions)
         {
@@ -119,7 +119,7 @@ namespace NugetUtility
                         }
 
                         //Linux: package file name could be lowercase
-                        var nuspecPath = CreateNuSpecPath(userDir, version, packageWithVersion.Name?.ToLowerInvariant());
+                        var nuspecPath = CreateNuSpecPath(nugetRoot, version, packageWithVersion.Name?.ToLowerInvariant());
 
                         if (File.Exists(nuspecPath))
                         {
@@ -209,8 +209,8 @@ namespace NugetUtility
 
             return licenses;
 
-            static string CreateNuSpecPath(string userDir, string version, string packageName)
-                => Path.Combine(userDir, ".nuget", "packages", packageName, version, $"{packageName}.nuspec");
+            static string CreateNuSpecPath(string nugetRoot, string version, string packageName)
+                => Path.Combine(nugetRoot, packageName, version, $"{packageName}.nuspec");
         }
 
         private async Task<string> ResolvePackageVersionAsync(string name, string versionRange, Func<string, Task<IEnumerable<string>>> GetVersions)
@@ -241,7 +241,7 @@ namespace NugetUtility
 
         private async Task <IEnumerable<string>> GetVersionsFromLocalCacheAsync(string packageName)
         {
-            DirectoryInfo di = new DirectoryInfo(Path.Combine(userDir, ".nuget", "packages", packageName));
+            DirectoryInfo di = new DirectoryInfo(Path.Combine(nugetRoot, packageName));
             try
             {
                 return di.GetDirectories().Select(dir => dir.Name);
