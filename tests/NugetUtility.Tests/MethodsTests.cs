@@ -260,13 +260,7 @@ namespace NugetUtility.Tests
             packages.Should().HaveCount(1);
             var list = packages.Values.First();
 
-            foreach (var item in list)
-            {
-                Console.WriteLine(item.ToString());
-            }
-
             // Just look for a few expected packages. First-order refs:
-            //list.Should().ContainKey($"dotnet-project-licenses,{typeof(Methods).Assembly.GetName().Version.ToString(3)}");
             list.Should().ContainKey($"NUnit,{typeof(TestAttribute).Assembly.GetName().Version.ToString(3)}");
 
             // Some second-order refs:
