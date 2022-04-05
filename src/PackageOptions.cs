@@ -31,7 +31,7 @@ namespace NugetUtility
         [Option("manual-package-information", Default = null, HelpText = "Simple json file of an array of LibraryInfo objects for manually determined packages.")]
         public string ManualInformationOption { get; set; }
 
-        [Option("licenseurl-to-license-mappings", Default = null, HelpText = "Simple json file of Dictinary<string,string> to override default mappings")]
+        [Option("licenseurl-to-license-mappings", Default = null, HelpText = "Simple json file of Dictionary<string,string> to override default mappings")]
         public string LicenseToUrlMappingsOption { get; set; }
 
         [Option('o', "output", Default = false, HelpText = "Saves as text file (licenses.txt)")]

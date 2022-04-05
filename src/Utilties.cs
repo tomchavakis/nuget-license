@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 
@@ -31,6 +32,9 @@ namespace NugetUtility
             }
 
             return JsonConvert.DeserializeObject<Dictionary<T1, T2>>(EnsureFileExistsAndRead(jsonFileList))
+                .Concat(defaultValue)
+                .GroupBy(kv => kv.Key)
+                .ToDictionary(g => g.Key, g => g.First().Value)
                 ?? defaultValue;
         }
 

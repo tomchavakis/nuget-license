@@ -33,7 +33,7 @@ Usage: dotnet-project-licenses [options]
 | `--include-project-file` | (Default: false) Adds project file path to information when enabled. |
 | `-l, --log-level` | (Default: Error) Sets log level for output display. Options: Error,Warning,Information,Verbose. |
 | `--manual-package-information` | Simple json file of an array of LibraryInfo objects for manually determined packages. |
-| `--licenseurl-to-license-mappings` | Simple json file of Dictinary<string,string> to override default mappings |
+| `--licenseurl-to-license-mappings` | Simple json file of Dictionary<string,string> to override default mappings |
 | `--include-transitive` | Include distinct transitive package licenses per project file. |
 | `-o, --output` | (Default: false) Saves as text file (licenses.txt) |
 | `--outfile` | Output filename |
