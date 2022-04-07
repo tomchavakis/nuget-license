@@ -106,22 +106,12 @@ namespace NugetUtility.Tests
             var packages = new Dictionary<string, PackageList>();
             packages.Add("packages", list);
             var info = _methods.MapPackagesToLibraryInfo(packages);
-            info.Count.Should().Equals(1);
+            info.Count.Should().Be(1);
         }
 
         [Test]
-        public async Task MapPackagesToLibraryInfo_Proxy_Should_Return_License()
+        public void MapPackagesToLibraryInfo_Proxy_Should_Return_License()
         {
-
-            var methods = new Methods(
-                new PackageOptions
-                {
-                    ProjectDirectory = _projectPath,
-                    ProxyURL = "http://localhost:8080",
-                    ProxySystemAuth = true
-                });
-
-
             PackageList list = new PackageList();
             list.Add("log4net", new Package
             {
@@ -151,11 +141,19 @@ namespace NugetUtility.Tests
                     Version = "6.0.9",
                 }
             });
+            var packageOptions = new PackageOptions
+            {
+                ProjectDirectory = _projectPath,
+                ProxyURL = "http://localhost:8080",
+                ProxySystemAuth = true,
+                Timeout = 1000,
+            };
 
+            Methods methods = new Methods(packageOptions);
             var packages = new Dictionary<string, PackageList>();
             packages.Add("packages", list);
             var info = methods.MapPackagesToLibraryInfo(packages);
-            info.Count.Should().Equals(2);
+            info.Count.Should().Be(2);
         }
 
 
