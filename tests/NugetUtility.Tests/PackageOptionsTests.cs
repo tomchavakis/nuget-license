@@ -55,6 +55,20 @@ namespace NugetUtility.Tests
         }
 
         [Test]
+        [TestCase("/.*/")]
+        [TestCase("#.*#")]
+        public void PackagesFilterOption_RegexPackagesFilter_Should_Support_Hashes_And_Slashes(string option)
+        {
+            var options = new PackageOptions
+            {
+                PackagesFilterOption = option,
+            };
+
+            var regex = options.PackageRegex;
+            regex.Should().NotBeNull();
+        }
+
+        [Test]
         public void PackagesFilterOption_IncorrectRegexPackagesFilter_Should_Throw_ArgumentException()
         {
             var options = new PackageOptions
@@ -66,11 +80,14 @@ namespace NugetUtility.Tests
         }
 
         [Test]
-        public void PackagesFilterOption_IncorrectPackagesFilterPath_Should_Throw_FileNotFoundException () {
+        [TestCase(@"../../../DoesNotExist.json")]
+        [TestCase("/.*validregexinvalidpath#")]
+        [TestCase("#invalidpath/")]
+        public void PackagesFilterOption_IncorrectPackagesFilterPath_Should_Throw_FileNotFoundException (string option) {
             
             var options = new PackageOptions
             {
-                PackagesFilterOption = @"../../../DoesNotExist.json",
+                PackagesFilterOption = option,
             };
 
             Assert.Throws(typeof(FileNotFoundException), () => { var regex = options.PackageFilter; });
