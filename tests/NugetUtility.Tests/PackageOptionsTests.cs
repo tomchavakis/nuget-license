@@ -56,7 +56,7 @@ namespace NugetUtility.Tests
 
         [Test]
         [TestCase("/.*/")]
-        [TestCase("#.*#")]
+        [TestCase(@"#System\..*#")]
         public void PackagesFilterOption_RegexPackagesFilter_Should_Support_Hashes_And_Slashes(string option)
         {
             var options = new PackageOptions
