@@ -70,6 +70,9 @@ namespace NugetUtility
         [Option('t', "include-transitive", Default = false, HelpText = "Include distinct transitive package licenses per project file.")]
         public bool IncludeTransitive { get; set; }
 
+        [Option("convert-html-to-text", Default = false, HelpText = "Convert html licenses to plain text.")]
+        public bool ConvertHtmlToText { get; set; }
+
         [Option("ignore-ssl-certificate-errors", Default = false, HelpText = "Ignore SSL certificate errors in HttpClient.")]
         public bool IgnoreSslCertificateErrors { get; set; }
 

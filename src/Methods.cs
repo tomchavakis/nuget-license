@@ -1000,6 +1000,41 @@ namespace NugetUtility
             }
         }
 
+        public void ConvertHtmlFileToText(string htmlFile)
+        {
+            var htmlDocument = new HtmlAgilityPack.HtmlDocument();
+            
+            htmlDocument.Load(htmlFile);
+            
+            string htmlStrippedText =
+                System.Web.HttpUtility.HtmlDecode(
+                    htmlDocument.DocumentNode.InnerText
+                );
+            
+            string textFile = htmlFile.Replace(".html", ".txt");
+            
+            WriteOutput(
+                line: $"Converting {htmlFile} to {textFile}...",
+                logLevel: LogLevel.Verbose
+            );    
+            File.WriteAllText(textFile, htmlStrippedText);
+
+            WriteOutput(
+                line: $"Deleting {htmlFile}...",
+                logLevel: LogLevel.Verbose
+            );
+            File.Delete(htmlFile);
+        }
+
+        public void ConvertHtmlFilesToText(string htmlFolder)
+        {
+            var htmlFiles = Directory.GetFiles(htmlFolder, "*.html");
+            foreach (var htmlFile in htmlFiles)
+            {
+                ConvertHtmlFileToText(htmlFile);
+            }
+        }
+
         private bool IsGithub(string uri)
         {
             return uri.StartsWith("https://github.com", StringComparison.Ordinal);

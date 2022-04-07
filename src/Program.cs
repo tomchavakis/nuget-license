@@ -25,6 +25,14 @@ namespace NugetUtility
                 return 1;
             }
 
+            if (options.ConvertHtmlToText && !options.ExportLicenseTexts)
+            {
+                Console.WriteLine("ERROR(S):");
+                Console.WriteLine("--convert-html-to-text\tThis option requires the --export-license-texts option.");
+
+                return 1;
+            }
+
             if (options.UseProjectAssetsJson && !options.IncludeTransitive)
             {
                 Console.WriteLine("ERROR(S):");
@@ -51,6 +59,13 @@ namespace NugetUtility
                 if (options.ExportLicenseTexts)
                 {
                     await methods.ExportLicenseTexts(mappedLibraryInfo);
+                }
+
+                if (options.ConvertHtmlToText)
+                {
+                    methods.ConvertHtmlFilesToText(
+                        methods.GetExportDirectory()
+                    );
                 }
 
                 mappedLibraryInfo = methods.HandleDeprecateMSFTLicense(mappedLibraryInfo);
