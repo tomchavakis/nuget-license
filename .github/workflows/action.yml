@@ -35,6 +35,4 @@ jobs:
         run: dotnet build --configuration Release
       # dotnet test
       - name: test
-        run: |
-          dotnet nuget locals all --clear
-          dotnet test
+      - run: dotnet test
