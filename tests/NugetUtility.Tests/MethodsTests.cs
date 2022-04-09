@@ -106,11 +106,11 @@ namespace NugetUtility.Tests
             var packages = new Dictionary<string, PackageList>();
             packages.Add("packages", list);
             var info = _methods.MapPackagesToLibraryInfo(packages);
-            info.Count.Should().Be(1);
+            info.Count.Should().Equals(1);
         }
 
         [Test]
-        public void MapPackagesToLibraryInfo_Proxy_Should_Return_License()
+        public async Task MapPackagesToLibraryInfo_Proxy_Should_Return_License()
         {
             PackageList list = new PackageList();
             list.Add("log4net", new Package
@@ -153,7 +153,7 @@ namespace NugetUtility.Tests
             var packages = new Dictionary<string, PackageList>();
             packages.Add("packages", list);
             var info = methods.MapPackagesToLibraryInfo(packages);
-            info.Count.Should().Be(2);
+            info.Count.Should().Equals(2);
         }
 
 

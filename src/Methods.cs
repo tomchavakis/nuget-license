@@ -231,7 +231,7 @@ namespace NugetUtility
 
         private async Task<string> ResolvePackageVersionFromLocalCacheAsync(string name, string versionRange)
         {
-            return await ResolvePackageVersionAsync(name, versionRange, GetVersionsFromLocalCacheAsnync);
+            return await ResolvePackageVersionAsync(name, versionRange, GetVersionsFromLocalCacheAsync);
         }
 
         private async Task<string> ResolvePackageVersionFromNugetServerAsync(string name, string versionRange)
@@ -239,7 +239,22 @@ namespace NugetUtility
             return await ResolvePackageVersionAsync(name, versionRange, GetVersionsFromNugetServerAsync);
         }
 
-        private Task<IEnumerable<string>> GetVersionsFromLocalCacheAsnync(string packageName)
+
+        private async Task<IEnumerable<string>> GetVersionsFromLocalCacheAsync(string packageName)
+        {
+            DirectoryInfo di = new DirectoryInfo(Path.Combine(nugetRoot, packageName));
+            try
+            {
+                return di.GetDirectories().Select(dir => dir.Name);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                return Enumerable.Empty<string>();
+            }
+
+        }
+
+          /*  private Task<IEnumerable<string>> GetVersionsFromLocalCacheAsnync(string packageName)
         {
             DirectoryInfo di = new DirectoryInfo(Path.Combine(nugetRoot, packageName));
             return Task.Run(() =>
@@ -255,7 +270,7 @@ namespace NugetUtility
                 }
                 return result;
             });
-        }
+        }*/
 
         private async Task<IEnumerable<string>> GetVersionsFromNugetServerAsync(string packageName)
         {
