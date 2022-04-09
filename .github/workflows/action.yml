@@ -23,7 +23,7 @@ jobs:
         run: dotnet restore
       # dotnet build and publish
       - name: Build with dotnet
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --configuration Release
       # dotnet test
       - name: test
         run: dotnet test
