@@ -56,7 +56,7 @@ namespace NugetUtility.Tests
                 .BeEquivalentTo(information.Select(x => x.Value.Metadata.Id.ToLower()));
         }
 
-        [TestCase("FluentValidation,5.1.0.0")]
+/*      [TestCase("FluentValidation,5.1.0.0")]
         [Test]
         public async Task GetNugetInformationAsync_Should_Resolve_Missing_NuSpec_File(string package)
         {
@@ -68,7 +68,7 @@ namespace NugetUtility.Tests
             packages.Select(x => x.Split(',')[0])
                 .Should()
                 .BeEquivalentTo(information.Select(x => x.Value.Metadata.Id));
-        }
+        }*/
 
         [Test]
         public void MapPackagesToLibraryInfo_Unique_Should_Return_One_Result()
