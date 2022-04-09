@@ -56,7 +56,7 @@ namespace NugetUtility.Tests
                 .BeEquivalentTo(information.Select(x => x.Value.Metadata.Id.ToLower()));
         }
 
-        [TestCase("FluentValidation,5.1.0.0")]
+        [TestCase("FluentValidation,5.1.0")]
         [Test]
         public async Task GetNugetInformationAsync_Should_Resolve_Missing_NuSpec_File(string package)
         {
