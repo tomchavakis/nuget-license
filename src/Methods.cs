@@ -497,7 +497,13 @@ namespace NugetUtility
                     item.Metadata.Description ?? string.Empty,
                 LicenseType = manual?.LicenseType ?? licenseType ?? string.Empty,
                 LicenseUrl = manual?.LicenseUrl ?? licenseUrl ?? string.Empty,
-                Projects = _packageOptions.IncludeProjectFile ? projectFile : null
+                Projects = _packageOptions.IncludeProjectFile ? projectFile : null,
+                Repository = manual?.Repository ?? new LibraryRepositoryInfo
+                {
+                    Url = item.Metadata.Repository?.Url ?? string.Empty,
+                    Commit = item.Metadata.Repository?.Commit ?? string.Empty,
+                    Type = item.Metadata.Repository?.Type ?? string.Empty,
+                }
             };
         }
 
