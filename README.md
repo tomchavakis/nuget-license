@@ -39,7 +39,7 @@ Usage: dotnet-project-licenses [options]
 | `--outfile` | Output filename |
 | `-f, --output-directory` | Set Output Directory/Folder |
 | `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj, Tests.vbproj, Tests.fsproj' |
-| `--packages-filter` | Simple json file of a text array of packages to skip. Or a regular expression defined between two forward slashes '`/regex/`'. |
+| `--packages-filter` | Simple json file of a text array of packages to skip. Or a regular expression defined between two forward slashes '`/regex/`' or two hashes '`#regex#`'. |
 | `-u, --unique` | (Default: false) Unique licenses list by Id/Version |
 | `-p, --print` | (Default: true) Print licenses. |
 | `--export-license-texts` | Exports the raw license texts |
@@ -103,6 +103,11 @@ dotnet-project-licenses -i projectFolder -o -j -f ~/Projects/github --outfile ~/
 
 ```ps
 dotnet-project-licenses -i projectFolder --export-license-texts --packages-filter '/Microsoft.*/'
+```
+
+### Prints licenses used by a compiled solution excluding all System packages
+```ps
+dotnet-project-licenses -i projectSolution.sln --use-project-assets-json --packages-filter '#System\..*#'
 ```
 
 ### Use a proxy server when getting nuget package information via http requests

@@ -11,7 +11,7 @@ namespace NugetUtility
 {
     public class PackageOptions
     {
-        private readonly Regex UserRegexRegex = new Regex("^\\/(.+)\\/$");
+        private readonly Regex UserRegexRegex = new Regex("^([/#])(.+)\\1$");
 
         private ICollection<string> _allowedLicenseTypes = new Collection<string>();
         private ICollection<LibraryInfo> _manualInformation = new Collection<LibraryInfo>();
@@ -49,7 +49,7 @@ namespace NugetUtility
         [Option("projects-filter", Default = null, HelpText = "Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj'")]
         public string ProjectsFilterOption { get; set; }
 
-        [Option("packages-filter", Default = null, HelpText = "Simple json file of a text array of packages to skip, or a regular expression defined between two forward slashes.")]
+        [Option("packages-filter", Default = null, HelpText = "Simple json file of a text array of packages to skip, or a regular expression defined between two forward slashes or two hashes.")]
         public string PackagesFilterOption { get; set; }
 
         [Option('u', "unique", Default = false, HelpText = "Unique licenses list by Id/Version")]
@@ -150,8 +150,8 @@ namespace NugetUtility
                 // Check if the input is a regular expression that is defined between two forward slashes '/';
                 if (UserRegexRegex.IsMatch(PackagesFilterOption))
                 {
-                    var userRegexString = UserRegexRegex.Replace(PackagesFilterOption, "$1");
-                    // Try parse regular expression between forward slashes
+                    var userRegexString = UserRegexRegex.Replace(PackagesFilterOption, "$2");
+                    // Try parse regular expression between forward slashes or hashes
                     try
                     {
                         var parsedExpression = new Regex(userRegexString, RegexOptions.IgnoreCase);
