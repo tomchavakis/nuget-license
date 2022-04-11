@@ -255,7 +255,8 @@ namespace NugetUtility
 
         private async Task<IEnumerable<string>> GetVersionsFromNugetServerAsync(string packageName)
         {
-            using var request = new HttpRequestMessage(HttpMethod.Get, $"{packageName}/index.json");
+            // Linux request fails with NotFound if URL has any uppercase letters, thus, converting it all to lowercase
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"{packageName}/index.json".ToLowerInvariant());
             try
             {
                 using var response = await _httpClient.SendAsync(request);
