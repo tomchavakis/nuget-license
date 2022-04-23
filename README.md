@@ -27,8 +27,8 @@ Usage: dotnet-project-licenses [options]
 | Option | Description |
 |------|-------------|
 | `-i, --input` | Project or Solution to be analyzed |
-| `-ii, --json-input` | Similar to `-i, --input` but providing a file containing a valid JSON Array that contains all projects to be analyzed |
-| `--include-transitive` | When set, the analysis includes transitive packages (dependencies of packages that are directly installed to the project) |
+| `-ji, --json-input` | Similar to `-i, --input` but providing a file containing a valid JSON Array that contains all projects to be analyzed |
+| `-t, --include-transitive` | When set, the analysis includes transitive packages (dependencies of packages that are directly installed to the project) |
 | `-a, --allowed-license-types` | File containing all allowed licenses in JSON format. If omitted, all licenses are considered to be allowed. |
 | `-ignore, --ignored-packages` | File containing a JSON formatted array containing package names, that should be ignored when validating licenses. Note that even though a package is ignored, it's transitive dependencies are still validated. This Option is useful e.g. to exclude homegrown nuget packages from validation. |
 | `-mapping, --licenseurl-to-license-mappings` | When used, this option allows to override the url to license mapping built into the application (see [here](src/NuGetUtility/LicenseValidator/UrlToLicenseMapping.cs)) |
