@@ -25,25 +25,25 @@ namespace NuGetUtility
             Description = "File in json format that contains an array of all project files to be evaluated")]
         public string? InputJsonFile { get; } = null;
 
-        [Option(LongName = "include-transitive", ShortName = "",
+        [Option(LongName = "include-transitive", ShortName = "t",
             Description =
                 "If set, the whole license tree is followed in order to determine all nuget's used by the projects")]
         public bool IncludeTransitive { get; } = false;
 
-        [Option(LongName = "allowed-license-types",
+        [Option(LongName = "allowed-license-types", ShortName = "a",
             Description = "File in json format that contains an array of all allowed license types")]
         public string? AllowedLicenses { get; } = null;
 
-        [Option(LongName = "ignored-packages", ShortName = "",
+        [Option(LongName = "ignored-packages", ShortName = "ignore",
             Description =
                 "File in json format that contains an array of nuget package names to completely ignore (e.g. useful for nuget packages built in-house. Note that even though the packages are ignored, their transitive dependencies are not.")]
         public string? IgnoredPackages { get; } = null;
 
-        [Option(LongName = "licenseurl-to-license-mappings",
+        [Option(LongName = "licenseurl-to-license-mappings", ShortName = "mapping",
             Description = "File in json format that contains a dictionary to map license urls to licenses.")]
         public string? LicenseMapping { get; } = null;
 
-        [Option(LongName = "override-package-information",
+        [Option(LongName = "override-package-information", ShortName = "override",
             Description =
                 "File in json format that contains a list of package and license information which should be used in favor of the online version. This option can be used to override the license type of packages that e.g. specify the license as file.")]
         public string? OverridePackageInformation { get; } = null;

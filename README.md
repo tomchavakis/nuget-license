@@ -1,7 +1,7 @@
 # Nuget License Utility [![Build Status](https://travis-ci.com/tomchavakis/nuget-license.svg?branch=develop)](https://travis-ci.com/tomchavakis/nuget-license.svg?branch=develop) [![NuGet](https://img.shields.io/nuget/v/dotnet-project-licenses.svg)](https://www.nuget.org/packages/dotnet-project-licenses)
 
 
-A .net core tool to print the licenses of a project. This tool support .NET Core and .NET Standard Projects.
+A .net core tool to print the licenses of a project. This tool supports .NET Core and .NET Standard and .NET Framework Projects.
 
 ## dotnet-project-licenses tool
 
@@ -26,30 +26,14 @@ Usage: dotnet-project-licenses [options]
 
 | Option | Description |
 |------|-------------|
-| `-i, --input` | Project Folder |
-| `--allowed-license-types` | Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed |
-| `-j, --json` | (Default: false) Saves licenses list in a json file (licenses.json) |
-| `-m, --md` | (Default: false) Saves licenses list in a markdown file (licenses.md) |
-| `--include-project-file` | (Default: false) Adds project file path to information when enabled. |
-| `-l, --log-level` | (Default: Error) Sets log level for output display. Options: Error,Warning,Information,Verbose. |
-| `--manual-package-information` | Simple json file of an array of LibraryInfo objects for manually determined packages. |
-| `--licenseurl-to-license-mappings` | Simple json file of Dictinary<string,string> to override default mappings |
-| `--include-transitive` | Include distinct transitive package licenses per project file. |
-| `-o, --output` | (Default: false) Saves as text file (licenses.txt) |
-| `--outfile` | Output filename |
-| `-f, --output-directory` | Set Output Directory/Folder |
-| `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj, Tests.vbproj, Tests.fsproj' |
-| `--packages-filter` | Simple json file of a text array of packages to skip. Or a regular expression defined between two forward slashes '`/regex/`'. |
-| `-u, --unique` | (Default: false) Unique licenses list by Id/Version |
-| `-p, --print` | (Default: true) Print licenses. |
-| `--export-license-texts` | Exports the raw license texts |
-| `--help` | Display this help screen. |
-| `--version` | Display version information. |
-| `--ignore-ssl-certificate-errors` | Ignores SSL certificate errors in HttpClient. |
-| `--use-project-assets-json` | Use the resolved project.assets.json file for each project as the source of package information. Requires the `-t` option since this always includes transitive references. Requires `nuget restore` or `dotnet restore` to be run first. |
-| `--timeout` | Set HttpClient timeout in seconds. |
-| `--proxy-url` | Set a proxy server URL to be used by HttpClient. |
-| `--proxy-system-auth` | Use the system credentials for proxy authentication. |
+| `-i, --input` | Project or Solution to be analyzed |
+| `-ii, --json-input` | Similar to `-i, --input` but providing a file containing a valid JSON Array that contains all projects to be analyzed |
+| `--include-transitive` | When set, the analysis includes transitive packages (dependencies of packages that are directly installed to the project) |
+| `-a, --allowed-license-types` | File containing all allowed licenses in JSON format. If omitted, all licenses are considered to be allowed. |
+| `-ignore, --ignored-packages` | File containing a JSON formatted array containing package names, that should be ignored when validating licenses. Note that even though a package is ignored, it's transitive dependencies are still validated. This Option is useful e.g. to exclude homegrown nuget packages from validation. |
+| `-mapping, --licenseurl-to-license-mappings` | When used, this option allows to override the url to license mapping built into the application (see [here](src/NuGetUtility/LicenseValidator/UrlToLicenseMapping.cs)) |
+| `-mapping, --licenseurl-to-license-mappings` | When used, this option allows to override the url to license mapping built into the application (see [here](src/NuGetUtility/LicenseValidator/UrlToLicenseMapping.cs)) |
+| `-override, --override-package-information` | When used, this option allows to override the package information used for the validation. This makes sure that no attempt is made to get the associated information about the package from the available web resources. This is useful for packages that e.g. provide a license file as part of the nuget package which (at the time of writing) cannot be used for validation and thus requires the package's information to be provided by this option. |
 
 ## Example tool commands
 
@@ -58,65 +42,8 @@ dotnet-project-licenses --help
 ```
 
 ```ps
-dotnet-project-licenses -i projectFolder
+dotnet-project-licenses -i project.csproj
 ```
-
-### Print unique licenses
-
-Values for the input may include a folder path, a Visual Studio '.sln' file, a '.csproj' or a '.fsproj' file or a '.vbproj' file.
-
-```ps
-dotnet-project-licenses -i projectFolder -u
-```
-
-### Creates output file of unique licenses in a plain text 'licenses.txt' file in current directory
-
-```ps
-dotnet-project-licenses -i projectFolder -u -o
-```
-
-### Create output file 'new-name.txt' in another directory
-
-```ps
-dotnet-project-licenses -i projectFolder -o --outfile ../../../another/folder/new-name.txt
-```
-
-### Creates output json file of unique licenses in a file 'licenses.json' in the current directory
-
-```ps
-dotnet-project-licenses -i projectFolder -u -o -j
-```
-
-### Exports all license texts in the current directory
-
-```ps
-dotnet-project-licenses -i projectFolder --export-license-texts
-```
-
-### Exports all license texts in ~/Projects/github directory and output json in ~/Projects/output.json
-
-```ps
-dotnet-project-licenses -i projectFolder -o -j -f ~/Projects/github --outfile ~/Projects/output.json --export-license-texts
-```
-
-### Exports all license texts in the current directory excluding all Microsoft packages
-
-```ps
-dotnet-project-licenses -i projectFolder --export-license-texts --packages-filter '/Microsoft.*/'
-```
-
-### Use a proxy server when getting nuget package information via http requests
-
-```ps
-dotnet-project-licenses -i projectFolder --proxy-url "http://my.proxy.com:8080"
-```
-
-### Use a proxy server requiring authentication with the system credentials
-
-```ps
-dotnet-project-licenses -i projectFolder --proxy-url "http://my.proxy.com:8080" --proxy-system-auth
-```
-
 
 ## Docker
 
@@ -124,13 +51,11 @@ dotnet-project-licenses -i projectFolder --proxy-url "http://my.proxy.com:8080" 
 ```
 docker build . -t nuget-license
 ```
-### Run the image and export the licenses locally
+### Run the same example commands as above in docker
+```ps
+docker run -it -v projectPath:/tmp nuget-license --help 
 ```
-docker run -it -v projectPath:/tmp nuget-license -i /tmp -f /tmp --export-license-texts -l Verbose
 
-where projectPath is the path of the project that you want to export the licenses. 
-You can also add the command parameters of the tool.
-
-ex.
-docker run -it -v ~/Projects/github/nuget-license:/tmp nuget-license -i /tmp -o --export-license-texts -l Verbose
+```ps
+docker run -it -v projectPath:/tmp nuget-license -i /tmp/project.csproj 
 ```
