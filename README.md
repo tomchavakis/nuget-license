@@ -32,7 +32,6 @@ Usage: dotnet-project-licenses [options]
 | `-a, --allowed-license-types` | File containing all allowed licenses in JSON format. If omitted, all licenses are considered to be allowed. |
 | `-ignore, --ignored-packages` | File containing a JSON formatted array containing package names, that should be ignored when validating licenses. Note that even though a package is ignored, it's transitive dependencies are still validated. This Option is useful e.g. to exclude homegrown nuget packages from validation. |
 | `-mapping, --licenseurl-to-license-mappings` | When used, this option allows to override the url to license mapping built into the application (see [here](src/NuGetUtility/LicenseValidator/UrlToLicenseMapping.cs)) |
-| `-mapping, --licenseurl-to-license-mappings` | When used, this option allows to override the url to license mapping built into the application (see [here](src/NuGetUtility/LicenseValidator/UrlToLicenseMapping.cs)) |
 | `-override, --override-package-information` | When used, this option allows to override the package information used for the validation. This makes sure that no attempt is made to get the associated information about the package from the available web resources. This is useful for packages that e.g. provide a license file as part of the nuget package which (at the time of writing) cannot be used for validation and thus requires the package's information to be provided by this option. |
 
 ## Example tool commands
