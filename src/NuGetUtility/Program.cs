@@ -66,10 +66,20 @@ namespace NuGetUtility
             var projectReader = new ReferencedPackageReader(ignoredPackages, new MsBuildAbstraction(),
                 new LockFileFactory(), new PackageSearchMetadataBuilderFactory());
             var validator = new LicenseValidator.LicenseValidator(licenseMappings, allowedLicenses);
+            var validationExceptions = new List<Exception>();
 
             foreach (var project in projects)
             {
-                var installedPackages = projectReader.GetInstalledPackages(project, IncludeTransitive);
+                IEnumerable<IPackageSearchMetadata> installedPackages;
+                try
+                {
+                    installedPackages = projectReader.GetInstalledPackages(project, IncludeTransitive);
+                }
+                catch (MsBuildAbstractionException e)
+                {
+                    validationExceptions.Add(e);
+                    continue;
+                }
 
                 var settings = Settings.LoadDefaultSettings(project);
                 var sourceProvider = new PackageSourceProvider(settings);
@@ -79,6 +89,16 @@ namespace NuGetUtility
                 var downloadedInfo = informationReader.GetPackageInfo(installedPackages, CancellationToken.None);
 
                 await validator.Validate(downloadedInfo, project);
+            }
+
+            if (validationExceptions.Any())
+            {
+                foreach (var exception in validationExceptions)
+                {
+                    await Console.Error.WriteLineAsync(exception.Message);
+                }
+
+                return -1;
             }
 
             if (validator.GetErrors().Any())
