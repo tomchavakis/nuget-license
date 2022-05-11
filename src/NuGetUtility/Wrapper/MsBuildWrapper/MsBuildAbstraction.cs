@@ -45,7 +45,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             if (!IsPackageReferenceProject(project))
             {
                 throw new MsBuildAbstractionException(
-                    "Invalid project structure detected. Currently only PackageReference projects are supported");
+                    $"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {project.FullPath})");
             }
 
             return new ProjectWrapper(project);
