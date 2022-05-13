@@ -1,15 +1,16 @@
 ﻿using AutoFixture;
 using Moq;
 using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Test.Helper.AsyncEnumerableExtension;
 using NuGetUtility.Test.Helper.AutoFixture;
 using NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning;
 using NuGetUtility.Test.Helper.NuGet.Protocol.Core.Types;
-using NuGetUtility.Test.Helper.NuGet.Versioning;
 using NuGetUtility.Test.Helper.ShuffelledEnumerable;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 using NUnit.Framework;
 
 namespace NuGetUtility.Test.PackageInformationReader
@@ -74,7 +75,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             SetupUut();
 
             var searchedPackages = _customPackageInformation.Select(p =>
-                new PackageSearchMetadataMock(new PackageIdentity(p.Id, new WrappedNuGetVersion(p.Version))) as
+                new PackageSearchMetadataMock(new PackageIdentity(p.Id, CreateMockedVersion(p.Version))) as
                     IPackageSearchMetadata);
 
             var searchedPackageInfo =
@@ -108,7 +109,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             }
 
             var searchedPackages = searchedPackagesAsPackageInformation.Select(i =>
-                new PackageSearchMetadataMock(new PackageIdentity(i.Id, new WrappedNuGetVersion(i.Version))) as
+                new PackageSearchMetadataMock(new PackageIdentity(i.Id, CreateMockedVersion(i.Version))) as
                     IPackageSearchMetadata);
 
             var searchedPackageInfo =
@@ -154,7 +155,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             }
 
             var searchedPackages = searchedPackagesAsPackageInformation.Select(i =>
-                new PackageSearchMetadataMock(new PackageIdentity(i.Id, new WrappedNuGetVersion(i.Version))) as
+                new PackageSearchMetadataMock(new PackageIdentity(i.Id, CreateMockedVersion(i.Version))) as
                     IPackageSearchMetadata);
 
             var searchedPackageInfo =
@@ -170,13 +171,21 @@ namespace NuGetUtility.Test.PackageInformationReader
         {
             var searchedPackagesAsPackageInformation = _fixture.CreateMany<CustomPackageInformation>().ToArray();
             var searchedPackages = searchedPackagesAsPackageInformation.Select(p =>
-                new PackageSearchMetadataMock(new PackageIdentity(p.Id, new WrappedNuGetVersion(p.Version))) as
+                new PackageSearchMetadataMock(new PackageIdentity(p.Id, CreateMockedVersion(p.Version))) as
                     IPackageSearchMetadata).ToArray();
 
             var searchedPackageInfo =
                 await _uut!.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
 
             CollectionAssert.AreEquivalent(searchedPackages, searchedPackageInfo);
+        }
+
+        private INuGetVersion CreateMockedVersion(NuGetVersion innerVersion)
+        {
+            var mock = new Mock<INuGetVersion>();
+            mock.Setup(m => m.ToString()).Returns(innerVersion.ToString());
+
+            return mock.Object;
         }
     }
 }
