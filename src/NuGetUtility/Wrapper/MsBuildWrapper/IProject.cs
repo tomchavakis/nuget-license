@@ -3,5 +3,9 @@
     public interface IProject
     {
         string GetAssetsPath();
+
+        bool HasNugetPackagesReferenced();
+
+        bool IsNotPackageReferenceProject();
     }
 }
