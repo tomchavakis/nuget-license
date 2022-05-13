@@ -39,6 +39,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _packageReferencesFromProjectForFramework = new Dictionary<string, PackageReference[]>();
 
             _msBuild.Setup(m => m.GetProject(_projectPath)).Returns(_projectMock.Object);
+            _projectMock.Setup(m => m.HasNugetPackagesReferenced()).Returns(true);
             _projectMock.Setup(m => m.GetAssetsPath()).Returns(_assetsFilePath);
             _lockFileFactory.Setup(m => m.GetFromFile(_assetsFilePath)).Returns(_lockFileMock.Object);
             _lockFileMock.SetupGet(m => m.PackageSpec).Returns(_packageSpecMock.Object);
@@ -257,6 +258,16 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             CollectionAssert.AreEquivalent(
                 directReferencesResult.Where(l => l.Object.Name != ignoredPackageName).Select(l =>
                     new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))), result);
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_ReturnEmptyCollection_When_ProjectHasNoPackageReferences(
+            [Values] bool includeTransitive)
+        {
+            _projectMock!.Setup(m => m.HasNugetPackagesReferenced()).Returns(false);
+            var result = _uut!.GetInstalledPackages(_projectPath!, includeTransitive);
+
+            Assert.That(result.Count(), Is.EqualTo(0));
         }
     }
 }

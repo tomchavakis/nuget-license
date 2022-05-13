@@ -28,6 +28,17 @@ namespace NuGetUtility.ReferencedPackagesReader
         {
             var project = _msBuild.GetProject(projectPath);
 
+            if (!project.HasNugetPackagesReferenced())
+            {
+                return Enumerable.Empty<IPackageSearchMetadata>();
+            }
+
+            return GetInstalledPackagesFromAssetsFile(projectPath, includeTransitive, project);
+        }
+
+        private IEnumerable<IPackageSearchMetadata> GetInstalledPackagesFromAssetsFile(string projectPath,
+            bool includeTransitive, IProject project)
+        {
             var assetsFile = LoadAssetsFile(projectPath, project);
 
             var referencedLibraries = new HashSet<ILockFileLibrary>();
@@ -35,23 +46,30 @@ namespace NuGetUtility.ReferencedPackagesReader
             foreach (var target in assetsFile.Targets!)
             {
                 var referencedLibrariesForTarget =
-                    assetsFile.Libraries.Where(l => l.Type != ProjectReferenceIdentifier);
-
-                if (!includeTransitive)
-                {
-                    var targetFrameworkInformation = GetTargetFrameworkInformation(target, assetsFile);
-                    var directlyReferencedPackages = _msBuild.GetPackageReferencesFromProjectForFramework(projectPath,
-                        targetFrameworkInformation.FrameworkName.ToString()!);
-
-                    referencedLibrariesForTarget =
-                        referencedLibrariesForTarget.Where(l => IsDirectlyReferenced(l, directlyReferencedPackages));
-                }
-
+                    GetReferencedLibrariesForTarget(projectPath, includeTransitive, assetsFile, target);
                 referencedLibraries.AddRange(referencedLibrariesForTarget);
             }
 
             return referencedLibraries.Where(IsNotIgnoredPackage).Select(r =>
                 _metadataBuilderFactory.FromIdentity(new PackageIdentity(r.Name, r.Version)).Build());
+        }
+
+        private IEnumerable<ILockFileLibrary> GetReferencedLibrariesForTarget(string projectPath,
+            bool includeTransitive, ILockFile assetsFile, ILockFileTarget target)
+        {
+            var referencedLibrariesForTarget = assetsFile.Libraries.Where(l => l.Type != ProjectReferenceIdentifier);
+
+            if (!includeTransitive)
+            {
+                var targetFrameworkInformation = GetTargetFrameworkInformation(target, assetsFile);
+                var directlyReferencedPackages = _msBuild.GetPackageReferencesFromProjectForFramework(projectPath,
+                    targetFrameworkInformation.FrameworkName.ToString()!);
+
+                referencedLibrariesForTarget =
+                    referencedLibrariesForTarget.Where(l => IsDirectlyReferenced(l, directlyReferencedPackages));
+            }
+
+            return referencedLibrariesForTarget;
         }
 
         private bool IsNotIgnoredPackage(ILockFileLibrary packageInfo)
