@@ -9,6 +9,7 @@ using NuGetUtility.PackageInformationReader;
 using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Serialization;
 using NuGetUtility.Wrapper.MsBuildWrapper;
+using NuGetUtility.Wrapper.NuGetWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 using System.Text.Json;
@@ -75,7 +76,7 @@ namespace NuGetUtility
                 {
                     installedPackages = projectReader.GetInstalledPackages(project, IncludeTransitive);
                 }
-                catch (MsBuildAbstractionException e)
+                catch (Exception e) when (IsInternalException(e))
                 {
                     validationExceptions.Add(e);
                     continue;
@@ -117,6 +118,12 @@ namespace NuGetUtility
                     license => { return new object[] { license.PackageId, license.PackageVersion, license.License }; })
                 .Print();
             return 0;
+        }
+
+        private static bool IsInternalException(Exception exception)
+        {
+            return exception is MsBuildAbstractionException || exception is ReferencedPackageReaderException ||
+                   exception is NugetWrapperException;
         }
 
         private IEnumerable<CustomPackageInformation> GetOverridePackageInformation()
