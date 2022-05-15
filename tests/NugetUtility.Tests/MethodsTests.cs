@@ -56,9 +56,23 @@ namespace NugetUtility.Tests
                 .BeEquivalentTo(information.Select(x => x.Value.Metadata.Id.ToLower()));
         }
 
-        [TestCase("FluentValidation,5.1.0.0")]
+        [TestCase("FluentAssertions,6.1.0.0")]
         [Test]
         public async Task GetNugetInformationAsync_Should_Resolve_Missing_NuSpec_File(string package)
+        {
+            AddMethods();
+            var packages = package.Split(';', System.StringSplitOptions.RemoveEmptyEntries);
+            var referencedpackages = packages.Select(p => { var split = p.Split(","); return new PackageNameAndVersion { Name = split[0], Version = split[1] }; });
+            var information = await _methods.GetNugetInformationAsync(_projectPath, referencedpackages);
+
+            packages.Select(x => x.Split(',')[0])
+                .Should()
+                .BeEquivalentTo(information.Select(x => x.Value.Metadata.Id));
+        }
+
+        [TestCase("CommandLineParser,2.8.0")]
+        [Test]
+        public async Task GetNugetInformationAsync_Should_Resolve_NuSpec_File_From_Local_Cache(string package)
         {
             AddMethods();
             var packages = package.Split(';', System.StringSplitOptions.RemoveEmptyEntries);

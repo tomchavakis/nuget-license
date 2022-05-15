@@ -160,7 +160,8 @@ namespace NugetUtility
                         }
 
                         // Try dowload nuspec
-                        using var request = new HttpRequestMessage(HttpMethod.Get, $"{packageWithVersion.Name}/{version}/{packageWithVersion.Name}.nuspec");
+                        // Linux request fails with NotFound if URL has any uppercase letters, thus, converting it all to lowercase
+                        using var request = new HttpRequestMessage(HttpMethod.Get, $"{packageWithVersion.Name}/{version}/{packageWithVersion.Name}.nuspec".ToLowerInvariant());
                         using var response = await _httpClient.SendAsync(request);
                         if (!response.IsSuccessStatusCode)
                         {
@@ -241,7 +242,8 @@ namespace NugetUtility
 
         private async Task <IEnumerable<string>> GetVersionsFromLocalCacheAsync(string packageName)
         {
-            DirectoryInfo di = new DirectoryInfo(Path.Combine(nugetRoot, packageName));
+            // Linux request fails with NotFound if URL has any uppercase letters, thus, converting it all to lowercase
+            DirectoryInfo di = new DirectoryInfo(Path.Combine(nugetRoot, packageName).ToLowerInvariant());
             try
             {
                 return di.GetDirectories().Select(dir => dir.Name);
