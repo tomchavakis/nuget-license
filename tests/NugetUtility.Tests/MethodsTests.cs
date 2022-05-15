@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using CommandLine.Text;
 using FluentAssertions;
@@ -331,6 +332,29 @@ namespace NugetUtility.Tests
             var referencedpackages = new PackageNameAndVersion[] { new PackageNameAndVersion { Name = package, Version = version } };
 
             Assert.DoesNotThrowAsync(async () => await _methods.GetNugetInformationAsync(_projectPath, referencedpackages));
+        }
+
+        [Test]
+        public void GetVersionsFromLocalCacheAsync_Should_Return_Lowercase_Cache()
+        {
+            AddMethods();
+            string packageName = "Random.Package";
+            string packageVersion1 = "1.0.0";
+            string packageVersion2 = "2.0.3";
+            var nugetPackageFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".nuget", "packages", packageName.ToLowerInvariant());
+            Directory.CreateDirectory(nugetPackageFolder);
+            Directory.CreateDirectory(Path.Combine(nugetPackageFolder, packageVersion1));
+            Directory.CreateDirectory(Path.Combine(nugetPackageFolder, packageVersion2));
+
+            MethodInfo methodInfo = typeof(Methods).GetMethod(
+                "GetVersionsFromLocalCacheAsync",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+
+            object task = methodInfo.Invoke(_methods, new[] { packageName });
+
+            IEnumerable<string> dirs = ((Task<IEnumerable<string>>)task).Result;
+
+            dirs.Should().NotBeEmpty().And.BeEquivalentTo(new[] { packageVersion1, packageVersion2 });
         }
     }
 }
