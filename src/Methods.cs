@@ -14,7 +14,7 @@ using System.Xml.Serialization;
 using System.Xml.XPath;
 using Newtonsoft.Json;
 using NuGet.Versioning;
-using static NugetUtility.Utilties;
+using static NugetUtility.Utilities;
 
 namespace NugetUtility
 {
@@ -983,12 +983,20 @@ namespace NugetUtility
                         }
 
                         var contentType = response.Content.Headers.GetValues("Content-Type").First().Split(';').First(); // stripping away charset if exists.
+                        Stream outputStream = await response.Content.ReadAsStreamAsync();
                         if (contentType == "text/html")
                         {
-                            outpath = outpathhtml;
+                            if (!_packageOptions.ConvertHtmlToText)
+                            {
+                                outpath = outpathhtml;
+                            }
+                            else
+                            {
+                                outputStream = ConvertHtmlFileToText(outputStream);
+                            }
                         }
                         using var fileStream = File.OpenWrite(outpath);
-                        await response.Content.CopyToAsync(fileStream);
+                        await outputStream.CopyToAsync(fileStream);
                         break;
                     }
                     catch (HttpRequestException)
@@ -1000,39 +1008,17 @@ namespace NugetUtility
             }
         }
 
-        public void ConvertHtmlFileToText(string htmlFile)
+        public Stream ConvertHtmlFileToText(Stream htmlStream)
         {
             var htmlDocument = new HtmlAgilityPack.HtmlDocument();
-            
-            htmlDocument.Load(htmlFile);
-            
+
+            htmlDocument.Load(htmlStream);
             string htmlStrippedText =
                 System.Web.HttpUtility.HtmlDecode(
                     htmlDocument.DocumentNode.InnerText
                 );
-            
-            string textFile = htmlFile.Replace(".html", ".txt");
-            
-            WriteOutput(
-                line: $"Converting {htmlFile} to {textFile}...",
-                logLevel: LogLevel.Verbose
-            );    
-            File.WriteAllText(textFile, htmlStrippedText);
 
-            WriteOutput(
-                line: $"Deleting {htmlFile}...",
-                logLevel: LogLevel.Verbose
-            );
-            File.Delete(htmlFile);
-        }
-
-        public void ConvertHtmlFilesToText(string htmlFolder)
-        {
-            var htmlFiles = Directory.GetFiles(htmlFolder, "*.html");
-            foreach (var htmlFile in htmlFiles)
-            {
-                ConvertHtmlFileToText(htmlFile);
-            }
+            return new MemoryStream(Encoding.UTF8.GetBytes(htmlStrippedText));
         }
 
         private bool IsGithub(string uri)

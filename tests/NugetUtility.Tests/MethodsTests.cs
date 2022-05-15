@@ -224,7 +224,7 @@ namespace NugetUtility.Tests
 
             result.Should().HaveCount(1);
             validationResult.IsValid.Should().BeFalse();
-            validationResult.InvalidPackages.Count.Should().Be(4);
+            validationResult.InvalidPackages.Count.Should().Be(5);
         }
 
         [Test]
@@ -242,7 +242,7 @@ namespace NugetUtility.Tests
 
             result.Should().HaveCount(1);
             validationResult.IsValid.Should().BeFalse();
-            validationResult.InvalidPackages.Count.Should().Be(4);
+            validationResult.InvalidPackages.Count.Should().Be(5);
         }
 
         [Test]

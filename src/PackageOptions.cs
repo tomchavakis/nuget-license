@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using CommandLine;
 using CommandLine.Text;
-using static NugetUtility.Utilties;
+using static NugetUtility.Utilities;
 
 namespace NugetUtility
 {

@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "NugetUtility": {
+      "commandName": "Project"
+    },
+    "MyTests": {
+      "commandName": "Project",
+      "commandLineArgs": "--input . --md --unique --include-transitive --use-project-assets-json --output-directory licenses --export-license-texts --print=true --convert-html-to-text",
+      "workingDirectory": "C:\\Users\\lexy.zhitenev\\source\\repos\\opps"
+    }
+  }
+}

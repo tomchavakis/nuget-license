@@ -61,13 +61,6 @@ namespace NugetUtility
                     await methods.ExportLicenseTexts(mappedLibraryInfo);
                 }
 
-                if (options.ConvertHtmlToText)
-                {
-                    methods.ConvertHtmlFilesToText(
-                        methods.GetExportDirectory()
-                    );
-                }
-
                 mappedLibraryInfo = methods.HandleDeprecateMSFTLicense(mappedLibraryInfo);
 
                 if (options.Print == true)
