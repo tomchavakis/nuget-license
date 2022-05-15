@@ -239,7 +239,9 @@ namespace NugetUtility
             return await ResolvePackageVersionAsync(name, versionRange, GetVersionsFromNugetServerAsync);
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async Task <IEnumerable<string>> GetVersionsFromLocalCacheAsync(string packageName)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             DirectoryInfo di = new DirectoryInfo(Path.Combine(nugetRoot, packageName));
             try
