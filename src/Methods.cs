@@ -160,12 +160,12 @@ namespace NugetUtility
                         }
 
                         // Try dowload nuspec
-                        using var request = new HttpRequestMessage(HttpMethod.Get, $"{packageWithVersion.Name}/{version}/{packageWithVersion.Name}.nuspec");
+                        using var request = new HttpRequestMessage(HttpMethod.Get, $"{packageWithVersion.Name}/{version}/{packageWithVersion.Name}.nuspec".ToLowerInvariant());
                         using var response = await _httpClient.SendAsync(request);
                         if (!response.IsSuccessStatusCode)
                         {
                             WriteOutput($"{request.RequestUri} failed due to {response.StatusCode}!", logLevel: LogLevel.Warning);
-                            var fallbackResult = await GetNuGetPackageFileResult<Package>(packageWithVersion.Name, version, $"{packageWithVersion.Name}.nuspec");
+                            var fallbackResult = await GetNuGetPackageFileResult<Package>(packageWithVersion.Name, version, $"{packageWithVersion.Name}.nuspec".ToLowerInvariant());
                             if (fallbackResult is Package)
                             {
                                 licenses.Add($"{packageWithVersion.Name},{version}", fallbackResult);
@@ -241,7 +241,8 @@ namespace NugetUtility
 
         private async Task <IEnumerable<string>> GetVersionsFromLocalCacheAsync(string packageName)
         {
-            DirectoryInfo di = new DirectoryInfo(Path.Combine(nugetRoot, packageName));
+            // Nuget saves packages in lowercase format, and we should look for lowercase folders only to allow Linux case-sensitive folder enumeration to succeed
+            DirectoryInfo di = new DirectoryInfo(Path.Combine(nugetRoot, packageName).ToLowerInvariant());
             try
             {
                 return di.GetDirectories().Select(dir => dir.Name);
@@ -588,7 +589,7 @@ namespace NugetUtility
         where T : class
         {
             if (string.IsNullOrWhiteSpace(packageName) || string.IsNullOrWhiteSpace(versionNumber)) { return await Task.FromResult<T>(null); }
-            var fallbackEndpoint = new Uri(string.Format(fallbackPackageUrl, packageName, versionNumber));
+            var fallbackEndpoint = new Uri(string.Format(fallbackPackageUrl, packageName, versionNumber).ToLowerInvariant());
             WriteOutput(() => "Attempting to download: " + fallbackEndpoint.ToString(), logLevel: LogLevel.Verbose);
             using var packageRequest = new HttpRequestMessage(HttpMethod.Get, fallbackEndpoint);
             using var packageResponse = await _httpClient.SendAsync(packageRequest, CancellationToken.None);
@@ -860,7 +861,7 @@ namespace NugetUtility
         public async Task<bool> GetLicenceFromNpkgFile(string package, string licenseFile, string version)
         {
             bool result = false;
-            var nupkgEndpoint = new Uri(string.Format(fallbackPackageUrl, package, version));
+            var nupkgEndpoint = new Uri(string.Format(fallbackPackageUrl, package, version).ToLowerInvariant());
             WriteOutput(() => $"Attempting to download: {nupkgEndpoint}", logLevel: LogLevel.Verbose);
             using var packageRequest = new HttpRequestMessage(HttpMethod.Get, nupkgEndpoint);
             using var packageResponse = await _httpClient.SendAsync(packageRequest, CancellationToken.None);
@@ -963,6 +964,7 @@ namespace NugetUtility
                 do
                 {
                     WriteOutput(() => $"Attempting to download {source} to {outpath}", logLevel: LogLevel.Verbose);
+                    // We are not using conversion of URI to lowercase here because we think that the URI provided by the package maintainer should be a correct one
                     using var request = new HttpRequestMessage(HttpMethod.Get, source);
                     try
                     {
