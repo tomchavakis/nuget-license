@@ -11,5 +11,13 @@ namespace NugetUtility
         public string LicenseUrl { get; set; }
         public string LicenseType { get; set; }
         public string Projects { get; set; }
+        public LibraryRepositoryInfo Repository { get; set; }
+    }
+
+    public class LibraryRepositoryInfo
+    {
+        public string Type { get; set; }
+        public string Url { get; set; }
+        public string Commit { get; set; }
     }
 }
