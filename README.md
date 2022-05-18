@@ -23,34 +23,34 @@ dotnet tool uninstall --global dotnet-project-licenses
 Usage: dotnet-project-licenses [options]
 
 **Options:**
-
-| <div style="width:250px">Option</div> | Description |
-|------|-------------|
-| `-i`, `--input` | Project Folder |
-| `-o`, `--output` | (Default: false) Save as text file (licenses.txt). |
-| `--outfile` | Output filename |
-| `-f`, `--output-directory` | Output Directory/Folder. |
-| `-j`, `--json` | (Default: false) Save licenses list in a json file (licenses.json). |
-| `-m`, `--md` | (Default: false) Save licenses list in a markdown file (licenses.md). |
-| `--include-project-file` | (Default: false) Add project file path to information when enabled. |
-| `-l`, `--log-level` | (Default: Error) Set log level for output display. Options: Error,Warning,Information,Verbose. |
-| `--allowed-license-types` | Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed. |
-| `--manual-package-information` | Simple json file of an array of LibraryInfo objects for manually determined packages. |
-| `--licenseurl-to-license-mappings` | Simple json file of Dictionary<string,string> to override default mappings. |
-| `-t`, `--include-transitive` | Include distinct transitive package licenses per project file. |
-| `--use-project-assets-json` | Use the resolved project.assets.json file for each project as the source of package information. Requires the `-t` option since this always includes transitive.references. Requires `nuget restore` or `dotnet restore` to be run first. |
-| `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj, Tests.vbproj, Tests.fsproj'. |
-| `--packages-filter` | Simple json file of a text array of packages to skip. Or a regular expression defined between two forward slashes '`/regex/`' or two hashes '`#regex#`'. |
-| `-u`, `--unique` | (Default: false) Unique licenses list by Id/Version. |
-| `-p`, `--print` | (Default: true) Print licenses. |
-| `-e`, `--export-license-texts` | Export the raw license texts |
-| `-c`, `--convert-html-to-text` | Strip HTML tags if the license file is HTML and save as plain text (EXPERIMENTAL) | 
-| `--help` | Display this help screen. |
-| `--version` | Display version information. |
-| `--ignore-ssl-certificate-errors` | Ignore SSL certificate errors in HttpClient. |
-| `--timeout` | Set HttpClient timeout in seconds. |
-| `--proxy-url` | Set a proxy server URL to be used by HttpClient. |
-| `--proxy-system-auth` | Use the system credentials for proxy authentication. |
+<table>
+  <tr><td width="30%">Option</td><td width="70%">Description</td></tr>
+  <tr><td> -i, --input </td><td>Project Folder</td></tr>
+  <tr><td> -o, --output </td><td>(Default: false) Save as text file (licenses.txt)</td></tr>
+  <tr><td> --outfile </td><td>Output filename</td></tr>
+  <tr><td> -f, --output-directory </td><td>Output Directory/Folder</td></tr>
+  <tr><td> -j, --json </td><td>(Default: false) Save licenses list in a json file (licenses.json)</td></tr>
+  <tr><td> -m, --md </td><td>(Default: false) Save licenses list in a markdown file (licenses.md)</td></tr>
+  <tr><td> --include-project-file </td><td>(Default: false) Add project file path to information when enabled</td></tr>
+  <tr><td> -l, --log-level </td><td>(Default: Error) Set log level for output display. Options: Error,Warning,Information,Verbose</td></tr>
+  <tr><td> --allowed-license-types </td><td>Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed</td></tr>
+  <tr><td> --manual-package-information</td><td>Simple json file of an array of LibraryInfo objects for manually determined packages</td></tr>
+  <tr><td> --licenseurl-to-license-mappings</td><td>Simple json file of Dictionary<string,string> to override default mappings</td></tr>
+  <tr><td> -t, --include-transitive </td><td>Include distinct transitive package licenses per project file</td></tr>
+  <tr><td> --use-project-assets-json </td><td>Use the resolved project.assets.json file for each project as the source of package information. Requires the <code>-t</code> option since this always includes transitive.references. Requires <code>nuget restore</code> or <code>dotnet restore</code> to be run first</td></tr>
+  <tr><td> --projects-filter </td><td>Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj, Tests.vbproj, Tests.fsproj'</td></tr>
+  <tr><td> --packages-filter </td><td>Simple json file of a text array of packages to skip. Or a regular expression defined between two forward slashes <code>'/regex/'</code> or two hashes <code>'#regex#'</code></td></tr>
+  <tr><td> -u, --unique </td><td>(Default: false) Unique licenses list by Id/Version</td></tr>
+  <tr><td> -p, --print </td><td>(Default: true) Print licenses</td></tr>
+  <tr><td> -e, --export-license-texts </td><td>Export the raw license texts</td></tr>
+  <tr><td> -c, --convert-html-to-text </td><td>Strip HTML tags if the license file is HTML and save as plain text (EXPERIMENTAL)</td></tr>
+  <tr><td> --help </td><td>Display this help screen</td></tr>
+  <tr><td> --version </td><td>Display version information</td></tr>
+  <tr><td> --ignore-ssl-certificate-errors </td><td>Ignore SSL certificate errors in HttpClient</td></tr>
+  <tr><td> --timeout </td><td>Set HttpClient timeout in seconds</td></tr>
+  <tr><td> --proxy-url </td><td>Set a proxy server URL to be used by HttpClient</td></tr>
+  <tr><td> --proxy-system-auth </td><td>Use the system credentials for proxy authentication</td></tr>  
+</table>
 
 ## Example tool commands
 
