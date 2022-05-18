@@ -24,7 +24,7 @@ Usage: dotnet-project-licenses [options]
 
 **Options:**
 
-| Option | Description |
+| <div style="width:250px">Option</div> | Description |
 |------|-------------|
 | `-i`, `--input` | Project Folder |
 | `-o`, `--output` | (Default: false) Save as text file (licenses.txt). |
