@@ -26,27 +26,28 @@ Usage: dotnet-project-licenses [options]
 
 | Option | Description |
 |------|-------------|
-| `-i, --input` | Project Folder |
-| `--allowed-license-types` | Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed |
-| `-j, --json` | (Default: false) Saves licenses list in a json file (licenses.json) |
-| `-m, --md` | (Default: false) Saves licenses list in a markdown file (licenses.md) |
-| `--include-project-file` | (Default: false) Adds project file path to information when enabled. |
-| `-l, --log-level` | (Default: Error) Sets log level for output display. Options: Error,Warning,Information,Verbose. |
-| `--manual-package-information` | Simple json file of an array of LibraryInfo objects for manually determined packages. |
-| `--licenseurl-to-license-mappings` | Simple json file of Dictionary<string,string> to override default mappings |
-| `--include-transitive` | Include distinct transitive package licenses per project file. |
-| `-o, --output` | (Default: false) Saves as text file (licenses.txt) |
+| `-i`, `--input` | Project Folder |
+| `-o`, `--output` | (Default: false) Save as text file (licenses.txt). |
 | `--outfile` | Output filename |
-| `-f, --output-directory` | Set Output Directory/Folder |
-| `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj, Tests.vbproj, Tests.fsproj' |
+| `-f`, `--output-directory` | Output Directory/Folder. |
+| `-j`, `--json` | (Default: false) Save licenses list in a json file (licenses.json). |
+| `-m`, `--md` | (Default: false) Save licenses list in a markdown file (licenses.md). |
+| `--include-project-file` | (Default: false) Add project file path to information when enabled. |
+| `-l`, `--log-level` | (Default: Error) Set log level for output display. Options: Error,Warning,Information,Verbose. |
+| `--allowed-license-types` | Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed. |
+| `--manual-package-information` | Simple json file of an array of LibraryInfo objects for manually determined packages. |
+| `--licenseurl-to-license-mappings` | Simple json file of Dictionary<string,string> to override default mappings. |
+| `-t`, `--include-transitive` | Include distinct transitive package licenses per project file. |
+| `--use-project-assets-json` | Use the resolved project.assets.json file for each project as the source of package information. Requires the `-t` option since this always includes transitive.references. Requires `nuget restore` or `dotnet restore` to be run first. |
+| `--projects-filter` | Simple json file of a text array of projects to skip. Supports Ends with matching such as 'Tests.csproj, Tests.vbproj, Tests.fsproj'. |
 | `--packages-filter` | Simple json file of a text array of packages to skip. Or a regular expression defined between two forward slashes '`/regex/`' or two hashes '`#regex#`'. |
-| `-u, --unique` | (Default: false) Unique licenses list by Id/Version |
-| `-p, --print` | (Default: true) Print licenses. |
-| `--export-license-texts` | Exports the raw license texts |
+| `-u`, `--unique` | (Default: false) Unique licenses list by Id/Version. |
+| `-p`, `--print` | (Default: true) Print licenses. |
+| `-e`, `--export-license-texts` | Export the raw license texts |
+| `-c`, `--convert-html-to-text` | Strip HTML tags if the license file is HTML and save as plain text (EXPERIMENTAL) | 
 | `--help` | Display this help screen. |
 | `--version` | Display version information. |
-| `--ignore-ssl-certificate-errors` | Ignores SSL certificate errors in HttpClient. |
-| `--use-project-assets-json` | Use the resolved project.assets.json file for each project as the source of package information. Requires the `-t` option since this always includes transitive references. Requires `nuget restore` or `dotnet restore` to be run first. |
+| `--ignore-ssl-certificate-errors` | Ignore SSL certificate errors in HttpClient. |
 | `--timeout` | Set HttpClient timeout in seconds. |
 | `--proxy-url` | Set a proxy server URL to be used by HttpClient. |
 | `--proxy-system-auth` | Use the system credentials for proxy authentication. |
@@ -99,10 +100,10 @@ dotnet-project-licenses -i projectFolder --export-license-texts
 dotnet-project-licenses -i projectFolder -o -j -f ~/Projects/github --outfile ~/Projects/output.json --export-license-texts
 ```
 
-### Exports all license texts in the current directory excluding all Microsoft packages
+### Exports all license texts in the current directory excluding all Microsoft packages. Licenses in HTML format are saved as plain text files.
 
 ```ps
-dotnet-project-licenses -i projectFolder --export-license-texts --packages-filter '/Microsoft.*/'
+dotnet-project-licenses -i projectFolder --export-license-texts --convert-html-to-text --packages-filter '/Microsoft.*/'
 ```
 
 ### Prints licenses used by a compiled solution excluding all System packages

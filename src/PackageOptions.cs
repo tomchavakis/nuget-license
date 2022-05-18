@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using CommandLine;
 using CommandLine.Text;
-using static NugetUtility.Utilties;
+using static NugetUtility.Utilities;
 
 namespace NugetUtility
 {
@@ -69,6 +69,9 @@ namespace NugetUtility
 
         [Option('t', "include-transitive", Default = false, HelpText = "Include distinct transitive package licenses per project file.")]
         public bool IncludeTransitive { get; set; }
+
+        [Option('c', "convert-html-to-text", Default = false, HelpText = "Convert html licenses to plain text.")]
+        public bool ConvertHtmlToText { get; set; }
 
         [Option("ignore-ssl-certificate-errors", Default = false, HelpText = "Ignore SSL certificate errors in HttpClient.")]
         public bool IgnoreSslCertificateErrors { get; set; }
@@ -141,7 +144,9 @@ namespace NugetUtility
             }
         }
 
+#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         public Regex? PackageRegex
+#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         {
             get
             {

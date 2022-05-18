@@ -124,7 +124,9 @@ namespace NugetUtility.Tests
         }
 
         [Test]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task MapPackagesToLibraryInfo_Proxy_Should_Return_License()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
 
             var methods = new Methods(
@@ -238,7 +240,7 @@ namespace NugetUtility.Tests
 
             result.Should().HaveCount(1);
             validationResult.IsValid.Should().BeFalse();
-            validationResult.InvalidPackages.Count.Should().Be(4);
+            validationResult.InvalidPackages.Count.Should().Be(5);
         }
 
         [Test]
@@ -256,7 +258,7 @@ namespace NugetUtility.Tests
 
             result.Should().HaveCount(1);
             validationResult.IsValid.Should().BeFalse();
-            validationResult.InvalidPackages.Count.Should().Be(4);
+            validationResult.InvalidPackages.Count.Should().Be(5);
         }
 
         [Test]

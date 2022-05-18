@@ -14,7 +14,7 @@ using System.Xml.Serialization;
 using System.Xml.XPath;
 using Newtonsoft.Json;
 using NuGet.Versioning;
-using static NugetUtility.Utilties;
+using static NugetUtility.Utilities;
 
 namespace NugetUtility
 {
@@ -239,7 +239,9 @@ namespace NugetUtility
             return await ResolvePackageVersionAsync(name, versionRange, GetVersionsFromNugetServerAsync);
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async Task <IEnumerable<string>> GetVersionsFromLocalCacheAsync(string packageName)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             // Nuget saves packages in lowercase format, and we should look for lowercase folders only to allow Linux case-sensitive folder enumeration to succeed
             DirectoryInfo di = new DirectoryInfo(Path.Combine(nugetRoot, packageName).ToLowerInvariant());
@@ -992,12 +994,20 @@ namespace NugetUtility
                         }
 
                         var contentType = response.Content.Headers.GetValues("Content-Type").First().Split(';').First(); // stripping away charset if exists.
+                        Stream outputStream = await response.Content.ReadAsStreamAsync();
                         if (contentType == "text/html")
                         {
-                            outpath = outpathhtml;
+                            if (!_packageOptions.ConvertHtmlToText)
+                            {
+                                outpath = outpathhtml;
+                            }
+                            else
+                            {
+                                outputStream = ConvertHtmlFileToText(outputStream);
+                            }
                         }
                         using var fileStream = File.OpenWrite(outpath);
-                        await response.Content.CopyToAsync(fileStream);
+                        await outputStream.CopyToAsync(fileStream);
                         break;
                     }
                     catch (HttpRequestException)
@@ -1007,6 +1017,19 @@ namespace NugetUtility
                     }
                 } while (true);
             }
+        }
+
+        public Stream ConvertHtmlFileToText(Stream htmlStream)
+        {
+            var htmlDocument = new HtmlAgilityPack.HtmlDocument();
+
+            htmlDocument.Load(htmlStream);
+            string htmlStrippedText =
+                System.Web.HttpUtility.HtmlDecode(
+                    htmlDocument.DocumentNode.InnerText
+                );
+
+            return new MemoryStream(Encoding.UTF8.GetBytes(htmlStrippedText));
         }
 
         private bool IsGithub(string uri)
