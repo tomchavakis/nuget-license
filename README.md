@@ -64,7 +64,7 @@ dotnet-project-licenses -i projectFolder
 
 ### Print unique licenses
 
-Values for the input may include a folder path, a Visual Studio '.sln' file, a '.csproj' or a '.fsproj' file or a '.vbproj' file.
+Values for the input may include a folder path, a Visual Studio '.sln' file, a '.csproj' or a '.fsproj' file or a '.vbproj' file or the 'Directory.Build.props' file.
 
 ```ps
 dotnet-project-licenses -i projectFolder -u
