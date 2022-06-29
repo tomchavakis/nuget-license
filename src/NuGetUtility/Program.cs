@@ -76,7 +76,7 @@ namespace NuGetUtility
                 {
                     installedPackages = projectReader.GetInstalledPackages(project, IncludeTransitive);
                 }
-                catch (Exception e) when (IsInternalException(e))
+                catch (Exception e)
                 {
                     validationExceptions.Add(e);
                     continue;
@@ -94,22 +94,14 @@ namespace NuGetUtility
 
             if (validationExceptions.Any())
             {
-                foreach (var exception in validationExceptions)
-                {
-                    await Console.Error.WriteLineAsync(exception.ToString());
-                }
+                await WriteValidationExceptions(validationExceptions);
 
                 return -1;
             }
 
             if (validator.GetErrors().Any())
             {
-                TablePrinterExtensions.Create("Context", "Package", "Version", "LicenseError").FromValues(
-                    validator.GetErrors(),
-                    error =>
-                    {
-                        return new object[] { error.Context, error.PackageId, error.PackageVersion, error.Message };
-                    }).Print();
+                WriteValidationErrors(validator);
                 return -1;
             }
 
@@ -120,10 +112,19 @@ namespace NuGetUtility
             return 0;
         }
 
-        private static bool IsInternalException(Exception exception)
+        private static void WriteValidationErrors(LicenseValidator.LicenseValidator validator)
         {
-            return exception is MsBuildAbstractionException || exception is ReferencedPackageReaderException ||
-                   exception is NugetWrapperException;
+            TablePrinterExtensions.Create("Context", "Package", "Version", "LicenseError").FromValues(validator.GetErrors(),
+                    error => { return new object[] { error.Context, error.PackageId, error.PackageVersion, error.Message }; })
+                .Print();
+        }
+
+        private static async Task WriteValidationExceptions(List<Exception> validationExceptions)
+        {
+            foreach (var exception in validationExceptions)
+            {
+                await Console.Error.WriteLineAsync(exception.ToString());
+            }
         }
 
         private IEnumerable<CustomPackageInformation> GetOverridePackageInformation()
