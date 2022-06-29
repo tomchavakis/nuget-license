@@ -96,7 +96,7 @@ namespace NuGetUtility
             {
                 foreach (var exception in validationExceptions)
                 {
-                    await Console.Error.WriteLineAsync(exception.Message);
+                    await Console.Error.WriteLineAsync(exception.ToString());
                 }
 
                 return -1;
