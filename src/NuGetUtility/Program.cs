@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using McMaster.Extensions.CommandLineUtils;
+﻿using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 using NuGetUtility.ConsoleUtilities;
@@ -9,7 +7,6 @@ using NuGetUtility.PackageInformationReader;
 using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Serialization;
 using NuGetUtility.Wrapper.MsBuildWrapper;
-using NuGetUtility.Wrapper.NuGetWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 using System.Text.Json;
@@ -114,9 +111,12 @@ namespace NuGetUtility
 
         private static void WriteValidationErrors(LicenseValidator.LicenseValidator validator)
         {
-            TablePrinterExtensions.Create("Context", "Package", "Version", "LicenseError").FromValues(validator.GetErrors(),
-                    error => { return new object[] { error.Context, error.PackageId, error.PackageVersion, error.Message }; })
-                .Print();
+            TablePrinterExtensions.Create("Context", "Package", "Version", "LicenseError")
+                .FromValues(validator.GetErrors(),
+                    error =>
+                    {
+                        return new object[] { error.Context, error.PackageId, error.PackageVersion, error.Message };
+                    }).Print();
         }
 
         private static async Task WriteValidationExceptions(List<Exception> validationExceptions)
