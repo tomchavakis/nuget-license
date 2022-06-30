@@ -4,8 +4,12 @@
     {
         string GetAssetsPath();
 
-        bool HasNugetPackagesReferenced();
+        string GetRestoreStyleTag();
 
-        bool IsNotPackageReferenceProject();
+        string GetNugetStyleTag();
+
+        int GetPackageReferenceCount();
+
+        IEnumerable<string> GetEvaluatedIncludes();
     }
 }

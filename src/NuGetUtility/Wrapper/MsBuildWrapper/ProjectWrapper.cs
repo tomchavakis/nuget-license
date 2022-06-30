@@ -4,12 +4,10 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 {
     internal class ProjectWrapper : IProject
     {
-        private const string ProjectAssetsFile = "ProjectAssetsFile";
         private const string PackageReferenceTypeTag = "PackageReference";
+        private const string ProjectAssetsFile = "ProjectAssetsFile";
         private const string RestoreStyleTag = "RestoreProjectStyle";
         private const string NugetStyleTag = "NuGetProjectStyle";
-        private const string PackageReferenceValue = "PackageReference";
-        private const string PackagesConfigFileName = "packages.config";
 
         private readonly Project _project;
 
@@ -23,27 +21,24 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             return _project.GetPropertyValue(ProjectAssetsFile);
         }
 
-        public bool HasNugetPackagesReferenced()
+        public string GetRestoreStyleTag()
         {
-            return _project.GetItems(PackageReferenceTypeTag).Count != 0;
+            return _project.GetPropertyValue(RestoreStyleTag);
         }
 
-        public bool IsNotPackageReferenceProject()
+        public string GetNugetStyleTag()
         {
-            return StringIsSetAndUnequalTo(_project.GetPropertyValue(RestoreStyleTag), PackageReferenceValue) ||
-                   StringIsSetAndUnequalTo(_project.GetPropertyValue(NugetStyleTag), PackageReferenceValue) ||
-                   _project.AllEvaluatedItems.Any(projectItem =>
-                       projectItem.EvaluatedInclude == PackagesConfigFileName);
+            return _project.GetPropertyValue(NugetStyleTag);
         }
 
-        private static bool StringIsSetAndUnequalTo(string source, string target)
+        public int GetPackageReferenceCount()
         {
-            if (string.IsNullOrEmpty(source))
-            {
-                return false;
-            }
+            return _project.GetItems(PackageReferenceTypeTag).Count;
+        }
 
-            return source != target;
+        public IEnumerable<string> GetEvaluatedIncludes()
+        {
+            return _project.AllEvaluatedItems.Select(projectItem => projectItem.EvaluatedInclude);
         }
     }
 }
