@@ -40,6 +40,22 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
         [Test]
+        public void GetInstalledPackagesShould_ReturnTransitiveNuget()
+        {
+            var path = Path.GetFullPath(
+                "../../../../targets/ProjectWithTransitiveNuget/ProjectWithTransitiveNuget.csproj");
+
+            var result = _uut.GetInstalledPackages(path, true);
+
+            Assert.That(result.Count, Is.EqualTo(4));
+            var titles = result.Select(metadata => metadata.Title);
+            Assert.That(titles.Contains("Moq"), Is.True);
+            Assert.That(titles.Contains("Castle.Core"), Is.True);
+            Assert.That(titles.Contains("System.Threading.Tasks.Extensions"), Is.True);
+            Assert.That(titles.Contains("System.Diagnostics.EventLog"), Is.True);
+        }
+
+        [Test]
         public void GetInstalledPackagesShould_ReturnEmptyEnumerableForProjectsWithoutPackages()
         {
             var path = Path.GetFullPath(
