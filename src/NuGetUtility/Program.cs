@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using McMaster.Extensions.CommandLineUtils;
+﻿using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 using NuGetUtility.ConsoleUtilities;
@@ -66,10 +64,20 @@ namespace NuGetUtility
             var projectReader = new ReferencedPackageReader(ignoredPackages, new MsBuildAbstraction(),
                 new LockFileFactory(), new PackageSearchMetadataBuilderFactory());
             var validator = new LicenseValidator.LicenseValidator(licenseMappings, allowedLicenses);
+            var projectReaderExceptions = new List<Exception>();
 
             foreach (var project in projects)
             {
-                var installedPackages = projectReader.GetInstalledPackages(project, IncludeTransitive);
+                IEnumerable<IPackageSearchMetadata> installedPackages;
+                try
+                {
+                    installedPackages = projectReader.GetInstalledPackages(project, IncludeTransitive);
+                }
+                catch (Exception e)
+                {
+                    projectReaderExceptions.Add(e);
+                    continue;
+                }
 
                 var settings = Settings.LoadDefaultSettings(project);
                 var sourceProvider = new PackageSourceProvider(settings);
@@ -81,14 +89,16 @@ namespace NuGetUtility
                 await validator.Validate(downloadedInfo, project);
             }
 
+            if (projectReaderExceptions.Any())
+            {
+                await WriteValidationExceptions(projectReaderExceptions);
+
+                return -1;
+            }
+
             if (validator.GetErrors().Any())
             {
-                TablePrinterExtensions.Create("Context", "Package", "Version", "LicenseError").FromValues(
-                    validator.GetErrors(),
-                    error =>
-                    {
-                        return new object[] { error.Context, error.PackageId, error.PackageVersion, error.Message };
-                    }).Print();
+                WriteValidationErrors(validator);
                 return -1;
             }
 
@@ -97,6 +107,24 @@ namespace NuGetUtility
                     license => { return new object[] { license.PackageId, license.PackageVersion, license.License }; })
                 .Print();
             return 0;
+        }
+
+        private static void WriteValidationErrors(LicenseValidator.LicenseValidator validator)
+        {
+            TablePrinterExtensions.Create("Context", "Package", "Version", "LicenseError")
+                .FromValues(validator.GetErrors(),
+                    error =>
+                    {
+                        return new object[] { error.Context, error.PackageId, error.PackageVersion, error.Message };
+                    }).Print();
+        }
+
+        private static async Task WriteValidationExceptions(List<Exception> validationExceptions)
+        {
+            foreach (var exception in validationExceptions)
+            {
+                await Console.Error.WriteLineAsync(exception.ToString());
+            }
         }
 
         private IEnumerable<CustomPackageInformation> GetOverridePackageInformation()

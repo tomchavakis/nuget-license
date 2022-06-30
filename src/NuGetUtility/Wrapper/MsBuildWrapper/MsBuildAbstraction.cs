@@ -4,21 +4,18 @@ using Microsoft.Build.Exceptions;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Locator;
+using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Wrapper.MsBuildWrapper
 {
-    internal class MsBuildAbstraction : IMsBuildAbstraction
+    public class MsBuildAbstraction : IMsBuildAbstraction
     {
         private const string CollectPackageReferences = "CollectPackageReferences";
-        private const string PackageReferenceTypeTag = "PackageReference";
-        private const string RestoreStyleTag = "RestoreProjectStyle";
-        private const string NugetStyleTag = "NuGetProjectStyle";
-        private const string AssetsFilePathTag = "ProjectAssetsFile";
 
         public MsBuildAbstraction()
         {
-            MSBuildLocator.RegisterDefaults();
+            RegisterMsBuildLocatorIfNeeded();
         }
 
         public IEnumerable<PackageReference> GetPackageReferencesFromProjectForFramework(string projectPath,
@@ -41,14 +38,23 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             var rootElement = TryGetProjectRootElement(projectPath);
 
             var project = new Project(rootElement);
+            var projectWrapper = new ProjectWrapper(project);
 
-            if (!IsPackageReferenceProject(project))
+            if (!projectWrapper.IsPackageReferenceProject())
             {
                 throw new MsBuildAbstractionException(
                     $"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {project.FullPath})");
             }
 
-            return new ProjectWrapper(project);
+            return projectWrapper;
+        }
+
+        private static void RegisterMsBuildLocatorIfNeeded()
+        {
+            if (!MSBuildLocator.IsRegistered)
+            {
+                MSBuildLocator.RegisterDefaults();
+            }
         }
 
         private static ProjectRootElement TryGetProjectRootElement(string projectPath)
@@ -61,14 +67,6 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             {
                 throw new MsBuildAbstractionException($"Failed to open project: {projectPath}", e);
             }
-        }
-
-        private static bool IsPackageReferenceProject(Project project)
-        {
-            return (project.GetPropertyValue(RestoreStyleTag) == "PackageReference") ||
-                   (project.GetItems(PackageReferenceTypeTag).Count != 0) ||
-                   (project.GetPropertyValue(NugetStyleTag) == "PackageReference") ||
-                   (project.GetPropertyValue(AssetsFilePathTag) != "");
         }
     }
 }
