@@ -64,7 +64,7 @@ namespace NuGetUtility
             var projectReader = new ReferencedPackageReader(ignoredPackages, new MsBuildAbstraction(),
                 new LockFileFactory(), new PackageSearchMetadataBuilderFactory());
             var validator = new LicenseValidator.LicenseValidator(licenseMappings, allowedLicenses);
-            var validationExceptions = new List<Exception>();
+            var projectReaderExceptions = new List<Exception>();
 
             foreach (var project in projects)
             {
@@ -75,7 +75,7 @@ namespace NuGetUtility
                 }
                 catch (Exception e)
                 {
-                    validationExceptions.Add(e);
+                    projectReaderExceptions.Add(e);
                     continue;
                 }
 
@@ -89,9 +89,9 @@ namespace NuGetUtility
                 await validator.Validate(downloadedInfo, project);
             }
 
-            if (validationExceptions.Any())
+            if (projectReaderExceptions.Any())
             {
-                await WriteValidationExceptions(validationExceptions);
+                await WriteValidationExceptions(projectReaderExceptions);
 
                 return -1;
             }
