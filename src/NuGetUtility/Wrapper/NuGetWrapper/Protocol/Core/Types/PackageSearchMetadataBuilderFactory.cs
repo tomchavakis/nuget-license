@@ -4,7 +4,7 @@ using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
-    internal class PackageSearchMetadataBuilderFactory : IPackageSearchMetadataBuilderFactory
+    public class PackageSearchMetadataBuilderFactory : IPackageSearchMetadataBuilderFactory
     {
         public IPackageSearchMetadataBuilder FromIdentity(PackageIdentity packageIdentity)
         {

@@ -2,7 +2,7 @@
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 {
-    internal class LockFileFactory : ILockFileFactory
+    public class LockFileFactory : ILockFileFactory
     {
         private readonly LockFileFormat _format = new LockFileFormat();
 

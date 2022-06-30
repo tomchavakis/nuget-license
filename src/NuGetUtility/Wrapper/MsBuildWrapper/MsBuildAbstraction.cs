@@ -4,17 +4,18 @@ using Microsoft.Build.Exceptions;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Locator;
+using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Wrapper.MsBuildWrapper
 {
-    internal class MsBuildAbstraction : IMsBuildAbstraction
+    public class MsBuildAbstraction : IMsBuildAbstraction
     {
         private const string CollectPackageReferences = "CollectPackageReferences";
 
         public MsBuildAbstraction()
         {
-            MSBuildLocator.RegisterDefaults();
+            RegisterMsBuildLocatorIfNeeded();
         }
 
         public IEnumerable<PackageReference> GetPackageReferencesFromProjectForFramework(string projectPath,
@@ -46,6 +47,14 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             }
 
             return projectWrapper;
+        }
+
+        private static void RegisterMsBuildLocatorIfNeeded()
+        {
+            if (!MSBuildLocator.IsRegistered)
+            {
+                MSBuildLocator.RegisterDefaults();
+            }
         }
 
         private static ProjectRootElement TryGetProjectRootElement(string projectPath)
