@@ -39,7 +39,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             var project = new Project(rootElement);
             var projectWrapper = new ProjectWrapper(project);
 
-            if (projectWrapper.IsNotPackageReferenceProject())
+            if (!projectWrapper.IsPackageReferenceProject())
             {
                 throw new MsBuildAbstractionException(
                     $"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {project.FullPath})");
