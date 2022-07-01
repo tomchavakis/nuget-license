@@ -156,6 +156,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
         [Test]
+        [Platform(Include = "Win")]
         public void
             GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_NotIncludingTransitive_And_PackageSpecFrameworkInformationGetFails()
         {
