@@ -11,6 +11,17 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+
+        include:
+          - os: ubuntu-latest
+            buildConfiguration: "Release"
+
+          - os: windows-latest
+            buildConfiguration: "TestWindows"
+
+          - os: macos-latest
+            buildConfiguration: "Release"
+
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
@@ -23,7 +34,7 @@ jobs:
         run: dotnet restore
       # dotnet build and publish
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration ${{ matrix.buildConfiguration }}
       # dotnet test
       - name: test
-        run: dotnet test
+        run: dotnet test --configuration ${{ matrix.buildConfiguration }}
