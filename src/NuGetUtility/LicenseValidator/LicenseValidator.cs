@@ -12,7 +12,8 @@ namespace NuGetUtility.LicenseValidator
         private readonly Dictionary<Uri, string> _licenseMapping;
         private readonly HashSet<ValidatedLicense> _validatedLicenses = new HashSet<ValidatedLicense>();
 
-        public LicenseValidator(Dictionary<Uri, string> licenseMapping, IEnumerable<string> allowedLicenses,
+        public LicenseValidator(Dictionary<Uri, string> licenseMapping,
+            IEnumerable<string> allowedLicenses,
             IFileDownloader fileDownloader)
         {
             _licenseMapping = licenseMapping;
@@ -34,7 +35,9 @@ namespace NuGetUtility.LicenseValidator
                 }
                 else
                 {
-                    _errors.Add(new LicenseValidationError(context, info.Identity.Id, info.Identity.Version,
+                    _errors.Add(new LicenseValidationError(context,
+                        info.Identity.Id,
+                        info.Identity.Version,
                         "No license information found"));
                 }
             }
@@ -58,18 +61,23 @@ namespace NuGetUtility.LicenseValidator
                     var licenseId = info.LicenseMetadata!.License;
                     if (IsLicenseValid(licenseId))
                     {
-                        _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id, info.Identity.Version,
+                        _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
+                            info.Identity.Version,
                             info.LicenseMetadata.License));
                     }
                     else
                     {
-                        _errors.Add(new LicenseValidationError(context, info.Identity.Id, info.Identity.Version,
+                        _errors.Add(new LicenseValidationError(context,
+                            info.Identity.Id,
+                            info.Identity.Version,
                             GetLicenseNotAllowedMessage(info.LicenseMetadata.License)));
                     }
 
                     break;
                 default:
-                    _errors.Add(new LicenseValidationError(context, info.Identity.Id, info.Identity.Version,
+                    _errors.Add(new LicenseValidationError(context,
+                        info.Identity.Id,
+                        info.Identity.Version,
                         $"Validation for licenses of type {info.LicenseMetadata!.Type} not yet supported"));
                     break;
             }
@@ -79,7 +87,8 @@ namespace NuGetUtility.LicenseValidator
         {
             if (info.LicenseUrl.IsAbsoluteUri)
             {
-                await _fileDownloader.DownloadFile(info.LicenseUrl, $"{info.Identity.Id}__{info.Identity.Version}.txt");
+                await _fileDownloader.DownloadFile(info.LicenseUrl,
+                    $"{info.Identity.Id}__{info.Identity.Version}.html");
             }
 
             if (_licenseMapping.TryGetValue(info.LicenseUrl, out var licenseId))
@@ -90,18 +99,23 @@ namespace NuGetUtility.LicenseValidator
                 }
                 else
                 {
-                    _errors.Add(new LicenseValidationError(context, info.Identity.Id, info.Identity.Version,
+                    _errors.Add(new LicenseValidationError(context,
+                        info.Identity.Id,
+                        info.Identity.Version,
                         GetLicenseNotAllowedMessage(licenseId)));
                 }
             }
             else if (!_allowedLicenses.Any())
             {
-                _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id, info.Identity.Version,
+                _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
+                    info.Identity.Version,
                     info.LicenseUrl.ToString()));
             }
             else
             {
-                _errors.Add(new LicenseValidationError(context, info.Identity.Id, info.Identity.Version,
+                _errors.Add(new LicenseValidationError(context,
+                    info.Identity.Id,
+                    info.Identity.Version,
                     $"Cannot determine License type for url {info.LicenseUrl}"));
             }
         }

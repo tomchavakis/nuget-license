@@ -27,7 +27,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
             }
 
             _packageMetadataResource = new CachingPackageMetadataResource(
-                await _sourceRepository.GetResourceAsync<PackageMetadataResource>(), _cacheContext);
+                await _sourceRepository.GetResourceAsync<PackageMetadataResource>(),
+                _cacheContext);
             return _packageMetadataResource;
         }
     }

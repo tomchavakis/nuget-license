@@ -62,7 +62,8 @@ namespace NuGetUtility.Test.Extensions
         [TestCase("PackageReference", "")]
         [TestCase("PackageReference", "PackageReference")]
         public void IsPackageReferenceProject_Should_ReturnTrue_If_ProjectIsPackageReferenceProject(
-            string nugetStyleTag, string restoreStyleTag)
+            string nugetStyleTag,
+            string restoreStyleTag)
         {
             _projectMock!.Setup(m => m.GetNugetStyleTag()).Returns(nugetStyleTag);
             _projectMock.Setup(m => m.GetRestoreStyleTag()).Returns(restoreStyleTag);
@@ -81,7 +82,9 @@ namespace NuGetUtility.Test.Extensions
         [TestCase("PackageReference", "PackageReference", "packages.config")]
         [TestCase("PackageReference", "InvalidTag", "not-packages.config")]
         public void IsPackageReferenceProject_Should_ReturnFalse_If_ProjectIsNotPackageReferenceProject(
-            string nugetStyleTag, string restoreStyleTag, string evaluatedInclude)
+            string nugetStyleTag,
+            string restoreStyleTag,
+            string evaluatedInclude)
         {
             _projectMock!.Setup(m => m.GetNugetStyleTag()).Returns(nugetStyleTag);
             _projectMock.Setup(m => m.GetRestoreStyleTag()).Returns(restoreStyleTag);

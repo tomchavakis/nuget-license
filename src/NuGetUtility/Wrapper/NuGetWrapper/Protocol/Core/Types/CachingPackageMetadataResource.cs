@@ -20,7 +20,9 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
         {
             try
             {
-                return await _metadataResource.GetMetadataAsync(identity, _cacheContext, new NullLogger(),
+                return await _metadataResource.GetMetadataAsync(identity,
+                    _cacheContext,
+                    new NullLogger(),
                     cancellationToken);
             }
             catch (Exception)

@@ -12,8 +12,10 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [SetUp]
         public void SetUp()
         {
-            _uut = new ReferencedPackageReader(Enumerable.Empty<string>(), new MsBuildAbstraction(),
-                new LockFileFactory(), new PackageSearchMetadataBuilderFactory());
+            _uut = new ReferencedPackageReader(Enumerable.Empty<string>(),
+                new MsBuildAbstraction(),
+                new LockFileFactory(),
+                new PackageSearchMetadataBuilderFactory());
         }
 
         private ReferencedPackageReader? _uut;
@@ -73,8 +75,9 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             var path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");
 
             Assert.That(() => _uut!.GetInstalledPackages(path, false),
-                Throws.TypeOf<MsBuildAbstractionException>().With.Message.EqualTo(
-                    $"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {path})"));
+                Throws.TypeOf<MsBuildAbstractionException>()
+                    .With.Message.EqualTo(
+                        $"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {path})"));
         }
     }
 }

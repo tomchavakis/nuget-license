@@ -10,7 +10,8 @@
             return typeToCheck.IsOfGenericType(genericType, out var _);
         }
 
-        public static bool IsOfGenericType(this System.Type typeToCheck, System.Type genericType,
+        public static bool IsOfGenericType(this System.Type typeToCheck,
+            System.Type genericType,
             out System.Type? concreteGenericType)
         {
             while (true)

@@ -58,7 +58,7 @@ namespace Utilities
                 {
                     if (int.TryParse(row[i], out var n))
                     {
-                        line += "| " + row[i].PadLeft(_lengths[i]) + ' '; // numbers are padded to the left
+                        line += "| " + row[i].PadLeft(_lengths[i]) + ' ';// numbers are padded to the left
                     }
                     else
                     {

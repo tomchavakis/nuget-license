@@ -9,7 +9,8 @@ namespace NuGetUtility.ConsoleUtilities
             return new TablePrinter(headings);
         }
 
-        public static TablePrinter FromValues<T>(this TablePrinter printer, IEnumerable<T> values,
+        public static TablePrinter FromValues<T>(this TablePrinter printer,
+            IEnumerable<T> values,
             Func<T, object[]> formatter)
         {
             foreach (var value in values)
