@@ -67,6 +67,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
         [Test]
+        [Platform(Include = "Win")]
         public void GetInstalledPackagesShould_ThrowMsBuildAbstractionException_If_ProjectUsesPackagesConfig()
         {
             var path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");

@@ -103,7 +103,15 @@ namespace NuGetUtility.ReferencedPackagesReader
         private ILockFile LoadAssetsFile(string projectPath, IProject project)
         {
             var assetsPath = project.GetAssetsPath();
-            var assetsFile = _lockFileFactory.GetFromFile(assetsPath);
+            ILockFile assetsFile;
+            try
+            {
+                assetsFile = _lockFileFactory.GetFromFile(assetsPath);
+            }
+            catch (Exception e)
+            {
+                throw new ReferencedPackageReaderException($"Failed to load project assets for project {projectPath}", e);
+            }
 
             if (!assetsFile.PackageSpec.IsValid() || !(assetsFile.Targets?.Any() ?? false))
             {

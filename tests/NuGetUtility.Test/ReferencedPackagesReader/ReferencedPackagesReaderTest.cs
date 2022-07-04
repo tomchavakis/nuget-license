@@ -119,6 +119,19 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         private Dictionary<string, PackageReference[]>? _packageReferencesFromProjectForFramework;
 
         [Test]
+        public void GetInstalledPackages_Should_WrapExceptionThrownByLockFileFactory(
+            [Values] bool includeTransitive)
+        {
+            _lockFileFactory!.Setup(m => m.GetFromFile(It.IsAny<string>())).Throws<Exception>();
+            
+            var exception = Assert.Throws<ReferencedPackageReaderException>(() =>
+                _uut!.GetInstalledPackages(_projectPath!, includeTransitive));
+
+            Assert.AreEqual($"Failed to load project assets for project {_projectPath}", exception!.Message);
+            Assert.IsNotNull(exception!.InnerException);
+        }
+
+        [Test]
         public void GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_PackageSpecificationIsInvalid(
             [Values] bool includeTransitive)
         {
@@ -156,7 +169,6 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
         [Test]
-        [Platform(Include = "Win")]
         public void
             GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_NotIncludingTransitive_And_PackageSpecFrameworkInformationGetFails()
         {
