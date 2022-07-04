@@ -11,5 +11,7 @@
         int GetPackageReferenceCount();
 
         IEnumerable<string> GetEvaluatedIncludes();
+
+        public string FullPath { get; }
     }
 }

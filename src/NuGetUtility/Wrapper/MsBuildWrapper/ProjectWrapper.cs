@@ -1,4 +1,5 @@
 ﻿using Microsoft.Build.Evaluation;
+using Microsoft.Build.Framework;
 
 namespace NuGetUtility.Wrapper.MsBuildWrapper
 {
@@ -18,7 +19,13 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
         public string GetAssetsPath()
         {
-            return _project.GetPropertyValue(ProjectAssetsFile);
+            var assetsFile = _project.GetPropertyValue(ProjectAssetsFile);
+            if (!File.Exists(assetsFile))
+            {
+                throw new MsBuildAbstractionException(
+                    $"Failed to get the project assets file for project {_project.FullPath}");
+            }
+            return assetsFile;
         }
 
         public string GetRestoreStyleTag()
@@ -40,5 +47,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
         {
             return _project.AllEvaluatedItems.Select(projectItem => projectItem.EvaluatedInclude);
         }
+
+        public string FullPath => _project.FullPath;
     }
 }

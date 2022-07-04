@@ -33,20 +33,19 @@ namespace NuGetUtility.ReferencedPackagesReader
                 return Enumerable.Empty<IPackageSearchMetadata>();
             }
 
-            return GetInstalledPackagesFromAssetsFile(projectPath, includeTransitive, project);
+            return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
         }
 
-        private IEnumerable<IPackageSearchMetadata> GetInstalledPackagesFromAssetsFile(string projectPath,
-            bool includeTransitive, IProject project)
+        private IEnumerable<IPackageSearchMetadata> GetInstalledPackagesFromAssetsFile(bool includeTransitive, IProject project)
         {
-            var assetsFile = LoadAssetsFile(projectPath, project);
+            var assetsFile = LoadAssetsFile(project);
 
             var referencedLibraries = new HashSet<ILockFileLibrary>();
 
             foreach (var target in assetsFile.Targets!)
             {
                 var referencedLibrariesForTarget =
-                    GetReferencedLibrariesForTarget(projectPath, includeTransitive, assetsFile, target);
+                    GetReferencedLibrariesForTarget(project, includeTransitive, assetsFile, target);
                 referencedLibraries.AddRange(referencedLibrariesForTarget);
             }
 
@@ -54,7 +53,7 @@ namespace NuGetUtility.ReferencedPackagesReader
                 _metadataBuilderFactory.FromIdentity(new PackageIdentity(r.Name, r.Version)).Build());
         }
 
-        private IEnumerable<ILockFileLibrary> GetReferencedLibrariesForTarget(string projectPath,
+        private IEnumerable<ILockFileLibrary> GetReferencedLibrariesForTarget(IProject project,
             bool includeTransitive, ILockFile assetsFile, ILockFileTarget target)
         {
             var referencedLibrariesForTarget = assetsFile.Libraries.Where(l => l.Type != ProjectReferenceIdentifier);
@@ -62,7 +61,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             if (!includeTransitive)
             {
                 var targetFrameworkInformation = GetTargetFrameworkInformation(target, assetsFile);
-                var directlyReferencedPackages = _msBuild.GetPackageReferencesFromProjectForFramework(projectPath,
+                var directlyReferencedPackages = _msBuild.GetPackageReferencesFromProjectForFramework(project,
                     targetFrameworkInformation.FrameworkName.ToString()!);
 
                 referencedLibrariesForTarget =
@@ -100,23 +99,15 @@ namespace NuGetUtility.ReferencedPackagesReader
             }
         }
 
-        private ILockFile LoadAssetsFile(string projectPath, IProject project)
+        private ILockFile LoadAssetsFile(IProject project)
         {
             var assetsPath = project.GetAssetsPath();
-            ILockFile assetsFile;
-            try
-            {
-                assetsFile = _lockFileFactory.GetFromFile(assetsPath);
-            }
-            catch (Exception e)
-            {
-                throw new ReferencedPackageReaderException($"Failed to load project assets for project {projectPath}", e);
-            }
+            var assetsFile = _lockFileFactory.GetFromFile(assetsPath);
 
             if (!assetsFile.PackageSpec.IsValid() || !(assetsFile.Targets?.Any() ?? false))
             {
                 throw new ReferencedPackageReaderException(
-                    $"Failed to validate project assets for project {projectPath}");
+                    $"Failed to validate project assets for project {project.FullPath}");
             }
 
             return assetsFile;

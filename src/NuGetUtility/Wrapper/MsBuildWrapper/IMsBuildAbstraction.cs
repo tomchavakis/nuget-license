@@ -2,7 +2,7 @@
 {
     public interface IMsBuildAbstraction
     {
-        IEnumerable<PackageReference> GetPackageReferencesFromProjectForFramework(string projectPath, string framework);
+        IEnumerable<PackageReference> GetPackageReferencesFromProjectForFramework(IProject project, string framework);
         IProject GetProject(string projectPath);
     }
 }

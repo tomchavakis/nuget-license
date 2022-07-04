@@ -18,14 +18,14 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             RegisterMsBuildLocatorIfNeeded();
         }
 
-        public IEnumerable<PackageReference> GetPackageReferencesFromProjectForFramework(string projectPath,
+        public IEnumerable<PackageReference> GetPackageReferencesFromProjectForFramework(IProject project,
             string framework)
         {
             var globalProperties = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 { "TargetFramework", framework }
             };
-            var newProject = new ProjectInstance(projectPath, globalProperties, null);
+            var newProject = new ProjectInstance(project.FullPath, globalProperties, null);
             newProject.Build(new[] { CollectPackageReferences }, new List<ILogger>(), out var targetOutputs);
 
             return targetOutputs.First(e => e.Key.Equals(CollectPackageReferences)).Value.Items.Select(p =>

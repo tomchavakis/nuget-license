@@ -41,6 +41,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _msBuild.Setup(m => m.GetProject(_projectPath)).Returns(_projectMock.Object);
             _projectMock.Setup(m => m.GetPackageReferenceCount()).Returns(1);
             _projectMock.Setup(m => m.GetAssetsPath()).Returns(_assetsFilePath);
+            _projectMock.SetupGet(m => m.FullPath).Returns(_projectPath);
             _lockFileFactory.Setup(m => m.GetFromFile(_assetsFilePath)).Returns(_lockFileMock.Object);
             _lockFileMock.SetupGet(m => m.PackageSpec).Returns(_packageSpecMock.Object);
             _packageSpecMock.Setup(m => m.IsValid()).Returns(true);
@@ -56,8 +57,8 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                     return builder.Object;
                 });
 
-            _msBuild.Setup(m => m.GetPackageReferencesFromProjectForFramework(_projectPath, It.IsAny<string>()))
-                .Returns((string _, string framework) => _packageReferencesFromProjectForFramework[framework]);
+            _msBuild.Setup(m => m.GetPackageReferencesFromProjectForFramework(_projectMock.Object, It.IsAny<string>()))
+                .Returns((IProject _, string framework) => _packageReferencesFromProjectForFramework[framework]);
 
             foreach (var lockFileLibrary in _lockFileLibraries)
             {
@@ -117,25 +118,13 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         private IEnumerable<Mock<ITargetFrameworkInformation>>? _packageSpecTargetFrameworks;
         private IEnumerable<Mock<INuGetFramework>>? _targetFrameworks;
         private Dictionary<string, PackageReference[]>? _packageReferencesFromProjectForFramework;
-
-        [Test]
-        public void GetInstalledPackages_Should_WrapExceptionThrownByLockFileFactory(
-            [Values] bool includeTransitive)
-        {
-            _lockFileFactory!.Setup(m => m.GetFromFile(It.IsAny<string>())).Throws<Exception>();
-            
-            var exception = Assert.Throws<ReferencedPackageReaderException>(() =>
-                _uut!.GetInstalledPackages(_projectPath!, includeTransitive));
-
-            Assert.AreEqual($"Failed to load project assets for project {_projectPath}", exception!.Message);
-            Assert.IsNotNull(exception!.InnerException);
-        }
-
+        
         [Test]
         public void GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_PackageSpecificationIsInvalid(
             [Values] bool includeTransitive)
         {
             _packageSpecMock!.Setup(m => m.IsValid()).Returns(false);
+            _projectMock!.SetupGet(m => m.FullPath).Returns(_projectPath!);
 
             var exception = Assert.Throws<ReferencedPackageReaderException>(() =>
                 _uut!.GetInstalledPackages(_projectPath!, includeTransitive));
