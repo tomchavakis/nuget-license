@@ -36,7 +36,8 @@ namespace NuGetUtility.ReferencedPackagesReader
             return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
         }
 
-        private IEnumerable<IPackageSearchMetadata> GetInstalledPackagesFromAssetsFile(bool includeTransitive, IProject project)
+        private IEnumerable<IPackageSearchMetadata> GetInstalledPackagesFromAssetsFile(bool includeTransitive,
+            IProject project)
         {
             var assetsFile = LoadAssetsFile(project);
 
@@ -53,8 +54,8 @@ namespace NuGetUtility.ReferencedPackagesReader
                 _metadataBuilderFactory.FromIdentity(new PackageIdentity(r.Name, r.Version)).Build());
         }
 
-        private IEnumerable<ILockFileLibrary> GetReferencedLibrariesForTarget(IProject project,
-            bool includeTransitive, ILockFile assetsFile, ILockFileTarget target)
+        private IEnumerable<ILockFileLibrary> GetReferencedLibrariesForTarget(IProject project, bool includeTransitive,
+            ILockFile assetsFile, ILockFileTarget target)
         {
             var referencedLibrariesForTarget = assetsFile.Libraries.Where(l => l.Type != ProjectReferenceIdentifier);
 

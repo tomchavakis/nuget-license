@@ -118,7 +118,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         private IEnumerable<Mock<ITargetFrameworkInformation>>? _packageSpecTargetFrameworks;
         private IEnumerable<Mock<INuGetFramework>>? _targetFrameworks;
         private Dictionary<string, PackageReference[]>? _packageReferencesFromProjectForFramework;
-        
+
         [Test]
         public void GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_PackageSpecificationIsInvalid(
             [Values] bool includeTransitive)

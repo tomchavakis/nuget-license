@@ -6,6 +6,7 @@ using NuGetUtility.LicenseValidator;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Serialization;
+using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
@@ -15,6 +16,8 @@ namespace NuGetUtility
 {
     public class Program
     {
+        private HttpClient? _httpClient;
+
         [Option(ShortName = "i", LongName = "input",
             Description = "The project file who's dependencies should be analyzed")]
         public string? InputProjectFile { get; } = null;
@@ -46,6 +49,24 @@ namespace NuGetUtility
                 "File in json format that contains a list of package and license information which should be used in favor of the online version. This option can be used to override the license type of packages that e.g. specify the license as file.")]
         public string? OverridePackageInformation { get; } = null;
 
+        [Option(LongName = "license-information-download-location", ShortName = "d",
+            Description =
+                "When set, the application downloads all licenses given using a license URL to the specified folder.")]
+        public string? DownloadLicenseInformation { get; } = null;
+
+        private HttpClient HttpClient
+        {
+            get
+            {
+                if (_httpClient == null)
+                {
+                    _httpClient = new HttpClient();
+                }
+
+                return _httpClient;
+            }
+        }
+
         public static async Task Main(string[] args)
         {
             var lifetime = new AppLifetime();
@@ -60,10 +81,12 @@ namespace NuGetUtility
             var licenseMappings = GetLicenseMappings();
             var allowedLicenses = GetAllowedLicenses();
             var overridePackageInformation = GetOverridePackageInformation();
+            var urlLicenseFileDownloader = GetFileDownloader();
 
             var projectReader = new ReferencedPackageReader(ignoredPackages, new MsBuildAbstraction(),
                 new LockFileFactory(), new PackageSearchMetadataBuilderFactory());
-            var validator = new LicenseValidator.LicenseValidator(licenseMappings, allowedLicenses);
+            var validator = new LicenseValidator.LicenseValidator(licenseMappings, allowedLicenses,
+                urlLicenseFileDownloader);
             var projectReaderExceptions = new List<Exception>();
 
             foreach (var project in projects)
@@ -107,6 +130,21 @@ namespace NuGetUtility
                     license => { return new object[] { license.PackageId, license.PackageVersion, license.License }; })
                 .Print();
             return 0;
+        }
+
+        private IFileDownloader GetFileDownloader()
+        {
+            if (DownloadLicenseInformation == null)
+            {
+                return new NopFileDownloader();
+            }
+
+            if (!Directory.Exists(DownloadLicenseInformation))
+            {
+                Directory.CreateDirectory(DownloadLicenseInformation);
+            }
+
+            return new FileDownloader(HttpClient, DownloadLicenseInformation);
         }
 
         private static void WriteValidationErrors(LicenseValidator.LicenseValidator validator)

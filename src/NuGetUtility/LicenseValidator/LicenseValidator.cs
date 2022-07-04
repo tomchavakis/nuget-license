@@ -1,5 +1,6 @@
 ﻿using NuGet.Packaging;
 using NuGet.Protocol.Core.Types;
+using NuGetUtility.Wrapper.HttpClientWrapper;
 
 namespace NuGetUtility.LicenseValidator
 {
@@ -7,13 +8,16 @@ namespace NuGetUtility.LicenseValidator
     {
         private readonly IEnumerable<string> _allowedLicenses;
         private readonly List<LicenseValidationError> _errors = new List<LicenseValidationError>();
+        private readonly IFileDownloader _fileDownloader;
         private readonly Dictionary<Uri, string> _licenseMapping;
         private readonly HashSet<ValidatedLicense> _validatedLicenses = new HashSet<ValidatedLicense>();
 
-        public LicenseValidator(Dictionary<Uri, string> licenseMapping, IEnumerable<string> allowedLicenses)
+        public LicenseValidator(Dictionary<Uri, string> licenseMapping, IEnumerable<string> allowedLicenses,
+            IFileDownloader fileDownloader)
         {
             _licenseMapping = licenseMapping;
             _allowedLicenses = allowedLicenses;
+            _fileDownloader = fileDownloader;
         }
 
         public async Task Validate(IAsyncEnumerable<IPackageSearchMetadata> downloadedInfo, string context)
@@ -26,7 +30,7 @@ namespace NuGetUtility.LicenseValidator
                 }
                 else if (info.LicenseUrl != null)
                 {
-                    ValidateLicenseByUrl(info, context);
+                    await ValidateLicenseByUrl(info, context);
                 }
                 else
                 {
@@ -71,8 +75,13 @@ namespace NuGetUtility.LicenseValidator
             }
         }
 
-        private void ValidateLicenseByUrl(IPackageSearchMetadata info, string context)
+        private async Task ValidateLicenseByUrl(IPackageSearchMetadata info, string context)
         {
+            if (info.LicenseUrl.IsAbsoluteUri)
+            {
+                await _fileDownloader.DownloadFile(info.LicenseUrl, $"{info.Identity.Id}__{info.Identity.Version}.txt");
+            }
+
             if (_licenseMapping.TryGetValue(info.LicenseUrl, out var licenseId))
             {
                 if (IsLicenseValid(licenseId))

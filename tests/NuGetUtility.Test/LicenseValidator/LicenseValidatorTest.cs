@@ -10,6 +10,7 @@ using NuGetUtility.Test.Helper.AsyncEnumerableExtension;
 using NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning;
 using NuGetUtility.Test.Helper.NUnitExtension;
 using NuGetUtility.Test.Helper.ShuffelledEnumerable;
+using NuGetUtility.Wrapper.HttpClientWrapper;
 using NUnit.Framework;
 
 namespace NuGetUtility.Test.LicenseValidator
@@ -21,17 +22,20 @@ namespace NuGetUtility.Test.LicenseValidator
         public void SetUp()
         {
             var fixture = new Fixture();
+            _fileDonwloader = new();
             _licenseMapping = fixture.Create<Dictionary<Uri, string>>();
             _allowedLicenses = fixture.CreateMany<string>();
             _context = fixture.Create<string>();
 
-            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping, _allowedLicenses);
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping, _allowedLicenses,
+                _fileDonwloader.Object);
         }
 
         private NuGetUtility.LicenseValidator.LicenseValidator? _uut;
         private Dictionary<Uri, string>? _licenseMapping;
         private IEnumerable<string>? _allowedLicenses;
         private string? _context;
+        private Mock<IFileDownloader>? _fileDonwloader;
 
         [Test]
         public async Task ValidatingEmptyList_Should_ReturnEmptyErrorArray()
@@ -77,7 +81,7 @@ namespace NuGetUtility.Test.LicenseValidator
             ValidatingLicensesWithProperLicenseInformation_Should_NotContainErrorsIfAllowedLicensesIsEmpty(
                 string packageId, NuGetVersion packageVersion, string license)
         {
-            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { });
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { }, _fileDonwloader!.Object);
 
             var package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, license);
 
@@ -91,7 +95,8 @@ namespace NuGetUtility.Test.LicenseValidator
         public async Task ValidatingLicensesWithProperLicenseInformation_Should_GiveCorrectValidatedLicenseList(
             string packageId, NuGetVersion packageVersion, string license)
         {
-            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { });
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { },
+                _fileDonwloader!.Object);
 
             var package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, license);
 
@@ -114,7 +119,8 @@ namespace NuGetUtility.Test.LicenseValidator
         public async Task ValidatingLicensesWithMatchingLicenseUrl_Should_NotContainErrorsIfAllowedLicensesIsEmpty(
             string packageId, NuGetVersion packageVersion)
         {
-            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { });
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { },
+                _fileDonwloader!.Object);
 
             var package = SetupPackageWithLicenseUrl(packageId, packageVersion, _licenseMapping!.Shuffle().First().Key);
 
@@ -128,7 +134,8 @@ namespace NuGetUtility.Test.LicenseValidator
         public async Task ValidatingLicensesWithMatchingLicenseUrl_Should_GiveCorrectValidatedLicenseList(
             string packageId, NuGetVersion packageVersion)
         {
-            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { });
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { },
+                _fileDonwloader!.Object);
 
             var mappingLicense = _licenseMapping!.Shuffle().First();
             var package = SetupPackageWithLicenseUrl(packageId, packageVersion, mappingLicense.Key);
@@ -145,7 +152,8 @@ namespace NuGetUtility.Test.LicenseValidator
         public async Task ValidatingLicensesWithNonMatchingLicenseUrl_Should_NotContainErrorsIfAllowedLicensesIsEmpty(
             string packageId, NuGetVersion packageVersion, Uri licenseUrl)
         {
-            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { });
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { },
+                _fileDonwloader!.Object);
 
             var package = SetupPackageWithLicenseUrl(packageId, packageVersion, licenseUrl);
 
@@ -159,7 +167,8 @@ namespace NuGetUtility.Test.LicenseValidator
         public async Task ValidatingLicensesWithMatchingLicenseUrl_Should_GiveCorrectValidatedLicenseList(
             string packageId, NuGetVersion packageVersion, Uri licenseUrl)
         {
-            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { });
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { },
+                _fileDonwloader!.Object);
 
             var package = SetupPackageWithLicenseUrl(packageId, packageVersion, licenseUrl);
 
@@ -180,7 +189,8 @@ namespace NuGetUtility.Test.LicenseValidator
             var packageVersion = fixture.Create<NuGetVersion>();
             var license = fixture.Create<string>();
 
-            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { });
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { },
+                _fileDonwloader!.Object);
 
             var package = SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, licenseType);
 
@@ -200,7 +210,8 @@ namespace NuGetUtility.Test.LicenseValidator
         public async Task ValidatingLicensesWithoutLicenseInformation_Should_GiveCorrectErrorsAndValidationList(
             string packageId, NuGetVersion packageVersion)
         {
-            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { });
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!, new string[] { },
+                _fileDonwloader!.Object);
 
             var package = SetupPackage(packageId, packageVersion);
 
@@ -290,6 +301,19 @@ namespace NuGetUtility.Test.LicenseValidator
 
         [Test]
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithUrlInformation_Should_StartDownloadingSaidLicense(
+            string packageId, NuGetVersion packageVersion)
+        {
+            var urlMatch = _licenseMapping!.Shuffle().First();
+            var package = SetupPackageWithLicenseUrl(packageId, packageVersion, urlMatch.Key);
+
+            await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
+
+            _fileDonwloader!.Verify(m => m.DownloadFile(package.Object.LicenseUrl, $"{package.Object.Identity.Id}__{package.Object.Identity.Version}.txt"), Times.Once);
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithMatchingUrlInformation_Should_LeadToEmptyValidArrayIfNotAllowed(
             string packageId, NuGetVersion packageVersion)
         {
@@ -309,7 +333,7 @@ namespace NuGetUtility.Test.LicenseValidator
             var validLicense = _allowedLicenses!.Shuffle().First();
             var urlMatch = _licenseMapping!.Shuffle().First();
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!,
-                _allowedLicenses!.Append(urlMatch.Value));
+                _allowedLicenses!.Append(urlMatch.Value), _fileDonwloader!.Object);
             var package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, validLicense);
 
             await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
@@ -325,7 +349,7 @@ namespace NuGetUtility.Test.LicenseValidator
             var validLicense = _allowedLicenses!.Shuffle().First();
             var urlMatch = _licenseMapping!.Shuffle().First();
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!,
-                _allowedLicenses!.Append(urlMatch.Value));
+                _allowedLicenses!.Append(urlMatch.Value), _fileDonwloader!.Object);
             var package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, validLicense);
 
             await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
