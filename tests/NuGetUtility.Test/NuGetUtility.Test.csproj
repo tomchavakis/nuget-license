@@ -1,33 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-	  <ImplicitUsings>enable</ImplicitUsings>
-	  <Nullable>enable</Nullable>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
 
-    <IsPackable>false</IsPackable>
+        <IsPackable>false</IsPackable>
 
-    <Configurations>Debug;Release;TestWindows</Configurations>
+        <Configurations>Debug;Release;TestWindows</Configurations>
 
-    <Platforms>AnyCPU</Platforms>
-  </PropertyGroup>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.17.0" />
-    <PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
-    <PackageReference Include="AutoFixture.NUnit3" Version="4.17.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
-    <PackageReference Include="Moq" Version="4.17.2" />
-    <PackageReference Include="NUnit" Version="3.13.3" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
-    <PackageReference Include="coverlet.collector" Version="3.1.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="AutoFixture" Version="4.17.0"/>
+        <PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0"/>
+        <PackageReference Include="AutoFixture.NUnit3" Version="4.17.0"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0"/>
+        <PackageReference Include="Moq" Version="4.17.2"/>
+        <PackageReference Include="NUnit" Version="3.13.3"/>
+        <PackageReference Include="NUnit3TestAdapter" Version="4.2.1"/>
+        <PackageReference Include="coverlet.collector" Version="3.1.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\NuGetUtility\NuGetUtility.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\NuGetUtility\NuGetUtility.csproj"/>
+    </ItemGroup>
 
 </Project>

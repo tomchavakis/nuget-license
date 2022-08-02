@@ -15,8 +15,10 @@ namespace NuGetUtility.ReferencedPackagesReader
         private readonly IPackageSearchMetadataBuilderFactory _metadataBuilderFactory;
         private readonly IMsBuildAbstraction _msBuild;
 
-        public ReferencedPackageReader(IEnumerable<string> ignoredPackages, IMsBuildAbstraction msBuild,
-            ILockFileFactory lockFileFactory, IPackageSearchMetadataBuilderFactory metadataBuilderFactory)
+        public ReferencedPackageReader(IEnumerable<string> ignoredPackages,
+            IMsBuildAbstraction msBuild,
+            ILockFileFactory lockFileFactory,
+            IPackageSearchMetadataBuilderFactory metadataBuilderFactory)
         {
             _ignoredPackages = ignoredPackages;
             _msBuild = msBuild;
@@ -36,7 +38,8 @@ namespace NuGetUtility.ReferencedPackagesReader
             return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
         }
 
-        private IEnumerable<IPackageSearchMetadata> GetInstalledPackagesFromAssetsFile(bool includeTransitive, IProject project)
+        private IEnumerable<IPackageSearchMetadata> GetInstalledPackagesFromAssetsFile(bool includeTransitive,
+            IProject project)
         {
             var assetsFile = LoadAssetsFile(project);
 
@@ -49,12 +52,15 @@ namespace NuGetUtility.ReferencedPackagesReader
                 referencedLibraries.AddRange(referencedLibrariesForTarget);
             }
 
-            return referencedLibraries.Where(IsNotIgnoredPackage).Select(r =>
-                _metadataBuilderFactory.FromIdentity(new PackageIdentity(r.Name, r.Version)).Build());
+            return referencedLibraries.Where(IsNotIgnoredPackage)
+                .Select(r =>
+                    _metadataBuilderFactory.FromIdentity(new PackageIdentity(r.Name, r.Version)).Build());
         }
 
         private IEnumerable<ILockFileLibrary> GetReferencedLibrariesForTarget(IProject project,
-            bool includeTransitive, ILockFile assetsFile, ILockFileTarget target)
+            bool includeTransitive,
+            ILockFile assetsFile,
+            ILockFileTarget target)
         {
             var referencedLibrariesForTarget = assetsFile.Libraries.Where(l => l.Type != ProjectReferenceIdentifier);
 
@@ -95,7 +101,8 @@ namespace NuGetUtility.ReferencedPackagesReader
             catch (Exception e)
             {
                 throw new ReferencedPackageReaderException(
-                    $"Failed to identify the target framework information for {target}", e);
+                    $"Failed to identify the target framework information for {target}",
+                    e);
             }
         }
 

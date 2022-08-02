@@ -1,5 +1,4 @@
 ﻿using Microsoft.Build.Evaluation;
-using Microsoft.Build.Framework;
 
 namespace NuGetUtility.Wrapper.MsBuildWrapper
 {
@@ -25,6 +24,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
                 throw new MsBuildAbstractionException(
                     $"Failed to get the project assets file for project {_project.FullPath}");
             }
+
             return assetsFile;
         }
 

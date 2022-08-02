@@ -2,6 +2,7 @@
 {
     public interface IProject
     {
+        public string FullPath { get; }
         string GetAssetsPath();
 
         string GetRestoreStyleTag();
@@ -11,7 +12,5 @@
         int GetPackageReferenceCount();
 
         IEnumerable<string> GetEvaluatedIncludes();
-
-        public string FullPath { get; }
     }
 }

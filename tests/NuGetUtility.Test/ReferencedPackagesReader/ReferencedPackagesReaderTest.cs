@@ -49,13 +49,14 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _lockFileMock.SetupGet(m => m.Libraries).Returns(_lockFileLibraries.Select(l => l.Object));
             _packageSpecMock.SetupGet(m => m.TargetFrameworks)
                 .Returns(_packageSpecTargetFrameworks.Select(t => t.Object));
-            _metadataBuilderFactory.Setup(m => m.FromIdentity(It.IsAny<PackageIdentity>())).Returns(
-                (PackageIdentity id) =>
-                {
-                    var builder = new Mock<IPackageSearchMetadataBuilder>();
-                    builder.Setup(m => m.Build()).Returns(new PackageSearchMetadataMock(id));
-                    return builder.Object;
-                });
+            _metadataBuilderFactory.Setup(m => m.FromIdentity(It.IsAny<PackageIdentity>()))
+                .Returns(
+                    (PackageIdentity id) =>
+                    {
+                        var builder = new Mock<IPackageSearchMetadataBuilder>();
+                        builder.Setup(m => m.Build()).Returns(new PackageSearchMetadataMock(id));
+                        return builder.Object;
+                    });
 
             _msBuild.Setup(m => m.GetPackageReferencesFromProjectForFramework(_projectMock.Object, It.IsAny<string>()))
                 .Returns((IProject _, string framework) => _packageReferencesFromProjectForFramework[framework]);
@@ -74,8 +75,10 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             foreach (var targetFramework in _targetFrameworks)
             {
-                var returnedLibraries = _lockFileLibraries.Shuffle().Take(5)
-                    .Select(l => new PackageReference(l.Object.Name, l.Object.Version)).ToArray();
+                var returnedLibraries = _lockFileLibraries.Shuffle()
+                    .Take(5)
+                    .Select(l => new PackageReference(l.Object.Name, l.Object.Version))
+                    .ToArray();
                 _packageReferencesFromProjectForFramework[targetFramework.Object.ToString()!] = returnedLibraries;
             }
 
@@ -98,7 +101,9 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 }
             }
 
-            _uut = new ReferencedPackageReader(_ignoredPackages, _msBuild.Object, _lockFileFactory.Object,
+            _uut = new ReferencedPackageReader(_ignoredPackages,
+                _msBuild.Object,
+                _lockFileFactory.Object,
                 _metadataBuilderFactory.Object);
         }
 
@@ -118,7 +123,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         private IEnumerable<Mock<ITargetFrameworkInformation>>? _packageSpecTargetFrameworks;
         private IEnumerable<Mock<INuGetFramework>>? _targetFrameworks;
         private Dictionary<string, PackageReference[]>? _packageReferencesFromProjectForFramework;
-        
+
         [Test]
         public void GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_PackageSpecificationIsInvalid(
             [Values] bool includeTransitive)
@@ -182,7 +187,8 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             var result = _uut!.GetInstalledPackages(_projectPath!, true);
             CollectionAssert.AreEquivalent(
                 _lockFileLibraries!.Select(l =>
-                    new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))), result);
+                    new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))),
+                result);
         }
 
         [Test]
@@ -208,7 +214,8 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             var result = _uut!.GetInstalledPackages(_projectPath!, true);
             CollectionAssert.AreEquivalent(
                 _lockFileLibraries!.Select(l =>
-                    new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))), result);
+                    new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))),
+                result);
         }
 
         [Test]
@@ -216,14 +223,17 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             var result = _uut!.GetInstalledPackages(_projectPath!, false);
 
-            var expectedReferences = _packageReferencesFromProjectForFramework!.SelectMany(p => p.Value).Distinct()
+            var expectedReferences = _packageReferencesFromProjectForFramework!.SelectMany(p => p.Value)
+                .Distinct()
                 .ToArray();
             var expectedResult = _lockFileLibraries!.Where(l =>
-                expectedReferences.Any(e => e.PackageName.Equals(l.Object.Name)) &&
-                expectedReferences.Any(e => e.Version!.Equals(l.Object.Version))).ToArray();
+                    expectedReferences.Any(e => e.PackageName.Equals(l.Object.Name)) &&
+                    expectedReferences.Any(e => e.Version!.Equals(l.Object.Version)))
+                .ToArray();
             CollectionAssert.AreEquivalent(
                 expectedResult.Select(l =>
-                    new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))), result);
+                    new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))),
+                result);
         }
 
         [Test]
@@ -232,34 +242,44 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             var ignoredPackageName = _lockFileLibraries!.Shuffle().First().Object.Name;
             _ignoredPackages = _ignoredPackages!.Append(ignoredPackageName);
 
-            _uut = new ReferencedPackageReader(_ignoredPackages, _msBuild!.Object, _lockFileFactory!.Object,
+            _uut = new ReferencedPackageReader(_ignoredPackages,
+                _msBuild!.Object,
+                _lockFileFactory!.Object,
                 _metadataBuilderFactory!.Object);
             var result = _uut!.GetInstalledPackages(_projectPath!, true);
 
             CollectionAssert.AreEquivalent(
-                _lockFileLibraries!.Where(l => l.Object.Name != ignoredPackageName).Select(l =>
-                    new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))), result);
+                _lockFileLibraries!.Where(l => l.Object.Name != ignoredPackageName)
+                    .Select(l =>
+                        new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))),
+                result);
         }
 
         [Test]
         public void GetInstalledPackages_Should_ReturnCorrectValues_If_NotIncludingTransitive_If_IgnoringPackages()
         {
-            var directReferences = _packageReferencesFromProjectForFramework!.SelectMany(p => p.Value).Distinct()
+            var directReferences = _packageReferencesFromProjectForFramework!.SelectMany(p => p.Value)
+                .Distinct()
                 .ToArray();
             var directReferencesResult = _lockFileLibraries!.Where(l =>
-                directReferences.Any(e => e.PackageName.Equals(l.Object.Name)) &&
-                directReferences.Any(e => e.Version!.Equals(l.Object.Version))).ToArray();
+                    directReferences.Any(e => e.PackageName.Equals(l.Object.Name)) &&
+                    directReferences.Any(e => e.Version!.Equals(l.Object.Version)))
+                .ToArray();
 
             var ignoredPackageName = directReferencesResult.Shuffle().First().Object.Name;
             _ignoredPackages = _ignoredPackages!.Append(ignoredPackageName);
 
-            _uut = new ReferencedPackageReader(_ignoredPackages, _msBuild!.Object, _lockFileFactory!.Object,
+            _uut = new ReferencedPackageReader(_ignoredPackages,
+                _msBuild!.Object,
+                _lockFileFactory!.Object,
                 _metadataBuilderFactory!.Object);
             var result = _uut!.GetInstalledPackages(_projectPath!, false);
 
             CollectionAssert.AreEquivalent(
-                directReferencesResult.Where(l => l.Object.Name != ignoredPackageName).Select(l =>
-                    new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))), result);
+                directReferencesResult.Where(l => l.Object.Name != ignoredPackageName)
+                    .Select(l =>
+                        new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))),
+                result);
         }
 
         [Test]

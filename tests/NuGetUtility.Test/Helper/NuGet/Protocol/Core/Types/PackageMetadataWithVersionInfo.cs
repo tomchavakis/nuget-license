@@ -69,8 +69,11 @@ namespace NuGetUtility.Test.Helper.NuGet.Protocol.Core.Types
         public bool PrefixReserved => throw new NotImplementedException();
 
         public LicenseMetadata LicenseMetadata =>
-            new LicenseMetadata(LicenseType.Expression, _license, NuGetLicenseExpression.Parse(_license),
-                new string[] { }, LicenseMetadata.EmptyVersion);
+            new LicenseMetadata(LicenseType.Expression,
+                _license,
+                NuGetLicenseExpression.Parse(_license),
+                new string[] { },
+                LicenseMetadata.EmptyVersion);
 
         public IEnumerable<PackageVulnerabilityMetadata> Vulnerabilities => throw new NotImplementedException();
     }

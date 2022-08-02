@@ -37,13 +37,15 @@ namespace NuGetUtility.PackageInformationReader
                 else
                 {
                     yield return await TryGetPackageInformationFromRepositoriesOrReturnInput(_sourceRepositories,
-                        package, cancellation);
+                        package,
+                        cancellation);
                 }
             }
         }
 
         private async Task<IPackageSearchMetadata> TryGetPackageInformationFromRepositoriesOrReturnInput(
-            IDisposableSourceRepository[] cachedRepositories, IPackageSearchMetadata package,
+            IDisposableSourceRepository[] cachedRepositories,
+            IPackageSearchMetadata package,
             CancellationToken cancellation)
         {
             foreach (var repository in cachedRepositories)

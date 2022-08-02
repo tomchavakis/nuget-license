@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <Configurations>Debug;Release;TestWindows</Configurations>
-    <Platforms>AnyCPU</Platforms>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Configurations>Debug;Release;TestWindows</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Moq" Version="4.18.1" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Moq" Version="4.18.1"/>
+    </ItemGroup>
 
 </Project>

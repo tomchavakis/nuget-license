@@ -13,8 +13,11 @@ namespace NuGetUtility.PackageInformationReader
         public PackageMetadataWithLicenseInformation(IPackageSearchMetadata baseMetadata, string licenseType)
         {
             _baseMetadata = baseMetadata;
-            LicenseMetadata = new LicenseMetadata(LicenseType.Expression, licenseType,
-                NuGetLicenseExpression.Parse(licenseType), new string[] { }, LicenseMetadata.EmptyVersion);
+            LicenseMetadata = new LicenseMetadata(LicenseType.Expression,
+                licenseType,
+                NuGetLicenseExpression.Parse(licenseType),
+                new string[] { },
+                LicenseMetadata.EmptyVersion);
         }
 
         public Task<PackageDeprecationMetadata> GetDeprecationMetadataAsync()

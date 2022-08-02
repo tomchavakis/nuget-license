@@ -29,12 +29,14 @@ namespace NuGetUtility.Serialization
             return true;
         }
 
-        public override IDictionary<Uri, TValue> Read(ref Utf8JsonReader reader, Type typeToConvert,
+        public override IDictionary<Uri, TValue> Read(ref Utf8JsonReader reader,
+            Type typeToConvert,
             JsonSerializerOptions options)
         {
             //Step 1 - Use built-in serializer to deserialize into a dictionary with string key
             var dictionaryWithStringKey =
-                (Dictionary<string, TValue>)JsonSerializer.Deserialize(ref reader, typeof(Dictionary<string, TValue>),
+                (Dictionary<string, TValue>)JsonSerializer.Deserialize(ref reader,
+                    typeof(Dictionary<string, TValue>),
                     options)!;
 
             //Step 2 - Convert the dictionary to one that uses the actual key type we want
