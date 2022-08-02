@@ -87,8 +87,15 @@ namespace NuGetUtility.LicenseValidator
         {
             if (info.LicenseUrl.IsAbsoluteUri)
             {
-                await _fileDownloader.DownloadFile(info.LicenseUrl,
-                    $"{info.Identity.Id}__{info.Identity.Version}.html");
+                try
+                {
+                    await _fileDownloader.DownloadFile(info.LicenseUrl,
+                        $"{info.Identity.Id}__{info.Identity.Version}.html");
+                }
+                catch (Exception e)
+                {
+                    throw new LicenseDownloadException(e, context, info.Identity);
+                }
             }
 
             if (_licenseMapping.TryGetValue(info.LicenseUrl, out var licenseId))

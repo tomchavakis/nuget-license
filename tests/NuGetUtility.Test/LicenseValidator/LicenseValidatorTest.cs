@@ -363,6 +363,26 @@ namespace NuGetUtility.Test.LicenseValidator
 
         [Test]
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public void ValidatingLicensesWithUrlInformation_Should_ThrowLicenseDownloadInformation_If_DownloadThrows(
+            string packageId,
+            NuGetVersion packageVersion)
+        {
+            var urlMatch = _licenseMapping!.Shuffle().First();
+            var package = SetupPackageWithLicenseUrl(packageId, packageVersion, urlMatch.Key);
+            _fileDonwloader!.Setup(m => m.DownloadFile(package.Object.LicenseUrl, It.IsAny<string>()))
+                .ThrowsAsync(new Exception());
+
+            var exception = Assert.ThrowsAsync<LicenseDownloadException>(async () => await _uut!.Validate(
+                new[] { package.Object }.AsAsyncEnumerable(),
+                _context!));
+            Assert.IsInstanceOf<Exception>(exception!.InnerException);
+            Assert.AreEqual(
+                $"Failed to download license for package {packageId} ({packageVersion}).\nContext: {_context}",
+                exception.Message);
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithMatchingUrlInformation_Should_LeadToEmptyValidArrayIfNotAllowed(
             string packageId,
             NuGetVersion packageVersion)
