@@ -63,7 +63,8 @@ namespace NuGetUtility.LicenseValidator
                     {
                         _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
                             info.Identity.Version,
-                            info.LicenseMetadata.License));
+                            info.LicenseMetadata.License,
+                            LicenseInformationOrigin.Expression));
                     }
                     else
                     {
@@ -102,7 +103,10 @@ namespace NuGetUtility.LicenseValidator
             {
                 if (IsLicenseValid(licenseId))
                 {
-                    _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id, info.Identity.Version, licenseId));
+                    _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
+                        info.Identity.Version,
+                        licenseId,
+                        LicenseInformationOrigin.Url));
                 }
                 else
                 {
@@ -116,7 +120,8 @@ namespace NuGetUtility.LicenseValidator
             {
                 _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
                     info.Identity.Version,
-                    info.LicenseUrl.ToString()));
+                    info.LicenseUrl.ToString(),
+                    LicenseInformationOrigin.Url));
             }
             else
             {
