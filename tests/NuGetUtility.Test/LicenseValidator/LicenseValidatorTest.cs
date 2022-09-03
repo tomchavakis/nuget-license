@@ -117,7 +117,8 @@ namespace NuGetUtility.Test.LicenseValidator
 
             await _uut.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
-            CollectionAssert.AreEquivalent(new[] { new ValidatedLicense(packageId, packageVersion, license) },
+            CollectionAssert.AreEquivalent(new[]
+                    { new ValidatedLicense(packageId, packageVersion, license, LicenseInformationOrigin.Expression) },
                 _uut.GetValidatedLicenses());
         }
 
@@ -163,7 +164,10 @@ namespace NuGetUtility.Test.LicenseValidator
             await _uut.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
             CollectionAssert.AreEquivalent(
-                new[] { new ValidatedLicense(packageId, packageVersion, mappingLicense.Value) },
+                new[]
+                {
+                    new ValidatedLicense(packageId, packageVersion, mappingLicense.Value, LicenseInformationOrigin.Url)
+                },
                 _uut.GetValidatedLicenses());
         }
 
@@ -201,7 +205,13 @@ namespace NuGetUtility.Test.LicenseValidator
             await _uut.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
             CollectionAssert.AreEquivalent(
-                new[] { new ValidatedLicense(packageId, packageVersion, new string(licenseUrl.ToString())) },
+                new[]
+                {
+                    new ValidatedLicense(packageId,
+                        packageVersion,
+                        new string(licenseUrl.ToString()),
+                        LicenseInformationOrigin.Url)
+                },
                 _uut.GetValidatedLicenses());
         }
 
@@ -319,7 +329,10 @@ namespace NuGetUtility.Test.LicenseValidator
 
             await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
-            CollectionAssert.AreEqual(new[] { new ValidatedLicense(packageId, packageVersion, validLicense) },
+            CollectionAssert.AreEqual(new[]
+                {
+                    new ValidatedLicense(packageId, packageVersion, validLicense, LicenseInformationOrigin.Expression)
+                },
                 _uut!.GetValidatedLicenses());
         }
 
@@ -401,12 +414,11 @@ namespace NuGetUtility.Test.LicenseValidator
             string packageId,
             NuGetVersion packageVersion)
         {
-            var validLicense = _allowedLicenses!.Shuffle().First();
             var urlMatch = _licenseMapping!.Shuffle().First();
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!,
                 _allowedLicenses!.Append(urlMatch.Value),
                 _fileDonwloader!.Object);
-            var package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, validLicense);
+            var package = SetupPackageWithLicenseUrl(packageId, packageVersion, urlMatch.Key);
 
             await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
@@ -419,16 +431,16 @@ namespace NuGetUtility.Test.LicenseValidator
             string packageId,
             NuGetVersion packageVersion)
         {
-            var validLicense = _allowedLicenses!.Shuffle().First();
             var urlMatch = _licenseMapping!.Shuffle().First();
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping!,
                 _allowedLicenses!.Append(urlMatch.Value),
                 _fileDonwloader!.Object);
-            var package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, validLicense);
+            var package = SetupPackageWithLicenseUrl(packageId, packageVersion, urlMatch.Key);
 
             await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
-            CollectionAssert.AreEqual(new[] { new ValidatedLicense(packageId, packageVersion, validLicense) },
+            CollectionAssert.AreEqual(new[]
+                    { new ValidatedLicense(packageId, packageVersion, urlMatch.Value, LicenseInformationOrigin.Url) },
                 _uut!.GetValidatedLicenses());
         }
 

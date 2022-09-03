@@ -137,10 +137,16 @@ namespace NuGetUtility
                 return -1;
             }
 
-            TablePrinterExtensions.Create("Package", "Version", "License Expression")
+            TablePrinterExtensions.Create("Package", "Version", "License Information Origin", "License Expression")
                 .FromValues(
                     validator.GetValidatedLicenses(),
-                    license => { return new object[] { license.PackageId, license.PackageVersion, license.License }; })
+                    license =>
+                    {
+                        return new object[]
+                        {
+                            license.PackageId, license.PackageVersion, license.LicenseInformationOrigin, license.License
+                        };
+                    })
                 .Print();
             return 0;
         }
