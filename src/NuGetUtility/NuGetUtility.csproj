@@ -9,11 +9,12 @@
         <RepositoryType>git</RepositoryType>
         <PackageId>dotnet-project-licenses</PackageId>
         <ToolCommandName>dotnet-project-licenses</ToolCommandName>
-        <Version>3.0.0-alpha.1</Version>
+        <Version>3.0.0-alpha.2</Version>
         <Authors>Tom Chavakis,Simon Ensslen</Authors>
         <Company>-</Company>
         <Title>.NET Core Tool to print a list of the licenses of a projects</Title>
         <PackageProjectUrl>https://github.com/tomchavakis/nuget-license</PackageProjectUrl>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <GeneratePackageOnBuild Condition="'$(GeneratePackageOnBuild)' == ''">false</GeneratePackageOnBuild>
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
         <ImplicitUsings>enable</ImplicitUsings>
