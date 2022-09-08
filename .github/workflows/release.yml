@@ -61,7 +61,7 @@ jobs:
           args: zip -qq -r ./release.zip ./artifacts
       - name: Create release
         id: create_release
-        uses: actions/create-release@v1.0.0
+        uses: actions/create-release@v1.1.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
