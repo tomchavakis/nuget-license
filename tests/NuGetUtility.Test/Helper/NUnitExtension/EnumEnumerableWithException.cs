@@ -2,12 +2,12 @@
 
 namespace NuGetUtility.Test.Helper.NUnitExtension
 {
-    internal class EnumEnumerableWithExtension : IEnumerable
+    internal class EnumEnumerableWithException : IEnumerable
     {
         private readonly Array _allEnumOptions;
         private readonly object[] _exceptions;
 
-        public EnumEnumerableWithExtension(System.Type t, object[] exceptions)
+        public EnumEnumerableWithException(System.Type t, object[] exceptions)
         {
             _exceptions = exceptions;
             _allEnumOptions = Enum.GetValues(t);

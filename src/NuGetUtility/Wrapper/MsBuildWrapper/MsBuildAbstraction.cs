@@ -31,7 +31,9 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             return targetOutputs.First(e => e.Key.Equals(CollectPackageReferences))
                 .Value.Items.Select(p =>
                     new PackageReference(p.ItemSpec,
-                        string.IsNullOrEmpty(p.GetMetadata("version")) ? null : new WrappedNuGetVersion(p.GetMetadata("version"))));
+                        string.IsNullOrEmpty(p.GetMetadata("version"))
+                            ? null
+                            : new WrappedNuGetVersion(p.GetMetadata("version"))));
         }
 
         public IProject GetProject(string projectPath)
