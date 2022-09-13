@@ -245,10 +245,4 @@ namespace NuGetUtility
             throw new FileNotFoundException("Please provide an input file");
         }
     }
-
-    public enum OutputType
-    {
-        Table,
-        Json
-    }
 }
