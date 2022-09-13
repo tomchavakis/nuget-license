@@ -2,7 +2,6 @@
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
-using NUnit.Framework;
 
 namespace NuGetUtility.Test.ReferencedPackagesReader
 {
@@ -73,10 +72,10 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             var path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");
 
-            Assert.That(() => _uut!.GetInstalledPackages(path, false),
-                Throws.TypeOf<MsBuildAbstractionException>()
-                    .With.Message.EqualTo(
-                        $"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {path})"));
+            var exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, false));
+            Assert.AreEqual(
+                $"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {path})",
+                exception?.Message);
         }
     }
 }

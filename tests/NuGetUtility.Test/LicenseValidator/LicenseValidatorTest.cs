@@ -11,7 +11,6 @@ using NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning;
 using NuGetUtility.Test.Helper.NUnitExtension;
 using NuGetUtility.Test.Helper.ShuffelledEnumerable;
 using NuGetUtility.Wrapper.HttpClientWrapper;
-using NUnit.Framework;
 
 namespace NuGetUtility.Test.LicenseValidator
 {

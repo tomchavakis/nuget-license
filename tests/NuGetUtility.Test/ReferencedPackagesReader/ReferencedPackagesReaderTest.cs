@@ -10,7 +10,6 @@ using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
-using NUnit.Framework;
 
 namespace NuGetUtility.Test.ReferencedPackagesReader
 {
