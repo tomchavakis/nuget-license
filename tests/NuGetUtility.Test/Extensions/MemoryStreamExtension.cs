@@ -7,7 +7,7 @@ namespace NuGetUtility.Test.Extensions
         public static string AsString(this MemoryStream stream)
         {
             stream.Position = 0;
-            using var reader = new StreamReader(stream, leaveOpen: true, encoding: Encoding.UTF8);
+            using var reader = new StreamReader(stream, leaveOpen: true);
             return reader.ReadToEnd();
         }
     }

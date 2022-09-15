@@ -41,7 +41,7 @@ namespace Utilities
 
         public async Task Print()
         {
-            await using var writer = new StreamWriter(_stream, leaveOpen: true, encoding: Encoding.UTF8);
+            await using var writer = new StreamWriter(_stream, leaveOpen: true);
 
             await WriteSeparator(writer);
             await WriteRow(_titles, writer);
