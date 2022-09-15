@@ -20,12 +20,13 @@ namespace NuGetUtility
 
         [Option(ShortName = "i",
             LongName = "input",
-            Description = "The project file who's dependencies should be analyzed")]
-        public string? InputProjectFile { get; } = null;
+            Description = "The project (or solution) file who's dependencies should be analyzed")]
+        public string? InputFile { get; } = null;
 
         [Option(ShortName = "ji",
             LongName = "json-input",
-            Description = "File in json format that contains an array of all project files to be evaluated")]
+            Description =
+                "File in json format that contains an array of all files to be evaluated. The Files can either point to a project or a solution.")]
         public string? InputJsonFile { get; } = null;
 
         [Option(LongName = "include-transitive",
@@ -84,15 +85,17 @@ namespace NuGetUtility
 
         private async Task<int> OnExecuteAsync()
         {
-            var projects = GetProjects();
+            var inputFiles = GetInputFiles();
             var ignoredPackages = GetIgnoredPackages();
             var licenseMappings = GetLicenseMappings();
             var allowedLicenses = GetAllowedLicenses();
             var overridePackageInformation = GetOverridePackageInformation();
             var urlLicenseFileDownloader = GetFileDownloader();
 
+            var msBuild = new MsBuildAbstraction();
+            var projectCollector = new ProjectsCollector(msBuild);
             var projectReader = new ReferencedPackageReader(ignoredPackages,
-                new MsBuildAbstraction(),
+                msBuild,
                 new LockFileFactory(),
                 new PackageSearchMetadataBuilderFactory());
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
@@ -100,7 +103,7 @@ namespace NuGetUtility
                 urlLicenseFileDownloader);
             var projectReaderExceptions = new List<Exception>();
 
-            foreach (var project in projects)
+            foreach (var project in inputFiles.SelectMany(file => projectCollector.GetProjects(file)))
             {
                 IEnumerable<IPackageSearchMetadata> installedPackages;
                 try
@@ -232,11 +235,11 @@ namespace NuGetUtility
             return JsonSerializer.Deserialize<IEnumerable<string>>(File.ReadAllText(IgnoredPackages))!;
         }
 
-        private IEnumerable<string> GetProjects()
+        private IEnumerable<string> GetInputFiles()
         {
-            if (InputProjectFile != null)
+            if (InputFile != null)
             {
-                return new[] { InputProjectFile };
+                return new[] { InputFile };
             }
 
             if (InputJsonFile != null)

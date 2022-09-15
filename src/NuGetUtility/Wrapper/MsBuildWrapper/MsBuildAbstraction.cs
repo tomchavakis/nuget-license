@@ -31,7 +31,9 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             return targetOutputs.First(e => e.Key.Equals(CollectPackageReferences))
                 .Value.Items.Select(p =>
                     new PackageReference(p.ItemSpec,
-                        string.IsNullOrEmpty(p.GetMetadata("version")) ? null : new WrappedNuGetVersion(p.GetMetadata("version"))));
+                        string.IsNullOrEmpty(p.GetMetadata("version"))
+                            ? null
+                            : new WrappedNuGetVersion(p.GetMetadata("version"))));
         }
 
         public IProject GetProject(string projectPath)
@@ -48,6 +50,11 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             }
 
             return projectWrapper;
+        }
+        public IEnumerable<string> GetProjectsFromSolution(string inputPath)
+        {
+            var sln = SolutionFile.Parse(inputPath);
+            return sln.ProjectsInOrder.Select(p => p.AbsolutePath);
         }
 
         private static void RegisterMsBuildLocatorIfNeeded()
