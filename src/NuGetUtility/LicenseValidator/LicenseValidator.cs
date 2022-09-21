@@ -1,4 +1,4 @@
-﻿using NuGet.Packaging;
+using NuGet.Packaging;
 using NuGet.Protocol.Core.Types;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 
@@ -64,7 +64,8 @@ namespace NuGetUtility.LicenseValidator
                         _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
                             info.Identity.Version,
                             info.LicenseMetadata.License,
-                            LicenseInformationOrigin.Expression));
+                            LicenseInformationOrigin.Expression,
+                            info.ProjectUrl));
                     }
                     else
                     {
@@ -106,7 +107,8 @@ namespace NuGetUtility.LicenseValidator
                     _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
                         info.Identity.Version,
                         licenseId,
-                        LicenseInformationOrigin.Url));
+                        LicenseInformationOrigin.Url,
+                        info.ProjectUrl));
                 }
                 else
                 {
@@ -121,7 +123,8 @@ namespace NuGetUtility.LicenseValidator
                 _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
                     info.Identity.Version,
                     info.LicenseUrl.ToString(),
-                    LicenseInformationOrigin.Url));
+                    LicenseInformationOrigin.Url,
+                    info.ProjectUrl));
             }
             else
             {
