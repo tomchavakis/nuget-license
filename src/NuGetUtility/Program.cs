@@ -1,4 +1,4 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 using NuGetUtility.LicenseValidator;
@@ -69,6 +69,10 @@ namespace NuGetUtility
             ShortName = "o",
             Description = "This parameter allows to choose between tabular and json output.")]
         public OutputType OutputType { get; } = OutputType.Table;
+        [Option(LongName = "no-validation-errors",
+            ShortName = "noerr",
+            Description = "When set, errors while validating packages are ignored. The output will only contain successfully validated packages.")]
+        public bool IgnoreErrors { get; } = false;
 
         private HttpClient HttpClient
         {
@@ -143,7 +147,7 @@ namespace NuGetUtility
             }
 
             await using var outputStream = Console.OpenStandardOutput();
-            if (validator.GetErrors().Any())
+            if (!IgnoreErrors && validator.GetErrors().Any())
             {
                 await output.Write(outputStream, validator.GetErrors());
                 return -1;
