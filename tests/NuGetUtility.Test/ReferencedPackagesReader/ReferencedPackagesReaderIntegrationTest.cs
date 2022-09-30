@@ -49,11 +49,10 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             var result = _uut!.GetInstalledPackages(path, true).ToArray();
 
-            Assert.That(result.Count, Is.EqualTo(4));
+            Assert.That(result.Count, Is.EqualTo(3));
             var titles = result.Select(metadata => metadata.Title).ToArray();
             Assert.That(titles.Contains("Moq"), Is.True);
             Assert.That(titles.Contains("Castle.Core"), Is.True);
-            Assert.That(titles.Contains("System.Threading.Tasks.Extensions"), Is.True);
             Assert.That(titles.Contains("System.Diagnostics.EventLog"), Is.True);
         }
 
