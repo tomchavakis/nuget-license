@@ -37,13 +37,17 @@ Usage: dotnet-project-licenses [options]
 | `-o, --output`                                | This Parameter accepts the value `table` or `json`. It allows to select the type of output that should be given. If omitted, the output is given in tabular form.                                                                                                                                                                                                                                                                                          |
 
 ## Example tool commands
-
+### Show help
 ```ps
 dotnet-project-licenses --help
 ```
-
+### Validate licenses for .csproj file
 ```ps
 dotnet-project-licenses -i project.csproj
+```
+### Generate machine readable output
+```ps
+dotnet-project-licenses -i project.csproj -o json
 ```
 
 ## Docker
