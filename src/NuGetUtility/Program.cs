@@ -1,8 +1,10 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
-using NuGetUtility.ConsoleUtilities;
 using NuGetUtility.LicenseValidator;
+using NuGetUtility.Output;
+using NuGetUtility.Output.Json;
+using NuGetUtility.Output.Table;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Serialization;
@@ -63,6 +65,11 @@ namespace NuGetUtility
                 "When set, the application downloads all licenses given using a license URL to the specified folder.")]
         public string? DownloadLicenseInformation { get; } = null;
 
+        [Option(LongName = "output",
+            ShortName = "o",
+            Description = "This parameter allows to choose between tabular and json output.")]
+        public OutputType OutputType { get; } = OutputType.Table;
+
         private HttpClient HttpClient
         {
             get
@@ -91,6 +98,7 @@ namespace NuGetUtility
             var allowedLicenses = GetAllowedLicenses();
             var overridePackageInformation = GetOverridePackageInformation();
             var urlLicenseFileDownloader = GetFileDownloader();
+            var output = GetOutputFormatter();
 
             var msBuild = new MsBuildAbstraction();
             var projectCollector = new ProjectsCollector(msBuild);
@@ -134,24 +142,25 @@ namespace NuGetUtility
                 return -1;
             }
 
+            await using var outputStream = Console.OpenStandardOutput();
             if (validator.GetErrors().Any())
             {
-                WriteValidationErrors(validator);
+                await output.Write(outputStream, validator.GetErrors());
                 return -1;
             }
 
-            TablePrinterExtensions.Create("Package", "Version", "License Information Origin", "License Expression")
-                .FromValues(
-                    validator.GetValidatedLicenses(),
-                    license =>
-                    {
-                        return new object[]
-                        {
-                            license.PackageId, license.PackageVersion, license.LicenseInformationOrigin, license.License
-                        };
-                    })
-                .Print();
+            await output.Write(outputStream, validator.GetValidatedLicenses());
             return 0;
+        }
+
+        private IOutputFormatter GetOutputFormatter()
+        {
+            return OutputType switch
+            {
+                OutputType.Json => new JsonOutputFormatter(),
+                OutputType.Table => new TableOutputFormatter(),
+                _ => throw new ArgumentOutOfRangeException($"{OutputType} not supported")
+            };
         }
 
         private IFileDownloader GetFileDownloader()
@@ -167,17 +176,6 @@ namespace NuGetUtility
             }
 
             return new FileDownloader(HttpClient, DownloadLicenseInformation);
-        }
-
-        private static void WriteValidationErrors(LicenseValidator.LicenseValidator validator)
-        {
-            TablePrinterExtensions.Create("Context", "Package", "Version", "LicenseError")
-                .FromValues(validator.GetErrors(),
-                    error =>
-                    {
-                        return new object[] { error.Context, error.PackageId, error.PackageVersion, error.Message };
-                    })
-                .Print();
         }
 
         private static async Task WriteValidationExceptions(List<Exception> validationExceptions)

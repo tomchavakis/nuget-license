@@ -1,7 +1,6 @@
 ﻿using AutoFixture;
 using AutoFixture.NUnit3;
 using NuGetUtility.Extensions;
-using NUnit.Framework;
 using System.Collections.Immutable;
 
 namespace NuGetUtility.Test.Extensions

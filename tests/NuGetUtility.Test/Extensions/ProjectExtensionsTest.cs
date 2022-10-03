@@ -1,7 +1,6 @@
 ﻿using Moq;
 using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.MsBuildWrapper;
-using NUnit.Framework;
 
 namespace NuGetUtility.Test.Extensions
 {

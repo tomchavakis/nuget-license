@@ -2,7 +2,7 @@
 
 namespace NuGetUtility.LicenseValidator
 {
-    public record struct LicenseValidationError(string Context,
+    public record LicenseValidationError(string Context,
         string PackageId,
         NuGetVersion PackageVersion,
         string Message);

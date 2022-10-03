@@ -1,5 +1,4 @@
-﻿using NUnit.Framework;
-using NUnit.Framework.Interfaces;
+﻿using NUnit.Framework.Interfaces;
 using System.Collections;
 
 namespace NuGetUtility.Test.Helper.NUnitExtension
@@ -16,7 +15,7 @@ namespace NuGetUtility.Test.Helper.NUnitExtension
 
         public IEnumerable GetData(IParameterInfo parameter)
         {
-            return new EnumEnumerableWithExtension(parameter.ParameterType, _exceptions);
+            return new EnumEnumerableWithException(parameter.ParameterType, _exceptions);
         }
     }
 }

@@ -1,12 +1,12 @@
 ﻿using Utilities;
 
-namespace NuGetUtility.ConsoleUtilities
+namespace NuGetUtility.Output.Table
 {
     internal static class TablePrinterExtensions
     {
-        public static TablePrinter Create(params string[] headings)
+        public static TablePrinter Create(Stream stream, params string[] headings)
         {
-            return new TablePrinter(headings);
+            return new TablePrinter(stream, headings);
         }
 
         public static TablePrinter FromValues<T>(this TablePrinter printer,

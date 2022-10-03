@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup dotnet 6.0.x
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
           dotnet-version: "6.0.x" # SDK Version to use (x uses the latest version).
         env:
@@ -43,12 +43,12 @@ jobs:
         run: dotnet pack -c Release -o ./artifacts
       # Zip Artifacts
       - name: Zip artifacts
-        uses: tomchavakis/action-zip@v0.1.0
+        uses: tomchavakis/action-zip@v0.1.1
         with:
           args: zip -qq -r ./release.zip ./artifacts
       - name: Create release
         id: create_release
-        uses: actions/create-release@v1.0.0
+        uses: actions/create-release@v1.1.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

@@ -2,7 +2,7 @@
 
 namespace NuGetUtility.LicenseValidator
 {
-    public record struct ValidatedLicense(string PackageId,
+    public record ValidatedLicense(string PackageId,
         NuGetVersion PackageVersion,
         string License,
         LicenseInformationOrigin LicenseInformationOrigin);
