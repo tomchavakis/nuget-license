@@ -1,5 +1,4 @@
-﻿using NuGet.Protocol.Core.Types;
-using NuGetUtility.Extensions;
+﻿using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
@@ -26,19 +25,19 @@ namespace NuGetUtility.ReferencedPackagesReader
             _metadataBuilderFactory = metadataBuilderFactory;
         }
 
-        public IEnumerable<IPackageSearchMetadata> GetInstalledPackages(string projectPath, bool includeTransitive)
+        public IReferencedPackages GetInstalledPackages(string projectPath, bool includeTransitive)
         {
             var project = _msBuild.GetProject(projectPath);
 
             if (!project.HasNugetPackagesReferenced() && !includeTransitive)
             {
-                return Enumerable.Empty<IPackageSearchMetadata>();
+                return new ReferencedPackages();
             }
 
             return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
         }
 
-        private IEnumerable<IPackageSearchMetadata> GetInstalledPackagesFromAssetsFile(bool includeTransitive,
+        private IReferencedPackages GetInstalledPackagesFromAssetsFile(bool includeTransitive,
             IProject project)
         {
             var assetsFile = LoadAssetsFile(project);
@@ -52,9 +51,21 @@ namespace NuGetUtility.ReferencedPackagesReader
                 referencedLibraries.AddRange(referencedLibrariesForTarget);
             }
 
-            return referencedLibraries.Where(IsNotIgnoredPackage)
-                .Select(r =>
-                    _metadataBuilderFactory.FromIdentity(new PackageIdentity(r.Name, r.Version)).Build());
+            var result = new ReferencedPackages();
+            foreach (var library in referencedLibraries)
+            {
+                var packageIdentity = new PackageIdentity(library.Name, library.Version);
+                if (IsPackageIgnored(library))
+                {
+                    result.Ignored.Add(packageIdentity);
+                }
+                else
+                {
+                    result.Packages.Add(_metadataBuilderFactory.FromIdentity(packageIdentity).Build());
+                }
+            }
+
+            return result;
         }
 
         private IEnumerable<ILockFileLibrary> GetReferencedLibrariesForTarget(IProject project,
@@ -77,9 +88,9 @@ namespace NuGetUtility.ReferencedPackagesReader
             return referencedLibrariesForTarget;
         }
 
-        private bool IsNotIgnoredPackage(ILockFileLibrary packageInfo)
+        private bool IsPackageIgnored(ILockFileLibrary packageInfo)
         {
-            return !_ignoredPackages.Any(p => p.Equals(packageInfo.Name));
+            return _ignoredPackages.Any(p => p.Equals(packageInfo.Name));
         }
 
         private bool IsDirectlyReferenced(ILockFileLibrary library,
@@ -120,4 +131,5 @@ namespace NuGetUtility.ReferencedPackagesReader
             return assetsFile;
         }
     }
+
 }

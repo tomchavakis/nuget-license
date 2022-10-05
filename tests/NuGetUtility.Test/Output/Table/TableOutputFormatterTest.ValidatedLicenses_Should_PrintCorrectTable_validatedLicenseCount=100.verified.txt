@@ -1,19 +1,19 @@
 ﻿+-----------------------------------------+---------+----------------------------+------------------------------------------------------------------------------------------------------------+
 | Package                                 | Version | License Information Origin | License Expression                                                                                         |
 +-----------------------------------------+---------+----------------------------+------------------------------------------------------------------------------------------------------------+
-| Legacy Metrics Planner                  | 9.5.0   | Url                        | We need to generate the multi-byte SMTP port!                                                              |
-| International Implementation Consultant | 6.7.6   | Url                        | Try to generate the PNG sensor, maybe it will generate the haptic sensor!                                  |
+| Legacy Metrics Planner                  | 9.5.0   | Ignored                    | We need to generate the multi-byte SMTP port!                                                              |
+| International Implementation Consultant | 6.7.6   | Ignored                    | Try to generate the PNG sensor, maybe it will generate the haptic sensor!                                  |
 | Dynamic Implementation Orchestrator     | 3.1.0   | Url                        | I'll override the primary AI program, that should program the AI program!                                  |
-| Direct Program Director                 | 5.9.9   | Expression                 | Try to copy the EXE array, maybe it will copy the solid state array!                                       |
-| Legacy Markets Coordinator              | 2.3.0   | Url                        | You can't override the driver without backing up the redundant THX driver!                                 |
-| Future Infrastructure Planner           | 5.7.5   | Url                        | You can't parse the system without compressing the haptic GB system!                                       |
+| Direct Program Director                 | 5.9.9   | Url                        | Try to copy the EXE array, maybe it will copy the solid state array!                                       |
+| Legacy Markets Coordinator              | 2.3.0   | Ignored                    | You can't override the driver without backing up the redundant THX driver!                                 |
+| Future Infrastructure Planner           | 5.7.5   | Ignored                    | You can't parse the system without compressing the haptic GB system!                                       |
 | Customer Directives Director            | 7.9.2   | Expression                 | If we program the driver, we can get to the USB driver through the virtual USB driver!                     |
 | Direct Creative Representative          | 7.0.3   | Url                        | Try to navigate the RAM capacitor, maybe it will navigate the wireless capacitor!                          |
 | Forward Configuration Engineer          | 2.1.9   | Expression                 | Try to synthesize the COM port, maybe it will synthesize the haptic port!                                  |
 | Legacy Research Associate               | 9.9.5   | Expression                 | The THX program is down, transmit the redundant program so we can transmit the THX program!                |
-| Direct Branding Orchestrator            | 8.3.3   | Expression                 | You can't bypass the sensor without overriding the online ADP sensor!                                      |
-| Senior Intranet Designer                | 5.6.6   | Url                        | If we synthesize the protocol, we can get to the JBOD protocol through the multi-byte JBOD protocol!       |
-| National Communications Facilitator     | 3.1.0   | Url                        | You can't calculate the matrix without generating the optical JSON matrix!                                 |
+| Direct Branding Orchestrator            | 8.3.3   | Url                        | You can't bypass the sensor without overriding the online ADP sensor!                                      |
+| Senior Intranet Designer                | 5.6.6   | Ignored                    | If we synthesize the protocol, we can get to the JBOD protocol through the multi-byte JBOD protocol!       |
+| National Communications Facilitator     | 3.1.0   | Ignored                    | You can't calculate the matrix without generating the optical JSON matrix!                                 |
 | Human Response Technician               | 2.8.5   | Expression                 | I'll transmit the haptic COM protocol, that should protocol the COM protocol!                              |
 | Customer Accounts Engineer              | 5.4.5   | Expression                 | We need to hack the auxiliary COM hard drive!                                                              |
 | District Branding Analyst               | 1.9.5   | Expression                 | I'll navigate the neural SAS card, that should card the SAS card!                                          |
@@ -23,81 +23,81 @@
 | Legacy Intranet Agent                   | 9.0.8   | Expression                 | navigating the pixel won't do anything, we need to parse the back-end IB pixel!                            |
 | Future Implementation Architect         | 3.5.1   | Url                        | You can't input the capacitor without quantifying the virtual SQL capacitor!                               |
 | International Directives Supervisor     | 3.1.8   | Expression                 | Use the cross-platform CSS capacitor, then you can override the cross-platform capacitor!                  |
-| Dynamic Optimization Director           | 3.4.6   | Url                        | parsing the feed won't do anything, we need to input the wireless SAS feed!                                |
+| Dynamic Optimization Director           | 3.4.6   | Ignored                    | parsing the feed won't do anything, we need to input the wireless SAS feed!                                |
 | Corporate Data Associate                | 4.9.9   | Expression                 | We need to transmit the back-end RSS transmitter!                                                          |
 | International Identity Supervisor       | 8.6.5   | Expression                 | We need to parse the mobile PCI capacitor!                                                                 |
 | Product Factors Producer                | 0.2.3   | Url                        | The AI panel is down, reboot the wireless panel so we can reboot the AI panel!                             |
 | Principal Factors Producer              | 0.8.5   | Expression                 | Use the solid state SSL transmitter, then you can transmit the solid state transmitter!                    |
-| Corporate Infrastructure Administrator  | 2.8.0   | Expression                 | You can't hack the feed without compressing the bluetooth PNG feed!                                        |
+| Corporate Infrastructure Administrator  | 2.8.0   | Url                        | You can't hack the feed without compressing the bluetooth PNG feed!                                        |
 | Central Marketing Assistant             | 9.5.8   | Expression                 | I'll reboot the haptic SDD pixel, that should pixel the SDD pixel!                                         |
-| District Group Representative           | 3.5.9   | Url                        | We need to connect the digital XSS matrix!                                                                 |
-| Senior Optimization Assistant           | 3.6.0   | Url                        | I'll reboot the auxiliary PCI interface, that should interface the PCI interface!                          |
-| Chief Configuration Manager             | 6.3.8   | Url                        | Try to compress the SMS bus, maybe it will compress the bluetooth bus!                                     |
+| District Group Representative           | 3.5.9   | Ignored                    | We need to connect the digital XSS matrix!                                                                 |
+| Senior Optimization Assistant           | 3.6.0   | Ignored                    | I'll reboot the auxiliary PCI interface, that should interface the PCI interface!                          |
+| Chief Configuration Manager             | 6.3.8   | Ignored                    | Try to compress the SMS bus, maybe it will compress the bluetooth bus!                                     |
 | Legacy Interactions Analyst             | 3.0.8   | Url                        | You can't override the port without indexing the neural THX port!                                          |
-| Global Usability Producer               | 4.9.5   | Url                        | You can't quantify the monitor without copying the auxiliary SMTP monitor!                                 |
-| Corporate Implementation Engineer       | 4.4.9   | Expression                 | If we synthesize the circuit, we can get to the SCSI circuit through the virtual SCSI circuit!             |
+| Global Usability Producer               | 4.9.5   | Ignored                    | You can't quantify the monitor without copying the auxiliary SMTP monitor!                                 |
+| Corporate Implementation Engineer       | 4.4.9   | Url                        | If we synthesize the circuit, we can get to the SCSI circuit through the virtual SCSI circuit!             |
 | Customer Division Manager               | 1.3.9   | Expression                 | You can't compress the capacitor without copying the virtual USB capacitor!                                |
 | National Creative Executive             | 7.5.7   | Expression                 | The SQL interface is down, index the bluetooth interface so we can index the SQL interface!                |
 | National Security Developer             | 2.9.8   | Expression                 | The THX sensor is down, reboot the solid state sensor so we can reboot the THX sensor!                     |
 | Forward Research Strategist             | 8.8.2   | Url                        | We need to generate the multi-byte RSS application!                                                        |
-| Direct Metrics Associate                | 9.1.8   | Expression                 | The PCI protocol is down, back up the multi-byte protocol so we can back up the PCI protocol!              |
-| Senior Operations Coordinator           | 4.8.6   | Expression                 | quantifying the card won't do anything, we need to transmit the solid state EXE card!                      |
-| Senior Functionality Designer           | 7.8.9   | Url                        | The AI hard drive is down, back up the 1080p hard drive so we can back up the AI hard drive!               |
-| Investor Implementation Technician      | 2.7.9   | Expression                 | generating the protocol won't do anything, we need to hack the digital AI protocol!                        |
+| Direct Metrics Associate                | 9.1.8   | Url                        | The PCI protocol is down, back up the multi-byte protocol so we can back up the PCI protocol!              |
+| Senior Operations Coordinator           | 4.8.6   | Url                        | quantifying the card won't do anything, we need to transmit the solid state EXE card!                      |
+| Senior Functionality Designer           | 7.8.9   | Ignored                    | The AI hard drive is down, back up the 1080p hard drive so we can back up the AI hard drive!               |
+| Investor Implementation Technician      | 2.7.9   | Url                        | generating the protocol won't do anything, we need to hack the digital AI protocol!                        |
 | Direct Assurance Strategist             | 1.3.7   | Url                        | We need to program the 1080p SMS transmitter!                                                              |
-| Corporate Tactics Associate             | 3.8.8   | Url                        | You can't synthesize the bus without generating the auxiliary XSS bus!                                     |
-| Regional Factors Supervisor             | 8.6.4   | Expression                 | Use the neural PCI interface, then you can quantify the neural interface!                                  |
-| Internal Accountability Officer         | 8.7.8   | Url                        | You can't program the array without connecting the neural SSL array!                                       |
-| Future Assurance Analyst                | 1.1.1   | Url                        | You can't program the alarm without overriding the cross-platform RSS alarm!                               |
-| Product Integration Officer             | 3.3.6   | Url                        | connecting the application won't do anything, we need to bypass the mobile ADP application!                |
-| Principal Tactics Technician            | 5.4.6   | Url                        | I'll calculate the open-source SAS bus, that should bus the SAS bus!                                       |
+| Corporate Tactics Associate             | 3.8.8   | Ignored                    | You can't synthesize the bus without generating the auxiliary XSS bus!                                     |
+| Regional Factors Supervisor             | 8.6.4   | Url                        | Use the neural PCI interface, then you can quantify the neural interface!                                  |
+| Internal Accountability Officer         | 8.7.8   | Ignored                    | You can't program the array without connecting the neural SSL array!                                       |
+| Future Assurance Analyst                | 1.1.1   | Ignored                    | You can't program the alarm without overriding the cross-platform RSS alarm!                               |
+| Product Integration Officer             | 3.3.6   | Ignored                    | connecting the application won't do anything, we need to bypass the mobile ADP application!                |
+| Principal Tactics Technician            | 5.4.6   | Ignored                    | I'll calculate the open-source SAS bus, that should bus the SAS bus!                                       |
 | Future Security Agent                   | 4.6.5   | Expression                 | If we connect the protocol, we can get to the JSON protocol through the multi-byte JSON protocol!          |
-| International Research Coordinator      | 2.1.7   | Url                        | If we transmit the transmitter, we can get to the SSL transmitter through the back-end SSL transmitter!    |
-| Principal Accountability Supervisor     | 0.3.2   | Url                        | The XML firewall is down, generate the cross-platform firewall so we can generate the XML firewall!        |
-| Future Brand Representative             | 4.1.6   | Url                        | If we reboot the system, we can get to the SQL system through the mobile SQL system!                       |
-| Direct Web Orchestrator                 | 1.9.1   | Url                        | The JSON capacitor is down, connect the haptic capacitor so we can connect the JSON capacitor!             |
-| Legacy Accounts Technician              | 3.4.8   | Url                        | parsing the card won't do anything, we need to synthesize the online SQL card!                             |
-| Dynamic Quality Analyst                 | 0.9.5   | Url                        | We need to compress the back-end COM bus!                                                                  |
-| District Interactions Strategist        | 7.9.0   | Expression                 | I'll calculate the optical SQL pixel, that should pixel the SQL pixel!                                     |
+| International Research Coordinator      | 2.1.7   | Ignored                    | If we transmit the transmitter, we can get to the SSL transmitter through the back-end SSL transmitter!    |
+| Principal Accountability Supervisor     | 0.3.2   | Ignored                    | The XML firewall is down, generate the cross-platform firewall so we can generate the XML firewall!        |
+| Future Brand Representative             | 4.1.6   | Ignored                    | If we reboot the system, we can get to the SQL system through the mobile SQL system!                       |
+| Direct Web Orchestrator                 | 1.9.1   | Ignored                    | The JSON capacitor is down, connect the haptic capacitor so we can connect the JSON capacitor!             |
+| Legacy Accounts Technician              | 3.4.8   | Ignored                    | parsing the card won't do anything, we need to synthesize the online SQL card!                             |
+| Dynamic Quality Analyst                 | 0.9.5   | Ignored                    | We need to compress the back-end COM bus!                                                                  |
+| District Interactions Strategist        | 7.9.0   | Url                        | I'll calculate the optical SQL pixel, that should pixel the SQL pixel!                                     |
 | Customer Directives Architect           | 6.6.3   | Expression                 | You can't connect the interface without parsing the solid state XSS interface!                             |
 | National Tactics Specialist             | 5.7.8   | Expression                 | If we transmit the card, we can get to the SMTP card through the redundant SMTP card!                      |
-| Product Mobility Technician             | 3.3.8   | Expression                 | You can't generate the bandwidth without parsing the mobile EXE bandwidth!                                 |
+| Product Mobility Technician             | 3.3.8   | Url                        | You can't generate the bandwidth without parsing the mobile EXE bandwidth!                                 |
 | Global Configuration Consultant         | 5.9.5   | Url                        | We need to compress the wireless USB driver!                                                               |
 | Forward Infrastructure Consultant       | 1.3.1   | Url                        | quantifying the port won't do anything, we need to generate the primary THX port!                          |
-| Global Security Orchestrator            | 3.3.1   | Url                        | If we reboot the circuit, we can get to the PCI circuit through the virtual PCI circuit!                   |
+| Global Security Orchestrator            | 3.3.1   | Ignored                    | If we reboot the circuit, we can get to the PCI circuit through the virtual PCI circuit!                   |
 | Forward Infrastructure Specialist       | 6.1.6   | Url                        | If we transmit the application, we can get to the SMS application through the primary SMS application!     |
 | Lead Branding Developer                 | 4.1.5   | Expression                 | I'll copy the auxiliary PCI panel, that should panel the PCI panel!                                        |
 | Human Directives Engineer               | 5.3.9   | Url                        | Try to connect the ADP array, maybe it will connect the virtual array!                                     |
 | Dynamic Division Agent                  | 4.2.8   | Expression                 | Use the back-end SMS feed, then you can program the back-end feed!                                         |
 | Regional Factors Designer               | 7.4.1   | Url                        | Try to quantify the SCSI system, maybe it will quantify the 1080p system!                                  |
-| Internal Intranet Manager               | 6.3.3   | Url                        | I'll generate the optical THX system, that should system the THX system!                                   |
-| Product Data Designer                   | 7.7.5   | Url                        | The SQL circuit is down, generate the haptic circuit so we can generate the SQL circuit!                   |
+| Internal Intranet Manager               | 6.3.3   | Ignored                    | I'll generate the optical THX system, that should system the THX system!                                   |
+| Product Data Designer                   | 7.7.5   | Ignored                    | The SQL circuit is down, generate the haptic circuit so we can generate the SQL circuit!                   |
 | Dynamic Directives Technician           | 8.5.4   | Expression                 | I'll connect the mobile SMS sensor, that should sensor the SMS sensor!                                     |
 | National Accountability Administrator   | 5.3.0   | Expression                 | Try to bypass the EXE card, maybe it will bypass the optical card!                                         |
 | Human Factors Manager                   | 3.2.3   | Expression                 | We need to parse the back-end EXE matrix!                                                                  |
-| Lead Communications Officer             | 2.8.0   | Url                        | We need to back up the open-source PNG circuit!                                                            |
-| Forward Response Specialist             | 3.6.3   | Url                        | parsing the firewall won't do anything, we need to calculate the multi-byte PCI firewall!                  |
-| Direct Tactics Analyst                  | 1.0.4   | Url                        | Use the primary PCI array, then you can quantify the primary array!                                        |
+| Lead Communications Officer             | 2.8.0   | Ignored                    | We need to back up the open-source PNG circuit!                                                            |
+| Forward Response Specialist             | 3.6.3   | Ignored                    | parsing the firewall won't do anything, we need to calculate the multi-byte PCI firewall!                  |
+| Direct Tactics Analyst                  | 1.0.4   | Ignored                    | Use the primary PCI array, then you can quantify the primary array!                                        |
 | Future Creative Coordinator             | 6.1.3   | Expression                 | Try to transmit the SQL program, maybe it will transmit the multi-byte program!                            |
-| Investor Directives Technician          | 4.6.6   | Url                        | The RAM port is down, bypass the mobile port so we can bypass the RAM port!                                |
-| Central Applications Planner            | 6.6.9   | Url                        | parsing the driver won't do anything, we need to parse the primary TCP driver!                             |
-| Corporate Paradigm Administrator        | 5.5.2   | Url                        | Try to calculate the XSS feed, maybe it will calculate the neural feed!                                    |
+| Investor Directives Technician          | 4.6.6   | Ignored                    | The RAM port is down, bypass the mobile port so we can bypass the RAM port!                                |
+| Central Applications Planner            | 6.6.9   | Ignored                    | parsing the driver won't do anything, we need to parse the primary TCP driver!                             |
+| Corporate Paradigm Administrator        | 5.5.2   | Ignored                    | Try to calculate the XSS feed, maybe it will calculate the neural feed!                                    |
 | Dynamic Factors Designer                | 2.9.0   | Expression                 | Use the optical RSS feed, then you can program the optical feed!                                           |
-| Future Program Liaison                  | 5.1.6   | Expression                 | You can't index the feed without copying the haptic SAS feed!                                              |
+| Future Program Liaison                  | 5.1.6   | Url                        | You can't index the feed without copying the haptic SAS feed!                                              |
 | Lead Assurance Producer                 | 6.1.8   | Expression                 | If we transmit the system, we can get to the SMTP system through the virtual SMTP system!                  |
 | Chief Division Director                 | 3.4.7   | Expression                 | The FTP transmitter is down, compress the auxiliary transmitter so we can compress the FTP transmitter!    |
-| Senior Directives Officer               | 1.5.8   | Url                        | I'll override the primary XML monitor, that should monitor the XML monitor!                                |
-| Internal Creative Analyst               | 9.2.6   | Url                        | The SDD sensor is down, override the wireless sensor so we can override the SDD sensor!                    |
+| Senior Directives Officer               | 1.5.8   | Ignored                    | I'll override the primary XML monitor, that should monitor the XML monitor!                                |
+| Internal Creative Analyst               | 9.2.6   | Ignored                    | The SDD sensor is down, override the wireless sensor so we can override the SDD sensor!                    |
 | Principal Assurance Associate           | 9.3.9   | Expression                 | You can't bypass the sensor without transmitting the neural JSON sensor!                                   |
 | Customer Factors Planner                | 8.6.6   | Expression                 | If we bypass the transmitter, we can get to the SMTP transmitter through the solid state SMTP transmitter! |
-| Direct Operations Executive             | 3.1.7   | Expression                 | I'll bypass the solid state SMS system, that should system the SMS system!                                 |
-| Legacy Data Facilitator                 | 0.9.0   | Expression                 | synthesizing the firewall won't do anything, we need to program the primary JBOD firewall!                 |
-| Internal Brand Manager                  | 0.8.2   | Url                        | I'll connect the optical SQL transmitter, that should transmitter the SQL transmitter!                     |
-| Forward Research Designer               | 6.7.1   | Url                        | compressing the transmitter won't do anything, we need to reboot the optical SSL transmitter!              |
+| Direct Operations Executive             | 3.1.7   | Url                        | I'll bypass the solid state SMS system, that should system the SMS system!                                 |
+| Legacy Data Facilitator                 | 0.9.0   | Url                        | synthesizing the firewall won't do anything, we need to program the primary JBOD firewall!                 |
+| Internal Brand Manager                  | 0.8.2   | Ignored                    | I'll connect the optical SQL transmitter, that should transmitter the SQL transmitter!                     |
+| Forward Research Designer               | 6.7.1   | Ignored                    | compressing the transmitter won't do anything, we need to reboot the optical SSL transmitter!              |
 | Forward Implementation Liaison          | 0.7.5   | Expression                 | Use the optical USB firewall, then you can program the optical firewall!                                   |
 | Dynamic Directives Executive            | 9.9.0   | Expression                 | Use the open-source SQL system, then you can index the open-source system!                                 |
 | Regional Security Officer               | 9.7.3   | Expression                 | We need to transmit the redundant TCP panel!                                                               |
-| Future Factors Representative           | 9.2.0   | Expression                 | generating the bandwidth won't do anything, we need to reboot the solid state XML bandwidth!               |
+| Future Factors Representative           | 9.2.0   | Url                        | generating the bandwidth won't do anything, we need to reboot the solid state XML bandwidth!               |
 | Forward Tactics Planner                 | 5.4.6   | Expression                 | Use the digital SMTP hard drive, then you can program the digital hard drive!                              |
 | Direct Branding Engineer                | 7.4.9   | Url                        | If we copy the array, we can get to the SAS array through the neural SAS array!                            |
 | District Intranet Designer              | 4.5.0   | Expression                 | If we program the system, we can get to the AI system through the bluetooth AI system!                     |

@@ -1,7 +1,5 @@
 ﻿// ReSharper disable once CheckNamespace
 
-using System.Text;
-
 namespace Utilities
 {
     /// <summary>

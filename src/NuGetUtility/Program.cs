@@ -70,6 +70,11 @@ namespace NuGetUtility
             Description = "This parameter allows to choose between tabular and json output.")]
         public OutputType OutputType { get; } = OutputType.Table;
 
+        [Option(LongName = "output-verbosity",
+            ShortName = "v",
+            Description = "This parameter allows to choose the verbosity of the output.")]
+        public OutputVerbosity OutputVerbosity { get; } = OutputVerbosity.Standard;
+
         private HttpClient HttpClient
         {
             get
@@ -113,10 +118,10 @@ namespace NuGetUtility
 
             foreach (var project in inputFiles.SelectMany(file => projectCollector.GetProjects(file)))
             {
-                IEnumerable<IPackageSearchMetadata> installedPackages;
+                IReferencedPackages referencedPackages;
                 try
                 {
-                    installedPackages = projectReader.GetInstalledPackages(project, IncludeTransitive);
+                    referencedPackages = projectReader.GetInstalledPackages(project, IncludeTransitive);
                 }
                 catch (Exception e)
                 {
@@ -130,9 +135,14 @@ namespace NuGetUtility
                     new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider,
                         Repository.Provider.GetCoreV3())),
                     overridePackageInformation);
-                var downloadedInfo = informationReader.GetPackageInfo(installedPackages, CancellationToken.None);
+                var downloadedInfo =
+                    informationReader.GetPackageInfo(referencedPackages.PackagesToValidate, CancellationToken.None);
 
                 await validator.Validate(downloadedInfo, project);
+                if (OutputVerbosity == OutputVerbosity.IncludeIgnoredPackages)
+                {
+                    validator.AppendIgnoredPackages(referencedPackages.IgnoredPackages);
+                }
             }
 
             if (projectReaderExceptions.Any())
@@ -186,16 +196,16 @@ namespace NuGetUtility
             }
         }
 
-        private IEnumerable<CustomPackageInformation> GetOverridePackageInformation()
+        private CustomPackageInformation[] GetOverridePackageInformation()
         {
             if (OverridePackageInformation == null)
             {
-                return Enumerable.Empty<CustomPackageInformation>();
+                return Array.Empty<CustomPackageInformation>();
             }
 
             var serializerOptions = new JsonSerializerOptions();
             serializerOptions.Converters.Add(new NuGetVersionConverter());
-            return JsonSerializer.Deserialize<IEnumerable<CustomPackageInformation>>(
+            return JsonSerializer.Deserialize<CustomPackageInformation[]>(
                 File.ReadAllText(OverridePackageInformation),
                 serializerOptions)!;
         }
@@ -248,4 +258,5 @@ namespace NuGetUtility
             throw new FileNotFoundException("Please provide an input file");
         }
     }
+
 }

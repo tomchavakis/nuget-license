@@ -1,6 +1,8 @@
 ﻿using NuGet.Packaging;
 using NuGet.Protocol.Core.Types;
 using NuGetUtility.Wrapper.HttpClientWrapper;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.LicenseValidator
 {
@@ -37,7 +39,7 @@ namespace NuGetUtility.LicenseValidator
                 {
                     _errors.Add(new LicenseValidationError(context,
                         info.Identity.Id,
-                        info.Identity.Version,
+                        new WrappedNuGetVersion(info.Identity.Version),
                         "No license information found"));
                 }
             }
@@ -55,6 +57,7 @@ namespace NuGetUtility.LicenseValidator
 
         private void ValidateLicenseByMetadata(IPackageSearchMetadata info, string context)
         {
+            var version = new WrappedNuGetVersion(info.Identity.Version);
             switch (info.LicenseMetadata!.Type)
             {
                 case LicenseType.Expression:
@@ -62,7 +65,7 @@ namespace NuGetUtility.LicenseValidator
                     if (IsLicenseValid(licenseId))
                     {
                         _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
-                            info.Identity.Version,
+                            version,
                             info.LicenseMetadata.License,
                             LicenseInformationOrigin.Expression));
                     }
@@ -70,7 +73,7 @@ namespace NuGetUtility.LicenseValidator
                     {
                         _errors.Add(new LicenseValidationError(context,
                             info.Identity.Id,
-                            info.Identity.Version,
+                            version,
                             GetLicenseNotAllowedMessage(info.LicenseMetadata.License)));
                     }
 
@@ -78,7 +81,7 @@ namespace NuGetUtility.LicenseValidator
                 default:
                     _errors.Add(new LicenseValidationError(context,
                         info.Identity.Id,
-                        info.Identity.Version,
+                        version,
                         $"Validation for licenses of type {info.LicenseMetadata!.Type} not yet supported"));
                     break;
             }
@@ -99,12 +102,13 @@ namespace NuGetUtility.LicenseValidator
                 }
             }
 
+            var version = new WrappedNuGetVersion(info.Identity.Version);
             if (_licenseMapping.TryGetValue(info.LicenseUrl, out var licenseId))
             {
                 if (IsLicenseValid(licenseId))
                 {
                     _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
-                        info.Identity.Version,
+                        version,
                         licenseId,
                         LicenseInformationOrigin.Url));
                 }
@@ -112,14 +116,14 @@ namespace NuGetUtility.LicenseValidator
                 {
                     _errors.Add(new LicenseValidationError(context,
                         info.Identity.Id,
-                        info.Identity.Version,
+                        version,
                         GetLicenseNotAllowedMessage(licenseId)));
                 }
             }
             else if (!_allowedLicenses.Any())
             {
                 _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
-                    info.Identity.Version,
+                    version,
                     info.LicenseUrl.ToString(),
                     LicenseInformationOrigin.Url));
             }
@@ -127,7 +131,7 @@ namespace NuGetUtility.LicenseValidator
             {
                 _errors.Add(new LicenseValidationError(context,
                     info.Identity.Id,
-                    info.Identity.Version,
+                    version,
                     $"Cannot determine License type for url {info.LicenseUrl}"));
             }
         }
@@ -153,6 +157,12 @@ namespace NuGetUtility.LicenseValidator
         private string GetLicenseNotAllowedMessage(string license)
         {
             return $"License {license} not found in list of supported licenses";
+        }
+
+        public void AppendIgnoredPackages(IEnumerable<PackageIdentity> ignoredPackages)
+        {
+            _validatedLicenses.AddRange(ignoredPackages.Select(p =>
+                new ValidatedLicense(p.Name, p.Version, null, LicenseInformationOrigin.Ignored)));
         }
     }
 }

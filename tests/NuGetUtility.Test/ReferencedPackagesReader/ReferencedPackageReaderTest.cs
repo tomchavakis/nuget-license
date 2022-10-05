@@ -179,15 +179,10 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
         [Test]
         public void
-            GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_IncludingTransitive_And_PackageSpecFrameworkInformationGetFails()
+            GetInstalledPackages_Should_NotTryToGetTargetFrameworkInformationFromPackageSpec_If_IncludingTransitive()
         {
-            _packageSpecMock!.SetupGet(m => m.TargetFrameworks)
-                .Returns(Enumerable.Empty<ITargetFrameworkInformation>());
-            var result = _uut!.GetInstalledPackages(_projectPath!, true);
-            CollectionAssert.AreEquivalent(
-                _lockFileLibraries!.Select(l =>
-                    new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))),
-                result);
+            _uut!.GetInstalledPackages(_projectPath!, true);
+            _packageSpecMock!.VerifyGet(m => m.TargetFrameworks, Times.Never);
         }
 
         [Test]
@@ -214,7 +209,8 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             CollectionAssert.AreEquivalent(
                 _lockFileLibraries!.Select(l =>
                     new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))),
-                result);
+                result.PackagesToValidate);
+            CollectionAssert.AreEquivalent(Enumerable.Empty<PackageIdentity>(), result.IgnoredPackages);
         }
 
         [Test]
@@ -232,7 +228,8 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             CollectionAssert.AreEquivalent(
                 expectedResult.Select(l =>
                     new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))),
-                result);
+                result.PackagesToValidate);
+            CollectionAssert.AreEquivalent(Enumerable.Empty<PackageIdentity>(), result.IgnoredPackages);
         }
 
         [Test]
@@ -251,7 +248,11 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 _lockFileLibraries!.Where(l => l.Object.Name != ignoredPackageName)
                     .Select(l =>
                         new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))),
-                result);
+                result.PackagesToValidate);
+            CollectionAssert.AreEquivalent(
+                _lockFileLibraries!.Where(l => l.Object.Name == ignoredPackageName)
+                    .Select(l => new PackageIdentity(l.Object.Name, l.Object.Version)),
+                result.IgnoredPackages);
         }
 
         [Test]
@@ -278,7 +279,11 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 directReferencesResult.Where(l => l.Object.Name != ignoredPackageName)
                     .Select(l =>
                         new PackageSearchMetadataMock(new PackageIdentity(l.Object.Name, l.Object.Version))),
-                result);
+                result.PackagesToValidate);
+            CollectionAssert.AreEquivalent(
+                directReferencesResult.Where(l => l.Object.Name == ignoredPackageName)
+                    .Select(l => new PackageIdentity(l.Object.Name, l.Object.Version)),
+                result.IgnoredPackages);
         }
 
         [Test]
@@ -289,7 +294,8 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _projectMock!.Setup(m => m.GetEvaluatedIncludes()).Returns(Enumerable.Empty<string>());
             var result = _uut!.GetInstalledPackages(_projectPath!, false);
 
-            Assert.That(result.Count(), Is.EqualTo(0));
+            Assert.That(result.PackagesToValidate.Count(), Is.EqualTo(0));
+            Assert.That(result.IgnoredPackages.Count(), Is.EqualTo(0));
         }
     }
 }

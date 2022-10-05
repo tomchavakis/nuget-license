@@ -1,5 +1,5 @@
 ﻿+------------------------+---------+----------------------------+-----------------------------------------------+
 | Package                | Version | License Information Origin | License Expression                            |
 +------------------------+---------+----------------------------+-----------------------------------------------+
-| Legacy Metrics Planner | 9.5.0   | Url                        | We need to generate the multi-byte SMTP port! |
+| Legacy Metrics Planner | 9.5.0   | Ignored                    | We need to generate the multi-byte SMTP port! |
 +------------------------+---------+----------------------------+-----------------------------------------------+

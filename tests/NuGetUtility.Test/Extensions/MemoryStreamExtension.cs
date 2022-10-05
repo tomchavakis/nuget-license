@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace NuGetUtility.Test.Extensions
+﻿namespace NuGetUtility.Test.Extensions
 {
     public static class MemoryStreamExtension
     {

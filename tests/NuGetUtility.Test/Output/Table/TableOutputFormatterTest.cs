@@ -4,6 +4,7 @@ using NuGetUtility.LicenseValidator;
 using NuGetUtility.Output;
 using NuGetUtility.Output.Table;
 using NuGetUtility.Test.Extensions;
+using NuGetUtility.Test.Helper.NuGet.Version;
 
 namespace NuGetUtility.Test.Output.Table
 {
@@ -15,14 +16,14 @@ namespace NuGetUtility.Test.Output.Table
         {
             _validatedLicenseFaker = new Faker<ValidatedLicense>().CustomInstantiator(f =>
                     new ValidatedLicense(f.Name.JobTitle(),
-                        new NuGetVersion(f.System.Semver()),
+                        new MockedNugetVersion(f.System.Semver()),
                         f.Hacker.Phrase(),
                         f.Random.Enum<LicenseInformationOrigin>()))
                 .UseSeed(8675309);
             _licenseValidationErrorFaker = new Faker<LicenseValidationError>().CustomInstantiator(f =>
                     new LicenseValidationError(f.System.FilePath(),
                         f.Name.FullName(),
-                        new NuGetVersion(f.System.Semver()),
+                        new MockedNugetVersion(f.System.Semver()),
                         f.Lorem.Sentence()))
                 .UseSeed(9078345);
             _uut = new TableOutputFormatter();

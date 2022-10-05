@@ -26,7 +26,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             var result = _uut!.GetInstalledPackages(path, false);
 
-            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.PackagesToValidate.Count, Is.EqualTo(1));
         }
 
         [Test]
@@ -37,7 +37,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             var result = _uut!.GetInstalledPackages(path, true);
 
-            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result.PackagesToValidate.Count, Is.EqualTo(1));
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             var path = Path.GetFullPath(
                 "../../../../targets/ProjectWithTransitiveNuget/ProjectWithTransitiveNuget.csproj");
 
-            var result = _uut!.GetInstalledPackages(path, true).ToArray();
+            var result = _uut!.GetInstalledPackages(path, true).PackagesToValidate.ToArray();
 
             Assert.That(result.Count, Is.EqualTo(3));
             var titles = result.Select(metadata => metadata.Title).ToArray();
@@ -63,7 +63,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             var result = _uut!.GetInstalledPackages(path, false);
 
-            Assert.That(result.Count, Is.EqualTo(0));
+            Assert.That(result.PackagesToValidate.Count, Is.EqualTo(0));
         }
 
         [Test]

@@ -3,7 +3,6 @@ using Moq;
 using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Test.Helper.ShuffelledEnumerable;
 using NuGetUtility.Wrapper.MsBuildWrapper;
-using NUnit.Framework;
 
 namespace NuGetUtility.Test.ReferencedPackagesReader
 {
