@@ -1,0 +1,122 @@
+﻿[
+  {
+    "PackageId": "Global Branding Technician",
+    "PackageVersion": "9.6.5",
+    "License": "copying the program won\u0027t do anything, we need to copy the auxiliary HDD program!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Central Integration Administrator",
+    "PackageVersion": "2.8.7",
+    "License": "Use the haptic COM feed, then you can bypass the haptic feed!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Corporate Markets Representative",
+    "PackageVersion": "7.5.2",
+    "License": "The GB pixel is down, copy the cross-platform pixel so we can copy the GB pixel!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Future Web Facilitator",
+    "PackageVersion": "0.9.8",
+    "License": "You can\u0027t connect the panel without transmitting the haptic ADP panel!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Regional Research Facilitator",
+    "PackageVersion": "0.6.9",
+    "License": "I\u0027ll override the redundant AI alarm, that should alarm the AI alarm!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Chief Branding Developer",
+    "PackageVersion": "1.0.8",
+    "License": "I\u0027ll connect the online AGP monitor, that should monitor the AGP monitor!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Internal Web Facilitator",
+    "PackageVersion": "6.5.7",
+    "License": "Try to navigate the THX card, maybe it will navigate the solid state card!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Investor Identity Manager",
+    "PackageVersion": "8.2.1",
+    "License": "synthesizing the monitor won\u0027t do anything, we need to index the solid state SSL monitor!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "National Operations Technician",
+    "PackageVersion": "9.1.1",
+    "License": "Use the back-end HDD firewall, then you can input the back-end firewall!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Human Interactions Liaison",
+    "PackageVersion": "0.1.3",
+    "License": "generating the protocol won\u0027t do anything, we need to quantify the digital EXE protocol!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Global Quality Assistant",
+    "PackageVersion": "9.8.1",
+    "License": "We need to back up the redundant SAS matrix!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Dynamic Creative Representative",
+    "PackageVersion": "4.0.7",
+    "License": "If we reboot the protocol, we can get to the XML protocol through the virtual XML protocol!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "National Quality Engineer",
+    "PackageVersion": "1.9.6",
+    "License": "Try to compress the ADP application, maybe it will compress the bluetooth application!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "National Intranet Representative",
+    "PackageVersion": "4.1.1",
+    "License": "If we synthesize the hard drive, we can get to the SAS hard drive through the back-end SAS hard drive!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "National Optimization Officer",
+    "PackageVersion": "2.7.7",
+    "License": "If we override the hard drive, we can get to the SQL hard drive through the neural SQL hard drive!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "National Quality Agent",
+    "PackageVersion": "5.9.1",
+    "License": "We need to program the cross-platform SMS hard drive!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Human Accountability Consultant",
+    "PackageVersion": "1.7.6",
+    "License": "You can\u0027t index the program without transmitting the virtual ADP program!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Lead Functionality Executive",
+    "PackageVersion": "5.0.3",
+    "License": "Try to quantify the SQL circuit, maybe it will quantify the optical circuit!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Regional Optimization Assistant",
+    "PackageVersion": "9.9.6",
+    "License": "Try to quantify the HTTP firewall, maybe it will quantify the optical firewall!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Human Mobility Administrator",
+    "PackageVersion": "0.8.6",
+    "License": "We need to transmit the digital XSS pixel!",
+    "LicenseInformationOrigin": 0
+  }
+]

@@ -25,7 +25,7 @@ Usage: dotnet-project-licenses [options]
 **Options:**
 
 | Option                                        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| --------------------------------------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `-i, --input`                                 | Project or Solution to be analyzed                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `-ji, --json-input`                           | Similar to `-i, --input` but providing a file containing a valid JSON Array that contains all projects to be analyzed                                                                                                                                                                                                                                                                                                                                      |
 | `-t, --include-transitive`                    | When set, the analysis includes transitive packages (dependencies of packages that are directly installed to the project)                                                                                                                                                                                                                                                                                                                                  |
@@ -34,20 +34,26 @@ Usage: dotnet-project-licenses [options]
 | `-mapping, --licenseurl-to-license-mappings`  | When used, this option allows to override the url to license mapping built into the application (see [here](src/NuGetUtility/LicenseValidator/UrlToLicenseMapping.cs))                                                                                                                                                                                                                                                                                     |
 | `-override, --override-package-information`   | When used, this option allows to override the package information used for the validation. This makes sure that no attempt is made to get the associated information about the package from the available web resources. This is useful for packages that e.g. provide a license file as part of the nuget package which (at the time of writing) cannot be used for validation and thus requires the package's information to be provided by this option. |
 | `-d, --license-information-download-location` | When used, this option downloads the html content of the license URL to the specified folder. This is done for all NuGet packages that specify a license URL instead of providing the license expression.                                                                                                                                                                                                                                                  |
-| `-o, --output`                                | This Parameter accepts the value `table` or `json`. It allows to select the type of output that should be given. If omitted, the output is given in tabular form.                                                                                                                                                                                                                                                                                          |
+| `-o, --output`                                | This Parameter accepts the value `table`, `json` or `jsonPretty`. It allows to select the type of output that should be given. If omitted, the output is given in tabular form.                                                                                                                                                                                                                                                                            |
 
 ## Example tool commands
+
 ### Show help
+
 ```ps
 dotnet-project-licenses --help
 ```
+
 ### Validate licenses for .csproj file
+
 ```ps
 dotnet-project-licenses -i project.csproj
 ```
+
 ### Generate machine readable output
+
 ```ps
-dotnet-project-licenses -i project.csproj -o json
+dotnet-project-licenses -i project.csproj -o jsonPretty
 ```
 
 ## Docker

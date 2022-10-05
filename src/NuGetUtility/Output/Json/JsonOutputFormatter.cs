@@ -6,11 +6,12 @@ namespace NuGetUtility.Output.Json
     public class JsonOutputFormatter : IOutputFormatter
     {
         private readonly JsonSerializerOptions _options;
-        public JsonOutputFormatter()
+        public JsonOutputFormatter(bool prettyPrint = false)
         {
             _options = new JsonSerializerOptions
             {
-                Converters = { new NuGetVersionJsonConverter() }
+                Converters = { new NuGetVersionJsonConverter() },
+                WriteIndented = prettyPrint
             };
         }
 

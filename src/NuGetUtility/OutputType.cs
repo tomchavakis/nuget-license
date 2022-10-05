@@ -3,6 +3,7 @@
     public enum OutputType
     {
         Table,
-        Json
+        Json,
+        JsonPretty
     }
 }

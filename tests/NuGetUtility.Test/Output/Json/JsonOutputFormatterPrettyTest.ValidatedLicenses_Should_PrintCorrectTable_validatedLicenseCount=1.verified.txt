@@ -1,0 +1,8 @@
+﻿[
+  {
+    "PackageId": "Global Branding Technician",
+    "PackageVersion": "9.6.5",
+    "License": "copying the program won\u0027t do anything, we need to copy the auxiliary HDD program!",
+    "LicenseInformationOrigin": 1
+  }
+]
