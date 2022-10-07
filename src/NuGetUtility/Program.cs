@@ -158,6 +158,7 @@ namespace NuGetUtility
             return OutputType switch
             {
                 OutputType.Json => new JsonOutputFormatter(),
+                OutputType.JsonPretty => new JsonOutputFormatter(true),
                 OutputType.Table => new TableOutputFormatter(),
                 _ => throw new ArgumentOutOfRangeException($"{OutputType} not supported")
             };

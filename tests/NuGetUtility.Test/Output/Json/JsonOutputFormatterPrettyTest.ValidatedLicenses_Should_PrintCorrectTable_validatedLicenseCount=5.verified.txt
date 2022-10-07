@@ -1,0 +1,32 @@
+﻿[
+  {
+    "PackageId": "Global Branding Technician",
+    "PackageVersion": "9.6.5",
+    "License": "copying the program won\u0027t do anything, we need to copy the auxiliary HDD program!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Central Integration Administrator",
+    "PackageVersion": "2.8.7",
+    "License": "Use the haptic COM feed, then you can bypass the haptic feed!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Corporate Markets Representative",
+    "PackageVersion": "7.5.2",
+    "License": "The GB pixel is down, copy the cross-platform pixel so we can copy the GB pixel!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Future Web Facilitator",
+    "PackageVersion": "0.9.8",
+    "License": "You can\u0027t connect the panel without transmitting the haptic ADP panel!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Regional Research Facilitator",
+    "PackageVersion": "0.6.9",
+    "License": "I\u0027ll override the redundant AI alarm, that should alarm the AI alarm!",
+    "LicenseInformationOrigin": 1
+  }
+]
