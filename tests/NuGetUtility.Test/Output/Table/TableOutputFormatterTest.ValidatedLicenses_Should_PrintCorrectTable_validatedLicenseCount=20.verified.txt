@@ -1,24 +1,24 @@
-﻿+-----------------------------------------+---------+----------------------------+------------------------------------------------------------------------------------------------------+
-| Package                                 | Version | License Information Origin | License Expression                                                                                   |
-+-----------------------------------------+---------+----------------------------+------------------------------------------------------------------------------------------------------+
-| Legacy Metrics Planner                  | 9.5.0   | Url                        | We need to generate the multi-byte SMTP port!                                                        |
-| International Implementation Consultant | 6.7.6   | Url                        | Try to generate the PNG sensor, maybe it will generate the haptic sensor!                            |
-| Dynamic Implementation Orchestrator     | 3.1.0   | Url                        | I'll override the primary AI program, that should program the AI program!                            |
-| Direct Program Director                 | 5.9.9   | Expression                 | Try to copy the EXE array, maybe it will copy the solid state array!                                 |
-| Legacy Markets Coordinator              | 2.3.0   | Url                        | You can't override the driver without backing up the redundant THX driver!                           |
-| Future Infrastructure Planner           | 5.7.5   | Url                        | You can't parse the system without compressing the haptic GB system!                                 |
-| Customer Directives Director            | 7.9.2   | Expression                 | If we program the driver, we can get to the USB driver through the virtual USB driver!               |
-| Direct Creative Representative          | 7.0.3   | Url                        | Try to navigate the RAM capacitor, maybe it will navigate the wireless capacitor!                    |
-| Forward Configuration Engineer          | 2.1.9   | Expression                 | Try to synthesize the COM port, maybe it will synthesize the haptic port!                            |
-| Legacy Research Associate               | 9.9.5   | Expression                 | The THX program is down, transmit the redundant program so we can transmit the THX program!          |
-| Direct Branding Orchestrator            | 8.3.3   | Expression                 | You can't bypass the sensor without overriding the online ADP sensor!                                |
-| Senior Intranet Designer                | 5.6.6   | Url                        | If we synthesize the protocol, we can get to the JBOD protocol through the multi-byte JBOD protocol! |
-| National Communications Facilitator     | 3.1.0   | Url                        | You can't calculate the matrix without generating the optical JSON matrix!                           |
-| Human Response Technician               | 2.8.5   | Expression                 | I'll transmit the haptic COM protocol, that should protocol the COM protocol!                        |
-| Customer Accounts Engineer              | 5.4.5   | Expression                 | We need to hack the auxiliary COM hard drive!                                                        |
-| District Branding Analyst               | 1.9.5   | Expression                 | I'll navigate the neural SAS card, that should card the SAS card!                                    |
-| Central Creative Manager                | 8.4.8   | Expression                 | Use the online GB alarm, then you can navigate the online alarm!                                     |
-| District Operations Manager             | 8.5.0   | Expression                 | We need to navigate the back-end IB protocol!                                                        |
-| Central Interactions Manager            | 7.0.9   | Expression                 | We need to compress the primary GB array!                                                            |
-| Legacy Intranet Agent                   | 9.0.8   | Expression                 | navigating the pixel won't do anything, we need to parse the back-end IB pixel!                      |
-+-----------------------------------------+---------+----------------------------+------------------------------------------------------------------------------------------------------+
+﻿+-----------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------------------------+
+| Package                           | Version | License Information Origin | License Expression                                                                                     |
++-----------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------------------------+
+| Legacy Metrics Planner            | 9.5.0   | Url                        | We need to generate the multi-byte SMTP port!                                                          |
+| International Mobility Technician | 3.7.5   | Url                        | The XML alarm is down, override the haptic alarm so we can override the XML alarm!                     |
+| Principal Markets Executive       | 4.2.2   | Url                        | Use the auxiliary RAM firewall, then you can parse the auxiliary firewall!                             |
+| Future Identity Specialist        | 4.7.4   | Expression                 | You can't calculate the interface without bypassing the virtual AGP interface!                         |
+| Forward Functionality Designer    | 5.5.7   | Url                        | Use the digital RSS port, then you can index the digital port!                                         |
+| National Assurance Representative | 2.0.7   | Url                        | Try to hack the COM panel, maybe it will hack the auxiliary panel!                                     |
+| National Tactics Liaison          | 6.8.9   | Expression                 | Try to override the XML port, maybe it will override the neural port!                                  |
+| Global Implementation Engineer    | 6.0.7   | Url                        | If we input the pixel, we can get to the SDD pixel through the mobile SDD pixel!                       |
+| Forward Integration Executive     | 6.6.8   | Expression                 | You can't compress the sensor without navigating the cross-platform AI sensor!                         |
+| Customer Infrastructure Planner   | 6.6.0   | Expression                 | I'll transmit the digital HDD monitor, that should monitor the HDD monitor!                            |
+| Dynamic Program Administrator     | 9.8.6   | Expression                 | I'll calculate the neural SMTP card, that should card the SMTP card!                                   |
+| Customer Infrastructure Liaison   | 0.8.0   | Expression                 | Use the open-source PNG system, then you can generate the open-source system!                          |
+| Customer Research Associate       | 4.6.5   | Url                        | We need to transmit the multi-byte JBOD transmitter!                                                   |
+| Central Creative Manager          | 8.4.8   | Expression                 | Use the online GB alarm, then you can navigate the online alarm!                                       |
+| Internal Operations Executive     | 1.8.1   | Expression                 | Try to reboot the HTTP sensor, maybe it will reboot the cross-platform sensor!                         |
+| Corporate Marketing Associate     | 3.3.2   | Url                        | Try to back up the USB matrix, maybe it will back up the multi-byte matrix!                            |
+| District Intranet Strategist      | 2.2.2   | Expression                 | You can't copy the system without hacking the multi-byte FTP system!                                   |
+| Customer Assurance Officer        | 0.3.1   | Expression                 | I'll parse the digital COM hard drive, that should hard drive the COM hard drive!                      |
+| National Tactics Architect        | 6.7.8   | Url                        | The XSS application is down, override the wireless application so we can override the XSS application! |
+| Chief Integration Architect       | 1.6.8   | Url                        | copying the driver won't do anything, we need to reboot the wireless SSL driver!                       |
++-----------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------------------------+

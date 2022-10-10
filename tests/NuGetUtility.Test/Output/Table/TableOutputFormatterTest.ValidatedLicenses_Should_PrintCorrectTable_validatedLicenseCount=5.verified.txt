@@ -1,9 +1,9 @@
-﻿+-----------------------------------------+---------+----------------------------+----------------------------------------------------------------------------+
-| Package                                 | Version | License Information Origin | License Expression                                                         |
-+-----------------------------------------+---------+----------------------------+----------------------------------------------------------------------------+
-| Legacy Metrics Planner                  | 9.5.0   | Url                        | We need to generate the multi-byte SMTP port!                              |
-| International Implementation Consultant | 6.7.6   | Url                        | Try to generate the PNG sensor, maybe it will generate the haptic sensor!  |
-| Dynamic Implementation Orchestrator     | 3.1.0   | Url                        | I'll override the primary AI program, that should program the AI program!  |
-| Direct Program Director                 | 5.9.9   | Expression                 | Try to copy the EXE array, maybe it will copy the solid state array!       |
-| Legacy Markets Coordinator              | 2.3.0   | Url                        | You can't override the driver without backing up the redundant THX driver! |
-+-----------------------------------------+---------+----------------------------+----------------------------------------------------------------------------+
+﻿+-----------------------------------+---------+----------------------------+------------------------------------------------------------------------------------+
+| Package                           | Version | License Information Origin | License Expression                                                                 |
++-----------------------------------+---------+----------------------------+------------------------------------------------------------------------------------+
+| Legacy Metrics Planner            | 9.5.0   | Url                        | We need to generate the multi-byte SMTP port!                                      |
+| International Mobility Technician | 3.7.5   | Url                        | The XML alarm is down, override the haptic alarm so we can override the XML alarm! |
+| Principal Markets Executive       | 4.2.2   | Url                        | Use the auxiliary RAM firewall, then you can parse the auxiliary firewall!         |
+| Future Identity Specialist        | 4.7.4   | Expression                 | You can't calculate the interface without bypassing the virtual AGP interface!     |
+| Forward Functionality Designer    | 5.5.7   | Url                        | Use the digital RSS port, then you can index the digital port!                     |
++-----------------------------------+---------+----------------------------+------------------------------------------------------------------------------------+

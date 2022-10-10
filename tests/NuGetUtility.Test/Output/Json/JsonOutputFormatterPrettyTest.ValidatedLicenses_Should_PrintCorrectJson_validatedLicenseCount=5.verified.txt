@@ -1,0 +1,37 @@
+﻿[
+  {
+    "PackageId": "Global Branding Technician",
+    "PackageVersion": "9.6.5",
+    "License": "copying the program won\u0027t do anything, we need to copy the auxiliary HDD program!",
+    "LicenseInformationOrigin": 1,
+    "ProjectUrl": "http://daphnee.info"
+  },
+  {
+    "PackageId": "Future Creative Producer",
+    "PackageVersion": "6.5.5",
+    "License": "If we index the microchip, we can get to the SMTP microchip through the primary SMTP microchip!",
+    "LicenseInformationOrigin": 1,
+    "ProjectUrl": "https://keith.biz"
+  },
+  {
+    "PackageId": "Investor Directives Coordinator",
+    "PackageVersion": "1.6.2",
+    "License": "Use the bluetooth AGP driver, then you can parse the bluetooth driver!",
+    "LicenseInformationOrigin": 1,
+    "ProjectUrl": "http://heaven.name"
+  },
+  {
+    "PackageId": "Internal Directives Analyst",
+    "PackageVersion": "9.3.1",
+    "License": "parsing the circuit won\u0027t do anything, we need to navigate the bluetooth TCP circuit!",
+    "LicenseInformationOrigin": 0,
+    "ProjectUrl": "http://madilyn.biz"
+  },
+  {
+    "PackageId": "Legacy Factors Technician",
+    "PackageVersion": "6.1.0",
+    "License": "indexing the matrix won\u0027t do anything, we need to synthesize the open-source JBOD matrix!",
+    "LicenseInformationOrigin": 0,
+    "ProjectUrl": "http://reymundo.name"
+  }
+]

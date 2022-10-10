@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 using NuGet.Versioning;
 using NuGetUtility.LicenseValidator;
 using NuGetUtility.Output;
@@ -17,7 +17,8 @@ namespace NuGetUtility.Test.Output.Json
                     new ValidatedLicense(f.Name.JobTitle(),
                         new NuGetVersion(f.System.Semver()),
                         f.Hacker.Phrase(),
-                        f.Random.Enum<LicenseInformationOrigin>()))
+                        f.Random.Enum<LicenseInformationOrigin>(),
+                        new Uri(f.Internet.Url())))
                 .UseSeed(5432);
             _licenseValidationErrorFaker = new Faker<LicenseValidationError>().CustomInstantiator(f =>
                     new LicenseValidationError(f.System.FilePath(),
@@ -25,14 +26,14 @@ namespace NuGetUtility.Test.Output.Json
                         new NuGetVersion(f.System.Semver()),
                         f.Lorem.Sentence()))
                 .UseSeed(126334);
-            _uut = new JsonOutputFormatter(true);
+            _uut = new JsonOutputFormatter(true, true);
         }
         private IOutputFormatter _uut = null!;
         private Faker<ValidatedLicense> _validatedLicenseFaker = null!;
         private Faker<LicenseValidationError> _licenseValidationErrorFaker = null!;
 
         [Test]
-        public async Task Errors_Should_PrintCorrectTable([Values(0, 1, 5, 20)] int errorCount)
+        public async Task Errors_Should_PrintCorrectJson([Values(0, 1, 5, 20)] int errorCount)
         {
             using var stream = new MemoryStream();
             var errors = _licenseValidationErrorFaker.GenerateForever().Take(errorCount);
@@ -42,7 +43,7 @@ namespace NuGetUtility.Test.Output.Json
         }
 
         [Test]
-        public async Task ValidatedLicenses_Should_PrintCorrectTable(
+        public async Task ValidatedLicenses_Should_PrintCorrectJson(
             [Values(0, 1, 5, 20, 100)] int validatedLicenseCount)
         {
             using var stream = new MemoryStream();

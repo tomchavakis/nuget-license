@@ -1,0 +1,142 @@
+﻿[
+  {
+    "PackageId": "Global Branding Technician",
+    "PackageVersion": "9.6.5",
+    "License": "copying the program won\u0027t do anything, we need to copy the auxiliary HDD program!",
+    "LicenseInformationOrigin": 1,
+    "ProjectUrl": "http://daphnee.info"
+  },
+  {
+    "PackageId": "Future Creative Producer",
+    "PackageVersion": "6.5.5",
+    "License": "If we index the microchip, we can get to the SMTP microchip through the primary SMTP microchip!",
+    "LicenseInformationOrigin": 1,
+    "ProjectUrl": "https://keith.biz"
+  },
+  {
+    "PackageId": "Investor Directives Coordinator",
+    "PackageVersion": "1.6.2",
+    "License": "Use the bluetooth AGP driver, then you can parse the bluetooth driver!",
+    "LicenseInformationOrigin": 1,
+    "ProjectUrl": "http://heaven.name"
+  },
+  {
+    "PackageId": "Internal Directives Analyst",
+    "PackageVersion": "9.3.1",
+    "License": "parsing the circuit won\u0027t do anything, we need to navigate the bluetooth TCP circuit!",
+    "LicenseInformationOrigin": 0,
+    "ProjectUrl": "http://madilyn.biz"
+  },
+  {
+    "PackageId": "Legacy Factors Technician",
+    "PackageVersion": "6.1.0",
+    "License": "indexing the matrix won\u0027t do anything, we need to synthesize the open-source JBOD matrix!",
+    "LicenseInformationOrigin": 0,
+    "ProjectUrl": "http://reymundo.name"
+  },
+  {
+    "PackageId": "Human Web Planner",
+    "PackageVersion": "7.2.6",
+    "License": "I\u0027ll calculate the virtual XML firewall, that should firewall the XML firewall!",
+    "LicenseInformationOrigin": 0,
+    "ProjectUrl": "http://santino.biz"
+  },
+  {
+    "PackageId": "Dynamic Data Manager",
+    "PackageVersion": "9.7.7",
+    "License": "You can\u0027t reboot the feed without connecting the cross-platform PNG feed!",
+    "LicenseInformationOrigin": 0,
+    "ProjectUrl": "http://julian.name"
+  },
+  {
+    "PackageId": "Corporate Response Analyst",
+    "PackageVersion": "7.7.8",
+    "License": "I\u0027ll input the auxiliary RAM array, that should array the RAM array!",
+    "LicenseInformationOrigin": 1,
+    "ProjectUrl": "http://layne.com"
+  },
+  {
+    "PackageId": "Customer Assurance Analyst",
+    "PackageVersion": "6.8.9",
+    "License": "I\u0027ll input the digital GB interface, that should interface the GB interface!",
+    "LicenseInformationOrigin": 1,
+    "ProjectUrl": "http://felipa.biz"
+  },
+  {
+    "PackageId": "Internal Factors Architect",
+    "PackageVersion": "0.7.0",
+    "License": "Use the solid state FTP circuit, then you can quantify the solid state circuit!",
+    "LicenseInformationOrigin": 0,
+    "ProjectUrl": "https://dejuan.biz"
+  },
+  {
+    "PackageId": "Chief Web Specialist",
+    "PackageVersion": "4.6.8",
+    "License": "copying the pixel won\u0027t do anything, we need to parse the redundant AGP pixel!",
+    "LicenseInformationOrigin": 0,
+    "ProjectUrl": "http://cecile.com"
+  },
+  {
+    "PackageId": "Internal Directives Representative",
+    "PackageVersion": "5.7.5",
+    "License": "Try to input the XML transmitter, maybe it will input the digital transmitter!",
+    "LicenseInformationOrigin": 0,
+    "ProjectUrl": "http://payton.name"
+  },
+  {
+    "PackageId": "Customer Integration Facilitator",
+    "PackageVersion": "3.6.9",
+    "License": "Use the digital JBOD feed, then you can navigate the digital feed!",
+    "LicenseInformationOrigin": 1,
+    "ProjectUrl": "https://rodger.net"
+  },
+  {
+    "PackageId": "Human Accountability Consultant",
+    "PackageVersion": "1.7.6",
+    "License": "You can\u0027t index the program without transmitting the virtual ADP program!",
+    "LicenseInformationOrigin": 0,
+    "ProjectUrl": "http://demetris.com"
+  },
+  {
+    "PackageId": "Customer Security Coordinator",
+    "PackageVersion": "2.2.8",
+    "License": "Try to connect the JSON interface, maybe it will connect the multi-byte interface!",
+    "LicenseInformationOrigin": 1,
+    "ProjectUrl": "https://willow.name"
+  },
+  {
+    "PackageId": "Regional Program Facilitator",
+    "PackageVersion": "1.5.5",
+    "License": "The JSON protocol is down, program the 1080p protocol so we can program the JSON protocol!",
+    "LicenseInformationOrigin": 1,
+    "ProjectUrl": "http://vella.biz"
+  },
+  {
+    "PackageId": "Principal Intranet Consultant",
+    "PackageVersion": "4.1.5",
+    "License": "You can\u0027t transmit the pixel without transmitting the multi-byte SDD pixel!",
+    "LicenseInformationOrigin": 0,
+    "ProjectUrl": "https://leanna.biz"
+  },
+  {
+    "PackageId": "Internal Intranet Associate",
+    "PackageVersion": "9.1.1",
+    "License": "Use the cross-platform XSS firewall, then you can program the cross-platform firewall!",
+    "LicenseInformationOrigin": 1,
+    "ProjectUrl": "http://deron.info"
+  },
+  {
+    "PackageId": "Principal Implementation Designer",
+    "PackageVersion": "2.2.5",
+    "License": "You can\u0027t synthesize the hard drive without synthesizing the multi-byte PNG hard drive!",
+    "LicenseInformationOrigin": 1,
+    "ProjectUrl": "https://litzy.net"
+  },
+  {
+    "PackageId": "Internal Mobility Supervisor",
+    "PackageVersion": "0.1.9",
+    "License": "If we synthesize the bandwidth, we can get to the IB bandwidth through the auxiliary IB bandwidth!",
+    "LicenseInformationOrigin": 0,
+    "ProjectUrl": "https://dortha.com"
+  }
+]

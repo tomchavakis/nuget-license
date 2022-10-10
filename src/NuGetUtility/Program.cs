@@ -68,8 +68,8 @@ namespace NuGetUtility
         [Option(LongName = "output",
             ShortName = "o",
             Description = "This parameter allows to choose between tabular and json output.")]
-
         public OutputType OutputType { get; } = OutputType.Table;
+
         [Option(LongName = "no-validation-errors",
             ShortName = "noerr",
             Description = "When set, errors while validating packages are ignored. The output will only contain successfully validated packages.")]
@@ -78,7 +78,6 @@ namespace NuGetUtility
         [Option(LongName = "include-project-urls",
             ShortName = "url",
             Description = "When set, projects urls will be included in the output.")]
-
         public bool WithProjectUrls { get; } = false;
 
         private HttpClient HttpClient
@@ -168,8 +167,8 @@ namespace NuGetUtility
         {
             return OutputType switch
             {
-                OutputType.Json => new JsonOutputFormatter(),
-                OutputType.JsonPretty => new JsonOutputFormatter(true),
+                OutputType.Json => new JsonOutputFormatter(WithProjectUrls),
+                OutputType.JsonPretty => new JsonOutputFormatter(WithProjectUrls, true),
                 OutputType.Table => new TableOutputFormatter(WithProjectUrls),
                 _ => throw new ArgumentOutOfRangeException($"{OutputType} not supported")
             };

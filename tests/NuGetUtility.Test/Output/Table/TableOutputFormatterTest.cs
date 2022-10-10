@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 using NuGet.Versioning;
 using NuGetUtility.LicenseValidator;
 using NuGetUtility.Output;
@@ -17,7 +17,8 @@ namespace NuGetUtility.Test.Output.Table
                     new ValidatedLicense(f.Name.JobTitle(),
                         new NuGetVersion(f.System.Semver()),
                         f.Hacker.Phrase(),
-                        f.Random.Enum<LicenseInformationOrigin>()))
+                        f.Random.Enum<LicenseInformationOrigin>(),
+                        new Uri(f.Internet.Url())))
                 .UseSeed(8675309);
             _licenseValidationErrorFaker = new Faker<LicenseValidationError>().CustomInstantiator(f =>
                     new LicenseValidationError(f.System.FilePath(),
@@ -25,7 +26,7 @@ namespace NuGetUtility.Test.Output.Table
                         new NuGetVersion(f.System.Semver()),
                         f.Lorem.Sentence()))
                 .UseSeed(9078345);
-            _uut = new TableOutputFormatter();
+            _uut = new TableOutputFormatter(false);
         }
         private IOutputFormatter _uut = null!;
         private Faker<ValidatedLicense> _validatedLicenseFaker = null!;
@@ -45,6 +46,19 @@ namespace NuGetUtility.Test.Output.Table
         public async Task ValidatedLicenses_Should_PrintCorrectTable(
             [Values(0, 1, 5, 20, 100)] int validatedLicenseCount)
         {
+            using var stream = new MemoryStream();
+            var validated = _validatedLicenseFaker.GenerateForever().Take(validatedLicenseCount);
+            await _uut.Write(stream, validated);
+
+            await Verify(stream.AsString());
+        }
+
+        [Test]
+        public async Task ValidatedLicenses_Should_PrintCorrectTableWithUrls(
+            [Values(0, 1, 5, 20, 100)] int validatedLicenseCount)
+        {
+            _uut = new TableOutputFormatter(true);
+
             using var stream = new MemoryStream();
             var validated = _validatedLicenseFaker.GenerateForever().Take(validatedLicenseCount);
             await _uut.Write(stream, validated);

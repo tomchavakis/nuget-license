@@ -1,4 +1,4 @@
-﻿using NuGetUtility.LicenseValidator;
+using NuGetUtility.LicenseValidator;
 using System.Text.Json;
 
 namespace NuGetUtility.Output.Json
@@ -6,11 +6,11 @@ namespace NuGetUtility.Output.Json
     public class JsonOutputFormatter : IOutputFormatter
     {
         private readonly JsonSerializerOptions _options;
-        public JsonOutputFormatter(bool prettyPrint = false)
+        public JsonOutputFormatter(bool withPackageUrls, bool prettyPrint = false)
         {
             _options = new JsonSerializerOptions
             {
-                Converters = { new NuGetVersionJsonConverter() },
+                Converters = { new NuGetVersionJsonConverter(), new ValidatedLicenseJsonConverter(withPackageUrls) },
                 WriteIndented = prettyPrint
             };
         }

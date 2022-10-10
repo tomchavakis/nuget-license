@@ -1,0 +1,1 @@
+﻿[{"PackageId":"Dynamic Intranet Planner","PackageVersion":"0.2.4","License":"Try to synthesize the TCP matrix, maybe it will synthesize the primary matrix!","LicenseInformationOrigin":0,"ProjectUrl":"http://thea.com"}]
