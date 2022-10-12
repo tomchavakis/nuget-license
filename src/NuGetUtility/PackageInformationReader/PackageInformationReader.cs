@@ -93,11 +93,11 @@ namespace NuGetUtility.PackageInformationReader
             var manifest = Manifest.ReadFrom(pkgStream.GetNuspec(), true);
             if (manifest.Metadata.LicenseUrl != null)
             {
-                resolved = new PackageMetadataWithLicenseInformation(package, manifest.Metadata.LicenseUrl.ToString(), false);
+                resolved = new PackageMetadataWithLicenseInformation(package, manifest.Metadata.LicenseUrl.ToString());
             }
             else if (manifest.Metadata.LicenseMetadata != null)
             {
-                resolved = new PackageMetadataWithLicenseInformation(package, manifest.Metadata.LicenseMetadata.License, true);
+                resolved = new PackageMetadataWithLicenseInformation(package, manifest.Metadata.LicenseMetadata.License);
             }
             else
             {
@@ -117,7 +117,7 @@ namespace NuGetUtility.PackageInformationReader
                 return false;
             }
 
-            resolved = new PackageMetadataWithLicenseInformation(package, resolvedCustomInformation.License, true);
+            resolved = new PackageMetadataWithLicenseInformation(package, resolvedCustomInformation.License);
             return true;
         }
 

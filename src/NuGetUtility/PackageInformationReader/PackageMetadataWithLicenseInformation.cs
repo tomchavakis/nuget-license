@@ -10,12 +10,18 @@ namespace NuGetUtility.PackageInformationReader
     {
         private readonly IPackageSearchMetadata _baseMetadata;
 
-        public PackageMetadataWithLicenseInformation(IPackageSearchMetadata baseMetadata, string licenseType, bool parseLicenseType)
+        public PackageMetadataWithLicenseInformation(IPackageSearchMetadata baseMetadata, string license)
         {
+            NuGetLicenseExpression? nuGetLicenseExpression = default;
+            if (!Uri.TryCreate(license, UriKind.Absolute,  out _ ))
+            {
+                nuGetLicenseExpression = NuGetLicenseExpression.Parse(license);
+            }
+            
             _baseMetadata = baseMetadata;
             LicenseMetadata = new LicenseMetadata(LicenseType.Expression,
-                licenseType,
-                parseLicenseType ? NuGetLicenseExpression.Parse(licenseType) : null,
+                license,
+                nuGetLicenseExpression,
                 new string[] { },
                 LicenseMetadata.EmptyVersion);
         }
