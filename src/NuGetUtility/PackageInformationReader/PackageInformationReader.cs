@@ -1,4 +1,7 @@
-﻿using NuGet.Protocol.Core.Types;
+using NuGet.Configuration;
+using NuGet.Packaging;
+using NuGet.Protocol;
+using NuGet.Protocol.Core.Types;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 using System.Runtime.CompilerServices;
 
@@ -34,6 +37,10 @@ namespace NuGetUtility.PackageInformationReader
                 {
                     yield return info!;
                 }
+                else if (TryGetPackageInformationFromGlobalPackageFolder(package, out var infoGlobal))
+                {
+                    yield return infoGlobal!;
+                }
                 else
                 {
                     yield return await TryGetPackageInformationFromRepositoriesOrReturnInput(_sourceRepositories,
@@ -68,6 +75,37 @@ namespace NuGetUtility.PackageInformationReader
             return package;
         }
 
+        private bool TryGetPackageInformationFromGlobalPackageFolder(IPackageSearchMetadata package,
+            out IPackageSearchMetadata? resolved)
+        {
+            resolved = default;
+
+            var settings = Settings.LoadDefaultSettings(null);
+            var globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder(settings);
+
+            var packageCached = GlobalPackagesFolderUtility.GetPackage(package.Identity, globalPackagesFolder);
+            if (packageCached == null)
+            {
+                return false;
+            }
+
+            using var pkgStream = packageCached.PackageReader;
+            var manifest = Manifest.ReadFrom(pkgStream.GetNuspec(), true);
+            if (manifest.Metadata.LicenseUrl != null)
+            {
+                resolved = new PackageMetadataWithLicenseInformation(package, manifest.Metadata.LicenseUrl.ToString(), false);
+            }
+            else if (manifest.Metadata.LicenseMetadata != null)
+            {
+                resolved = new PackageMetadataWithLicenseInformation(package, manifest.Metadata.LicenseMetadata.License, true);
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+        }
+        
         private bool TryGetPackageInfoFromCustomInformation(IPackageSearchMetadata package,
             out IPackageSearchMetadata? resolved)
         {
@@ -79,7 +117,7 @@ namespace NuGetUtility.PackageInformationReader
                 return false;
             }
 
-            resolved = new PackageMetadataWithLicenseInformation(package, resolvedCustomInformation.License);
+            resolved = new PackageMetadataWithLicenseInformation(package, resolvedCustomInformation.License, true);
             return true;
         }
 

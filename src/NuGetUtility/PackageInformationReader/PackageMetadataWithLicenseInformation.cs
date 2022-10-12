@@ -1,4 +1,4 @@
-﻿using NuGet.Packaging;
+using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Packaging.Licenses;
 using NuGet.Protocol;
@@ -10,12 +10,12 @@ namespace NuGetUtility.PackageInformationReader
     {
         private readonly IPackageSearchMetadata _baseMetadata;
 
-        public PackageMetadataWithLicenseInformation(IPackageSearchMetadata baseMetadata, string licenseType)
+        public PackageMetadataWithLicenseInformation(IPackageSearchMetadata baseMetadata, string licenseType, bool parseLicenseType)
         {
             _baseMetadata = baseMetadata;
             LicenseMetadata = new LicenseMetadata(LicenseType.Expression,
                 licenseType,
-                NuGetLicenseExpression.Parse(licenseType),
+                parseLicenseType ? NuGetLicenseExpression.Parse(licenseType) : null,
                 new string[] { },
                 LicenseMetadata.EmptyVersion);
         }
