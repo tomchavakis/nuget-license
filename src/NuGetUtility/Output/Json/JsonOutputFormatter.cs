@@ -1,5 +1,6 @@
 ﻿using NuGetUtility.LicenseValidator;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace NuGetUtility.Output.Json
 {
@@ -11,17 +12,14 @@ namespace NuGetUtility.Output.Json
             _options = new JsonSerializerOptions
             {
                 Converters = { new NuGetVersionJsonConverter() },
-                WriteIndented = prettyPrint
+                WriteIndented = prettyPrint,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
         }
 
-        public async Task Write(Stream stream, IEnumerable<LicenseValidationError> errors)
+        public async Task Write(Stream stream, IList<LicenseValidationResult> results)
         {
-            await JsonSerializer.SerializeAsync(stream, errors, _options);
-        }
-        public async Task Write(Stream stream, IEnumerable<ValidatedLicense> validated)
-        {
-            await JsonSerializer.SerializeAsync(stream, validated, _options);
+            await JsonSerializer.SerializeAsync(stream, results, _options);
         }
     }
 }

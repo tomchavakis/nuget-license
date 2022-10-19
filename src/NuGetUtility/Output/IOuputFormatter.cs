@@ -4,7 +4,6 @@ namespace NuGetUtility.Output
 {
     public interface IOutputFormatter
     {
-        Task Write(Stream stream, IEnumerable<LicenseValidationError> errors);
-        Task Write(Stream stream, IEnumerable<ValidatedLicense> validated);
+        Task Write(Stream stream, IList<LicenseValidationResult> results);
     }
 }

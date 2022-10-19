@@ -2,8 +2,18 @@
 
 namespace NuGetUtility.LicenseValidator
 {
-    public record ValidatedLicense(string PackageId,
+    public record LicenseValidationResult(string PackageId,
         NuGetVersion PackageVersion,
-        string License,
-        LicenseInformationOrigin LicenseInformationOrigin);
+        string? PackageProjectUrl,
+        string? License,
+        LicenseInformationOrigin LicenseInformationOrigin,
+        List<ValidationError>? ValidationErrors = null)
+    {
+        public List<ValidationError> ValidationErrors { get; } = ValidationErrors ?? new List<ValidationError>();
+
+        public string? License { get; set; } = License;
+        public LicenseInformationOrigin LicenseInformationOrigin { get; set; } = LicenseInformationOrigin;
+    }
+
+    public record ValidationError(string Error, string Context);
 }

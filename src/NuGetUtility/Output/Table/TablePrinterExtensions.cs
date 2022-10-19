@@ -8,10 +8,14 @@ namespace NuGetUtility.Output.Table
         {
             return new TablePrinter(stream, headings);
         }
+        public static TablePrinter Create(Stream stream, IEnumerable<string> headings)
+        {
+            return new TablePrinter(stream, headings);
+        }
 
         public static TablePrinter FromValues<T>(this TablePrinter printer,
             IEnumerable<T> values,
-            Func<T, object[]> formatter)
+            Func<T, IEnumerable<object?>> formatter)
         {
             foreach (var value in values)
             {

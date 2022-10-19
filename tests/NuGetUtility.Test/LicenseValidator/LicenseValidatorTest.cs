@@ -6,6 +6,7 @@ using NuGet.Packaging.Licenses;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using NuGetUtility.LicenseValidator;
+using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Test.Helper.AsyncEnumerableExtension;
 using NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning;
 using NuGetUtility.Test.Helper.NUnitExtension;
@@ -38,19 +39,11 @@ namespace NuGetUtility.Test.LicenseValidator
         private Mock<IFileDownloader>? _fileDonwloader;
 
         [Test]
-        public async Task ValidatingEmptyList_Should_ReturnEmptyErrorArray()
-        {
-            var emptyListToValidate = Enumerable.Empty<IPackageSearchMetadata>().AsAsyncEnumerable();
-            await _uut!.Validate(emptyListToValidate, _context!);
-            CollectionAssert.AreEqual(Enumerable.Empty<LicenseValidationError>(), _uut!.GetErrors());
-        }
-
-        [Test]
         public async Task ValidatingEmptyList_Should_ReturnEmptyValidatedLicenses()
         {
-            var emptyListToValidate = Enumerable.Empty<IPackageSearchMetadata>().AsAsyncEnumerable();
-            await _uut!.Validate(emptyListToValidate, _context!);
-            CollectionAssert.AreEqual(Enumerable.Empty<ValidatedLicense>(), _uut!.GetValidatedLicenses());
+            var emptyListToValidate = Enumerable.Empty<ReferencedPackageWithContext>().AsAsyncEnumerable();
+            var results = await _uut!.Validate(emptyListToValidate);
+            CollectionAssert.AreEqual(Enumerable.Empty<LicenseValidationResult>(), results);
         }
 
         private static Mock<IPackageSearchMetadata> SetupPackage(string packageId, NuGetVersion packageVersion)
@@ -117,7 +110,7 @@ namespace NuGetUtility.Test.LicenseValidator
             await _uut.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
             CollectionAssert.AreEquivalent(new[]
-                    { new ValidatedLicense(packageId, packageVersion, license, LicenseInformationOrigin.Expression) },
+                    { new LicenseValidationResult(packageId, packageVersion, license, LicenseInformationOrigin.Expression) },
                 _uut.GetValidatedLicenses());
         }
 
@@ -165,7 +158,7 @@ namespace NuGetUtility.Test.LicenseValidator
             CollectionAssert.AreEquivalent(
                 new[]
                 {
-                    new ValidatedLicense(packageId, packageVersion, mappingLicense.Value, LicenseInformationOrigin.Url)
+                    new LicenseValidationResult(packageId, packageVersion, mappingLicense.Value, LicenseInformationOrigin.Url)
                 },
                 _uut.GetValidatedLicenses());
         }
@@ -206,7 +199,7 @@ namespace NuGetUtility.Test.LicenseValidator
             CollectionAssert.AreEquivalent(
                 new[]
                 {
-                    new ValidatedLicense(packageId,
+                    new LicenseValidationResult(packageId,
                         packageVersion,
                         new string(licenseUrl.ToString()),
                         LicenseInformationOrigin.Url)
@@ -232,7 +225,7 @@ namespace NuGetUtility.Test.LicenseValidator
 
             await _uut.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
-            CollectionAssert.AreEqual(Enumerable.Empty<ValidatedLicense>(), _uut.GetValidatedLicenses());
+            CollectionAssert.AreEqual(Enumerable.Empty<LicenseValidationResult>(), _uut.GetValidatedLicenses());
             CollectionAssert.AreEquivalent(
                 new[]
                 {
@@ -258,7 +251,7 @@ namespace NuGetUtility.Test.LicenseValidator
 
             await _uut.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
-            CollectionAssert.AreEqual(Enumerable.Empty<ValidatedLicense>(), _uut.GetValidatedLicenses());
+            CollectionAssert.AreEqual(Enumerable.Empty<LicenseValidationResult>(), _uut.GetValidatedLicenses());
             CollectionAssert.AreEquivalent(
                 new[]
                 {
@@ -300,7 +293,7 @@ namespace NuGetUtility.Test.LicenseValidator
 
             await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
-            CollectionAssert.AreEqual(Enumerable.Empty<ValidatedLicense>(), _uut!.GetValidatedLicenses());
+            CollectionAssert.AreEqual(Enumerable.Empty<LicenseValidationResult>(), _uut!.GetValidatedLicenses());
         }
 
         [Test]
@@ -330,7 +323,7 @@ namespace NuGetUtility.Test.LicenseValidator
 
             CollectionAssert.AreEqual(new[]
                 {
-                    new ValidatedLicense(packageId, packageVersion, validLicense, LicenseInformationOrigin.Expression)
+                    new LicenseValidationResult(packageId, packageVersion, validLicense, LicenseInformationOrigin.Expression)
                 },
                 _uut!.GetValidatedLicenses());
         }
@@ -404,7 +397,7 @@ namespace NuGetUtility.Test.LicenseValidator
 
             await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
-            CollectionAssert.AreEqual(Enumerable.Empty<ValidatedLicense>(), _uut!.GetValidatedLicenses());
+            CollectionAssert.AreEqual(Enumerable.Empty<LicenseValidationResult>(), _uut!.GetValidatedLicenses());
         }
 
         [Test]
@@ -439,7 +432,7 @@ namespace NuGetUtility.Test.LicenseValidator
             await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
             CollectionAssert.AreEqual(new[]
-                    { new ValidatedLicense(packageId, packageVersion, urlMatch.Value, LicenseInformationOrigin.Url) },
+                    { new LicenseValidationResult(packageId, packageVersion, urlMatch.Value, LicenseInformationOrigin.Url) },
                 _uut!.GetValidatedLicenses());
         }
 
@@ -476,7 +469,7 @@ namespace NuGetUtility.Test.LicenseValidator
 
             await _uut!.Validate(new[] { package.Object }.AsAsyncEnumerable(), _context!);
 
-            CollectionAssert.AreEqual(Enumerable.Empty<ValidatedLicense>(), _uut!.GetValidatedLicenses());
+            CollectionAssert.AreEqual(Enumerable.Empty<LicenseValidationResult>(), _uut!.GetValidatedLicenses());
         }
     }
 }

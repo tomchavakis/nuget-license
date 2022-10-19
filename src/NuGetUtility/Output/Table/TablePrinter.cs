@@ -1,6 +1,6 @@
 ﻿// ReSharper disable once CheckNamespace
 
-using System.Text;
+using NuGetUtility.Output.Table;
 
 namespace Utilities
 {
@@ -9,16 +9,16 @@ namespace Utilities
     /// </summary>
     public class TablePrinter
     {
-        private readonly List<int> _lengths;
-        private readonly List<string[]> _rows = new List<string[]>();
+        private readonly int[] _lengths;
+        private readonly List<string[][]> _rows = new List<string[][]>();
         private readonly Stream _stream;
         private readonly string[] _titles;
 
-        public TablePrinter(Stream stream, params string[] titles)
+        public TablePrinter(Stream stream, IEnumerable<string> titles)
         {
             _stream = stream;
-            _titles = titles;
-            _lengths = titles.Select(t => t.Length).ToList();
+            _titles = titles.ToArray();
+            _lengths = _titles.Select(t => t.Length).ToArray();
         }
 
         public void AddRow(params object?[] row)
@@ -29,14 +29,16 @@ namespace Utilities
                     $"Added row length [{row.Length}] is not equal to title row length [{_titles.Length}]");
             }
 
-            _rows.Add(row.Select(o => o?.ToString() ?? "").ToArray());
+            var rowElements = row.Select(item => SplitToLines(item?.ToString() ?? string.Empty).ToArray()).ToArray();
             for (var i = 0; i < _titles.Length; i++)
             {
-                if (_rows.Last()[i].Length > _lengths[i])
+                var maxLineLength = rowElements[i].Max(line => line.Length);
+                if (maxLineLength > _lengths[i])
                 {
-                    _lengths[i] = _rows.Last()[i].Length;
+                    _lengths[i] = maxLineLength;
                 }
             }
+            _rows.Add(rowElements);
         }
 
         public async Task Print()
@@ -44,7 +46,7 @@ namespace Utilities
             await using var writer = new StreamWriter(_stream, leaveOpen: true);
 
             await WriteSeparator(writer);
-            await WriteRow(_titles, writer);
+            await WriteRow(_titles.Select(t => new []{t}).ToArray(), writer);
             await WriteSeparator(writer);
 
             foreach (var row in _rows)
@@ -54,16 +56,22 @@ namespace Utilities
 
             await WriteSeparator(writer);
         }
-        private async Task WriteRow(string[] values, TextWriter writer)
-        {
-            for (var i = 0; i < values.Length; i++)
-            {
-                await writer.WriteAsync("| ");
-                await writer.WriteAsync(values[i].PadRight(_lengths[i]));
-                await writer.WriteAsync(' ');
-            }
 
-            await writer.WriteLineAsync("|");
+        private async Task WriteRow(string[][] values, TextWriter writer)
+        {
+            var maximumLines = values.Max(lines => lines.Length);
+            for (var line = 0; line < maximumLines; line++)
+            {
+                for (var i = 0; i < values.Length; i++)
+                {
+                    var printLine = values[line].Length > i ? values[line][i] : string.Empty;
+                    await writer.WriteAsync("| ");
+                    await writer.WriteAsync(printLine.PadRight(_lengths[i]));
+                    await writer.WriteAsync(' ');
+
+                }
+                await writer.WriteLineAsync("|");
+            }
         }
 
         private async Task WriteSeparator(TextWriter writer)
@@ -73,6 +81,20 @@ namespace Utilities
                 await writer.WriteAsync("+-" + new string('-', l) + '-');
             }
             await writer.WriteLineAsync("+");
+        }
+
+        /// <summary>
+        /// Credit: https://stackoverflow.com/a/23408020/1199089
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private static IEnumerable<string> SplitToLines(string input)
+        {
+            using var reader = new StringReader(input);
+            while (reader.ReadLine() is { } line)
+            {
+                yield return line;
+            }
         }
     }
 }

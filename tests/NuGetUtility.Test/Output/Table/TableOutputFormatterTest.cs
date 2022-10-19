@@ -13,8 +13,8 @@ namespace NuGetUtility.Test.Output.Table
         [SetUp]
         public void SetUp()
         {
-            _validatedLicenseFaker = new Faker<ValidatedLicense>().CustomInstantiator(f =>
-                    new ValidatedLicense(f.Name.JobTitle(),
+            _validatedLicenseFaker = new Faker<LicenseValidationResult>().CustomInstantiator(f =>
+                    new LicenseValidationResult(f.Name.JobTitle(),
                         new NuGetVersion(f.System.Semver()),
                         f.Hacker.Phrase(),
                         f.Random.Enum<LicenseInformationOrigin>()))
@@ -28,7 +28,7 @@ namespace NuGetUtility.Test.Output.Table
             _uut = new TableOutputFormatter();
         }
         private IOutputFormatter _uut = null!;
-        private Faker<ValidatedLicense> _validatedLicenseFaker = null!;
+        private Faker<LicenseValidationResult> _validatedLicenseFaker = null!;
         private Faker<LicenseValidationError> _licenseValidationErrorFaker = null!;
 
         [Test]
