@@ -10,11 +10,18 @@ namespace NuGetUtility.Test.LicenseValidator
             if (ReferenceEquals(x, null)) return false;
             if (ReferenceEquals(y, null)) return false;
             if (x.GetType() != y.GetType()) return false;
-            return x.ValidationErrors.SequenceEqual(y.ValidationErrors) && x.License == y.License && x.LicenseInformationOrigin == y.LicenseInformationOrigin && x.PackageId == y.PackageId && x.PackageVersion.Equals(y.PackageVersion) && x.PackageProjectUrl == y.PackageProjectUrl;
+            return x.ValidationErrors.SequenceEqual(y.ValidationErrors) && (x.License == y.License) &&
+                   (x.LicenseInformationOrigin == y.LicenseInformationOrigin) && (x.PackageId == y.PackageId) &&
+                   x.PackageVersion.Equals(y.PackageVersion) && (x.PackageProjectUrl == y.PackageProjectUrl);
         }
         public int GetHashCode(LicenseValidationResult obj)
         {
-            return HashCode.Combine(GetHashCode(obj.ValidationErrors), obj.License, (int)obj.LicenseInformationOrigin, obj.PackageId, obj.PackageVersion, obj.PackageProjectUrl);
+            return HashCode.Combine(GetHashCode(obj.ValidationErrors),
+                obj.License,
+                (int)obj.LicenseInformationOrigin,
+                obj.PackageId,
+                obj.PackageVersion,
+                obj.PackageProjectUrl);
         }
         private HashCode GetHashCode(List<ValidationError> validationErrors)
         {

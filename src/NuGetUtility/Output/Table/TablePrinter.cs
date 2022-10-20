@@ -1,7 +1,5 @@
 ﻿// ReSharper disable once CheckNamespace
 
-using NuGetUtility.Output.Table;
-
 namespace Utilities
 {
     /// <summary>
@@ -32,7 +30,7 @@ namespace Utilities
             var rowElements = row.Select(item => SplitToLines(item?.ToString() ?? string.Empty).ToArray()).ToArray();
             for (var i = 0; i < _titles.Length; i++)
             {
-                var maxLineLength = rowElements[i].Max(line => line.Length);
+                var maxLineLength = rowElements[i].Any() ? rowElements[i].Max(line => line.Length) : 0;
                 if (maxLineLength > _lengths[i])
                 {
                     _lengths[i] = maxLineLength;
@@ -46,7 +44,7 @@ namespace Utilities
             await using var writer = new StreamWriter(_stream, leaveOpen: true);
 
             await WriteSeparator(writer);
-            await WriteRow(_titles.Select(t => new []{t}).ToArray(), writer);
+            await WriteRow(_titles, writer);
             await WriteSeparator(writer);
 
             foreach (var row in _rows)
@@ -62,16 +60,19 @@ namespace Utilities
             var maximumLines = values.Max(lines => lines.Length);
             for (var line = 0; line < maximumLines; line++)
             {
-                for (var i = 0; i < values.Length; i++)
-                {
-                    var printLine = values[line].Length > i ? values[line][i] : string.Empty;
-                    await writer.WriteAsync("| ");
-                    await writer.WriteAsync(printLine.PadRight(_lengths[i]));
-                    await writer.WriteAsync(' ');
-
-                }
-                await writer.WriteLineAsync("|");
+                await WriteRow(values.Select(v => v.Length > line ? v[line] : string.Empty).ToArray(), writer);
             }
+        }
+
+        private async Task WriteRow(string[] values, TextWriter writer)
+        {
+            for (var i = 0; i < values.Length; i++)
+            {
+                await writer.WriteAsync("| ");
+                await writer.WriteAsync(values[i].PadRight(_lengths[i]));
+                await writer.WriteAsync(' ');
+            }
+            await writer.WriteLineAsync("|");
         }
 
         private async Task WriteSeparator(TextWriter writer)
@@ -84,7 +85,7 @@ namespace Utilities
         }
 
         /// <summary>
-        /// Credit: https://stackoverflow.com/a/23408020/1199089
+        ///     Credit: https://stackoverflow.com/a/23408020/1199089
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>

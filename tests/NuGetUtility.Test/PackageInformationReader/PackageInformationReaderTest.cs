@@ -82,15 +82,19 @@ namespace NuGetUtility.Test.PackageInformationReader
             var (project, result) = await PerformSearch(searchedPackages);
             CheckResult(result, project, _customPackageInformation);
         }
-        private async Task<(string Project, ReferencedPackageWithContext[] Result)> PerformSearch(IEnumerable<IPackageSearchMetadata> searchedPackages)
+        private async Task<(string Project, ReferencedPackageWithContext[] Result)> PerformSearch(
+            IEnumerable<IPackageSearchMetadata> searchedPackages)
         {
             var project = _fixture.Create<string>();
             var packageSearchRequest = new ProjectWithReferencedPackages(project, searchedPackages);
-            var result = (await _uut!.GetPackageInfo(packageSearchRequest, CancellationToken.None).Synchronize()).ToArray();
+            var result = (await _uut!.GetPackageInfo(packageSearchRequest, CancellationToken.None).Synchronize())
+                .ToArray();
             return (project, result);
         }
 
-        private static void CheckResult(ReferencedPackageWithContext[] result, string project, IEnumerable<CustomPackageInformation> packages)
+        private static void CheckResult(ReferencedPackageWithContext[] result,
+            string project,
+            IEnumerable<CustomPackageInformation> packages)
         {
             CollectionAssert.AreEquivalent(packages,
                 result.Select(s => new CustomPackageInformation(s.PackageInfo.Identity.Id,
@@ -193,7 +197,9 @@ namespace NuGetUtility.Test.PackageInformationReader
             var (project, result) = await PerformSearch(searchedPackages);
             CheckResult(result, project, searchedPackages);
         }
-        private void CheckResult(ReferencedPackageWithContext[] result, string project, IPackageSearchMetadata[] packages)
+        private void CheckResult(ReferencedPackageWithContext[] result,
+            string project,
+            IPackageSearchMetadata[] packages)
         {
             CollectionAssert.AreEquivalent(packages,
                 result.Select(s => s.PackageInfo));

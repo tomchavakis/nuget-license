@@ -4,22 +4,23 @@ namespace NuGetUtility.Output.Table
 {
     public class TableOutputFormatter : IOutputFormatter
     {
-        private readonly bool _omitValidLicensesIfErrorsExist;
-        public TableOutputFormatter(bool omitValidLicensesIfErrorsExist = false)
+        private readonly bool _printErrorsOnly;
+        public TableOutputFormatter(bool printErrorsOnly = false)
         {
-            _omitValidLicensesIfErrorsExist = omitValidLicensesIfErrorsExist;
+            _printErrorsOnly = printErrorsOnly;
         }
 
         public async Task Write(Stream stream, IList<LicenseValidationResult> results)
         {
-            bool printPackageProjectUrl = false;
-            bool hasPackagesWithErrors = false;
+            var printPackageProjectUrl = false;
+            var hasPackagesWithErrors = false;
             foreach (var license in results)
             {
                 printPackageProjectUrl |= license.PackageProjectUrl != null;
                 hasPackagesWithErrors |= license.ValidationErrors.Any();
             }
-            var headings = new List<string>(6) { "Package", "Version", "License Information Origin", "License Expression" };
+            var headings = new List<string>(6)
+                { "Package", "Version", "License Information Origin", "License Expression" };
             var formatters = new List<Func<LicenseValidationResult, string?>>(6)
             {
                 license => license.PackageId, license => license.PackageVersion.ToString(),
@@ -33,10 +34,14 @@ namespace NuGetUtility.Output.Table
             }
             if (hasPackagesWithErrors)
             {
-                headings.Add("Errors");
-                formatters.Add(license => FormatErrors(license.ValidationErrors));
+                headings.Add("Error");
+                headings.Add("Error Context");
+                formatters.Add(license =>
+                    string.Join(Environment.NewLine, license.ValidationErrors.Select(e => e.Error)));
+                formatters.Add(license =>
+                    string.Join(Environment.NewLine, license.ValidationErrors.Select(e => e.Context)));
 
-                if (_omitValidLicensesIfErrorsExist)
+                if (_printErrorsOnly)
                 {
                     results = results.Where(r => r.ValidationErrors.Any()).ToList();
                 }
@@ -48,10 +53,6 @@ namespace NuGetUtility.Output.Table
                     results,
                     license => formatters.Select(func => func(license)))
                 .Print();
-        }
-        private string FormatErrors(List<ValidationError> errors)
-        {
-            return string.Join("\n", errors.Select(e => $"Error: {e.Error}, Context:{e.Context}"));
         }
     }
 }

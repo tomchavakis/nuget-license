@@ -71,6 +71,12 @@ namespace NuGetUtility
             Description = "This parameter allows to choose between tabular and json output.")]
         public OutputType OutputType { get; } = OutputType.Table;
 
+        [Option(LongName = "error-only",
+            ShortName = "err",
+            Description =
+                "If this option is set and there are license validation errors, only the errors are returned as result. Otherwise all validation results are always returned.")]
+        public bool ReturnErrorsOnly { get; } = false;
+
         private HttpClient HttpClient
         {
             get
@@ -162,9 +168,9 @@ namespace NuGetUtility
         {
             return OutputType switch
             {
-                OutputType.Json => new JsonOutputFormatter(),
-                OutputType.JsonPretty => new JsonOutputFormatter(true),
-                OutputType.Table => new TableOutputFormatter(),
+                OutputType.Json => new JsonOutputFormatter(false, ReturnErrorsOnly),
+                OutputType.JsonPretty => new JsonOutputFormatter(true, ReturnErrorsOnly),
+                OutputType.Table => new TableOutputFormatter(ReturnErrorsOnly),
                 _ => throw new ArgumentOutOfRangeException($"{OutputType} not supported")
             };
         }

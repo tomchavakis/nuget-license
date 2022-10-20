@@ -9,6 +9,10 @@ namespace NuGetUtility.Test.Output
 {
     public abstract class TestBase
     {
+        private IOutputFormatter _uut = null!;
+        protected Faker<LicenseValidationResult> LicenseValidationErrorFaker = null!;
+
+        protected Faker<LicenseValidationResult> ValidatedLicenseFaker = null!;
         [SetUp]
         public void SetUp()
         {
@@ -57,10 +61,6 @@ namespace NuGetUtility.Test.Output
                 yield return new ValidationError(faker.Name.FirstName(), faker.System.FilePath());
             }
         }
-
-        protected Faker<LicenseValidationResult> ValidatedLicenseFaker = null!;
-        protected Faker<LicenseValidationResult> LicenseValidationErrorFaker = null!;
-        private IOutputFormatter _uut = null!;
 
         [Test]
         public async Task ValidatedLicensesWithErrors_Should_PrintCorrectTable(

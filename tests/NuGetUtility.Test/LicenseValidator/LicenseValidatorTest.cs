@@ -12,7 +12,6 @@ using NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning;
 using NuGetUtility.Test.Helper.NUnitExtension;
 using NuGetUtility.Test.Helper.ShuffelledEnumerable;
 using NuGetUtility.Wrapper.HttpClientWrapper;
-using System.Collections;
 
 namespace NuGetUtility.Test.LicenseValidator
 {
@@ -100,14 +99,16 @@ namespace NuGetUtility.Test.LicenseValidator
 
             var result = await _uut.Validate(CreateInput(package, _context));
 
-            Assert.That(result, Is.EquivalentTo(new[]
-            {
-                new LicenseValidationResult(packageId,
-                    packageVersion,
-                    _projectUrl.ToString(),
-                    license,
-                    LicenseInformationOrigin.Expression)
-            }).Using(new LicenseValidationResultValueEqualityComparer()));
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            license,
+                            LicenseInformationOrigin.Expression)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
         private Mock<IPackageSearchMetadata> SetupPackageWithLicenseUrl(string packageId,
@@ -163,11 +164,12 @@ namespace NuGetUtility.Test.LicenseValidator
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
-                    {                    new LicenseValidationResult(packageId,
-                                             packageVersion,
-                                             _projectUrl.ToString(),
-                                             licenseUrl.ToString(),
-                                             LicenseInformationOrigin.Url)
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            licenseUrl.ToString(),
+                            LicenseInformationOrigin.Url)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
@@ -192,16 +194,17 @@ namespace NuGetUtility.Test.LicenseValidator
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
-                    {                    new LicenseValidationResult(packageId,
-                                             packageVersion,
-                                             _projectUrl.ToString(),
-                                             null,
-                                             LicenseInformationOrigin.Unknown,
-                                             new List<ValidationError>
-                                             {
-                                                 new ValidationError($"Validation for licenses of type {licenseType} not yet supported",
-                                                     _context)
-                                             })
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            null,
+                            LicenseInformationOrigin.Unknown,
+                            new List<ValidationError>
+                            {
+                                new ValidationError($"Validation for licenses of type {licenseType} not yet supported",
+                                    _context)
+                            })
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
@@ -223,16 +226,16 @@ namespace NuGetUtility.Test.LicenseValidator
             Assert.That(result,
                 Is.EquivalentTo(new[]
                     {
-                    new LicenseValidationResult(packageId,
-                        packageVersion,
-                        _projectUrl.ToString(),
-                        null,
-                        LicenseInformationOrigin.Unknown,
-                        new List<ValidationError>
-                        {
-                            new ValidationError("No license information found",
-                                _context)
-                        })
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            null,
+                            LicenseInformationOrigin.Unknown,
+                            new List<ValidationError>
+                            {
+                                new ValidationError("No license information found",
+                                    _context)
+                            })
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
@@ -251,16 +254,16 @@ namespace NuGetUtility.Test.LicenseValidator
             Assert.That(result,
                 Is.EquivalentTo(new[]
                     {
-                    new LicenseValidationResult(packageId,
-                        packageVersion,
-                        _projectUrl.ToString(),
-                        license,
-                        LicenseInformationOrigin.Expression,
-                        new List<ValidationError>
-                        {
-                            new ValidationError($"License {license} not found in list of supported licenses",
-                                _context)
-                        })
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            license,
+                            LicenseInformationOrigin.Expression,
+                            new List<ValidationError>
+                            {
+                                new ValidationError($"License {license} not found in list of supported licenses",
+                                    _context)
+                            })
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
@@ -279,11 +282,11 @@ namespace NuGetUtility.Test.LicenseValidator
             Assert.That(result,
                 Is.EquivalentTo(new[]
                     {
-                    new LicenseValidationResult(packageId,
-                        packageVersion,
-                        _projectUrl.ToString(),
-                        validLicense,
-                        LicenseInformationOrigin.Expression)
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            validLicense,
+                            LicenseInformationOrigin.Expression)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
@@ -302,16 +305,16 @@ namespace NuGetUtility.Test.LicenseValidator
             Assert.That(result,
                 Is.EquivalentTo(new[]
                     {
-                    new LicenseValidationResult(packageId,
-                        packageVersion,
-                        _projectUrl.ToString(),
-                        urlMatch.Value,
-                        LicenseInformationOrigin.Url,
-                        new List<ValidationError>
-                        {
-                            new ValidationError($"License {urlMatch.Value} not found in list of supported licenses",
-                                _context)
-                        })
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            urlMatch.Value,
+                            LicenseInformationOrigin.Url,
+                            new List<ValidationError>
+                            {
+                                new ValidationError($"License {urlMatch.Value} not found in list of supported licenses",
+                                    _context)
+                            })
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
@@ -343,7 +346,8 @@ namespace NuGetUtility.Test.LicenseValidator
             _fileDownloader.Setup(m => m.DownloadFile(package.Object.LicenseUrl, It.IsAny<string>()))
                 .ThrowsAsync(new Exception());
 
-            var exception = Assert.ThrowsAsync<LicenseDownloadException>(() => _uut.Validate(CreateInput(package, _context)));
+            var exception =
+                Assert.ThrowsAsync<LicenseDownloadException>(() => _uut.Validate(CreateInput(package, _context)));
             Assert.IsInstanceOf<Exception>(exception!.InnerException);
             Assert.AreEqual(
                 $"Failed to download license for package {packageId} ({packageVersion}).\nContext: {_context}",
@@ -367,11 +371,11 @@ namespace NuGetUtility.Test.LicenseValidator
             Assert.That(result,
                 Is.EquivalentTo(new[]
                     {
-                    new LicenseValidationResult(packageId,
-                        packageVersion,
-                        _projectUrl.ToString(),
-                        urlMatch.Value,
-                        LicenseInformationOrigin.Url)
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            urlMatch.Value,
+                            LicenseInformationOrigin.Url)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
@@ -390,16 +394,16 @@ namespace NuGetUtility.Test.LicenseValidator
             Assert.That(result,
                 Is.EquivalentTo(new[]
                     {
-                    new LicenseValidationResult(packageId,
-                        packageVersion,
-                        _projectUrl.ToString(),
-                        licenseUrl.ToString(),
-                        LicenseInformationOrigin.Url,
-                        new List<ValidationError>
-                        {
-                            new ValidationError($"Cannot determine License type for url {licenseUrl}",
-                                _context)
-                        })
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            licenseUrl.ToString(),
+                            LicenseInformationOrigin.Url,
+                            new List<ValidationError>
+                            {
+                                new ValidationError($"Cannot determine License type for url {licenseUrl}",
+                                    _context)
+                            })
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
