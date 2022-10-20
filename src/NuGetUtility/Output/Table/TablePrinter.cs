@@ -21,7 +21,7 @@ namespace Utilities
             _lengths = _titles.Select(t => t.Length).ToArray();
         }
 
-        public void AddRow(params object?[] row)
+        public void AddRow(string?[] row)
         {
             if (row.Length != _titles.Length)
             {

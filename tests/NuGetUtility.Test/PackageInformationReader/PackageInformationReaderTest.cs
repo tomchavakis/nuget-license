@@ -79,19 +79,33 @@ namespace NuGetUtility.Test.PackageInformationReader
                 new PackageSearchMetadataMock(new PackageIdentity(p.Id, CreateMockedVersion(p.Version))) as
                     IPackageSearchMetadata);
 
-            var searchedPackageInfo =
-                await _uut!.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
+            var (project, result) = await PerformSearch(searchedPackages);
+            CheckResult(result, project, _customPackageInformation);
+        }
+        private async Task<(string Project, ReferencedPackageWithContext[] Result)> PerformSearch(IEnumerable<IPackageSearchMetadata> searchedPackages)
+        {
+            var project = _fixture.Create<string>();
+            var packageSearchRequest = new ProjectWithReferencedPackages(project, searchedPackages);
+            var result = (await _uut!.GetPackageInfo(packageSearchRequest, CancellationToken.None).Synchronize()).ToArray();
+            return (project, result);
+        }
 
-            CollectionAssert.AreEquivalent(_customPackageInformation!,
-                searchedPackageInfo.Select(s => new CustomPackageInformation(s.Identity.Id,
-                    s.Identity.Version,
-                    s.LicenseMetadata.License)));
+        private static void CheckResult(ReferencedPackageWithContext[] result, string project, IEnumerable<CustomPackageInformation> packages)
+        {
+            CollectionAssert.AreEquivalent(packages,
+                result.Select(s => new CustomPackageInformation(s.PackageInfo.Identity.Id,
+                    s.PackageInfo.Identity.Version,
+                    s.PackageInfo.LicenseMetadata.License)));
+            foreach (var r in result)
+            {
+                Assert.AreEqual(project, r.Context);
+            }
         }
 
         [Test]
         public async Task GetPackageInfo_Should_IterateThroughRepositoriesToGetAdditionalInformation()
         {
-            var sourceRepositoriesWithPackageMetadataResource = _sourceRepositories!.Shuffle().Take(2).ToArray();
+            var sourceRepositoriesWithPackageMetadataResource = _sourceRepositories!.Shuffle(2345).Take(2).ToArray();
             var packageMetadataResources = sourceRepositoriesWithPackageMetadataResource.Select(r =>
                 {
                     var metadataResource = new Mock<IPackageMetadataResource>();
@@ -103,7 +117,7 @@ namespace NuGetUtility.Test.PackageInformationReader
 
             foreach (var package in searchedPackagesAsPackageInformation)
             {
-                var metadataReturningProperInformation = packageMetadataResources.Shuffle().First();
+                var metadataReturningProperInformation = packageMetadataResources.Shuffle(6435).First();
                 metadataReturningProperInformation
                     .Setup(m => m.TryGetMetadataAsync(
                         new NuGet.Packaging.Core.PackageIdentity(package.Id, package.Version),
@@ -117,20 +131,15 @@ namespace NuGetUtility.Test.PackageInformationReader
                 new PackageSearchMetadataMock(new PackageIdentity(i.Id, CreateMockedVersion(i.Version))) as
                     IPackageSearchMetadata);
 
-            var searchedPackageInfo =
-                await _uut!.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
-
-            CollectionAssert.AreEquivalent(searchedPackagesAsPackageInformation,
-                searchedPackageInfo.Select(s => new CustomPackageInformation(s.Identity.Id,
-                    s.Identity.Version,
-                    s.LicenseMetadata.License)));
+            var (project, result) = await PerformSearch(searchedPackages);
+            CheckResult(result, project, searchedPackagesAsPackageInformation);
         }
 
         [Test]
         public async Task
             GetPackageInfo_Should_IgnoreFailingPackageMetadataResourceGetting_if_IterateThroughRepositoriesToGetAdditionalInformation()
         {
-            var shuffledRepositories = _sourceRepositories!.Shuffle();
+            var shuffledRepositories = _sourceRepositories!.Shuffle(14563);
             var splitRepositories = shuffledRepositories.Select((repo, index) => (Index: index, Repo: repo))
                 .GroupBy(e => e.Index % 2)
                 .ToArray();
@@ -154,7 +163,7 @@ namespace NuGetUtility.Test.PackageInformationReader
 
             foreach (var package in searchedPackagesAsPackageInformation)
             {
-                var metadataReturningProperInformation = packageMetadataResources.Shuffle().First();
+                var metadataReturningProperInformation = packageMetadataResources.Shuffle(4361).First();
                 metadataReturningProperInformation
                     .Setup(m => m.TryGetMetadataAsync(
                         new NuGet.Packaging.Core.PackageIdentity(package.Id, package.Version),
@@ -168,13 +177,8 @@ namespace NuGetUtility.Test.PackageInformationReader
                 new PackageSearchMetadataMock(new PackageIdentity(i.Id, CreateMockedVersion(i.Version))) as
                     IPackageSearchMetadata);
 
-            var searchedPackageInfo =
-                await _uut!.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
-
-            CollectionAssert.AreEquivalent(searchedPackagesAsPackageInformation,
-                searchedPackageInfo.Select(s => new CustomPackageInformation(s.Identity.Id,
-                    s.Identity.Version,
-                    s.LicenseMetadata.License)));
+            var (project, result) = await PerformSearch(searchedPackages);
+            CheckResult(result, project, searchedPackagesAsPackageInformation);
         }
 
         [Test]
@@ -186,10 +190,17 @@ namespace NuGetUtility.Test.PackageInformationReader
                         IPackageSearchMetadata)
                 .ToArray();
 
-            var searchedPackageInfo =
-                await _uut!.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
-
-            CollectionAssert.AreEquivalent(searchedPackages, searchedPackageInfo);
+            var (project, result) = await PerformSearch(searchedPackages);
+            CheckResult(result, project, searchedPackages);
+        }
+        private void CheckResult(ReferencedPackageWithContext[] result, string project, IPackageSearchMetadata[] packages)
+        {
+            CollectionAssert.AreEquivalent(packages,
+                result.Select(s => s.PackageInfo));
+            foreach (var r in result)
+            {
+                Assert.AreEqual(project, r.Context);
+            }
         }
 
         private INuGetVersion CreateMockedVersion(NuGetVersion innerVersion)

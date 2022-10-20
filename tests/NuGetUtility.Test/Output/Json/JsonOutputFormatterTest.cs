@@ -7,49 +7,23 @@ using NuGetUtility.Test.Extensions;
 
 namespace NuGetUtility.Test.Output.Json
 {
-    [TestFixture]
-    public class JsonOutputFormatterTest
-    {
-        [SetUp]
-        public void SetUp()
+
+        [TestFixture(false, false)]
+        [TestFixture(true, false)]
+        [TestFixture(false, true)]
+        [TestFixture(true, true)]
+        public class JsonOutputFormatterTest : TestBase
         {
-            _validatedLicenseFaker = new Faker<LicenseValidationResult>().CustomInstantiator(f =>
-                    new LicenseValidationResult(f.Name.JobTitle(),
-                        new NuGetVersion(f.System.Semver()),
-                        f.Hacker.Phrase(),
-                        f.Random.Enum<LicenseInformationOrigin>()))
-                .UseSeed(23498);
-            _licenseValidationErrorFaker = new Faker<LicenseValidationError>().CustomInstantiator(f =>
-                    new LicenseValidationError(f.System.FilePath(),
-                        f.Name.FullName(),
-                        new NuGetVersion(f.System.Semver()),
-                        f.Lorem.Sentence()))
-                .UseSeed(745039342);
-            _uut = new JsonOutputFormatter();
+            private readonly bool _prettyPrint;
+            private readonly bool _omitValidLicensesOnError;
+            public JsonOutputFormatterTest(bool prettyPrint, bool omitValidLicensesOnError)
+            {
+                _prettyPrint = prettyPrint;
+                _omitValidLicensesOnError = omitValidLicensesOnError;
+            }
+            protected override IOutputFormatter CreateUut()
+            {
+                return new JsonOutputFormatter(_prettyPrint, _omitValidLicensesOnError);
+            }
         }
-        private IOutputFormatter _uut = null!;
-        private Faker<LicenseValidationResult> _validatedLicenseFaker = null!;
-        private Faker<LicenseValidationError> _licenseValidationErrorFaker = null!;
-
-        [Test]
-        public async Task Errors_Should_PrintCorrectTable([Values(0, 1, 5, 20)] int errorCount)
-        {
-            using var stream = new MemoryStream();
-            var errors = _licenseValidationErrorFaker.GenerateForever().Take(errorCount);
-            await _uut.Write(stream, errors);
-
-            await Verify(stream.AsString());
-        }
-
-        [Test]
-        public async Task ValidatedLicenses_Should_PrintCorrectTable(
-            [Values(0, 1, 5, 20, 100)] int validatedLicenseCount)
-        {
-            using var stream = new MemoryStream();
-            var validated = _validatedLicenseFaker.GenerateForever().Take(validatedLicenseCount);
-            await _uut.Write(stream, validated);
-
-            await Verify(stream.AsString());
-        }
-    }
 }

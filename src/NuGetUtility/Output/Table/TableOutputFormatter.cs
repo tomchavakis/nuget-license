@@ -4,21 +4,26 @@ namespace NuGetUtility.Output.Table
 {
     public class TableOutputFormatter : IOutputFormatter
     {
+        private readonly bool _omitValidLicensesIfErrorsExist;
+        public TableOutputFormatter(bool omitValidLicensesIfErrorsExist = false)
+        {
+            _omitValidLicensesIfErrorsExist = omitValidLicensesIfErrorsExist;
+        }
 
         public async Task Write(Stream stream, IList<LicenseValidationResult> results)
         {
             bool printPackageProjectUrl = false;
-            bool printErrors = false;
+            bool hasPackagesWithErrors = false;
             foreach (var license in results)
             {
                 printPackageProjectUrl |= license.PackageProjectUrl != null;
-                printErrors |= license.ValidationErrors.Any();
+                hasPackagesWithErrors |= license.ValidationErrors.Any();
             }
             var headings = new List<string>(6) { "Package", "Version", "License Information Origin", "License Expression" };
-            var formatters = new List<Func<LicenseValidationResult, object?>>(6)
+            var formatters = new List<Func<LicenseValidationResult, string?>>(6)
             {
-                license => license.PackageId, license => license.PackageVersion,
-                license => license.LicenseInformationOrigin,
+                license => license.PackageId, license => license.PackageVersion.ToString(),
+                license => license.LicenseInformationOrigin.ToString(),
                 license => license.License
             };
             if (printPackageProjectUrl)
@@ -26,20 +31,22 @@ namespace NuGetUtility.Output.Table
                 headings.Add("Package Project Url");
                 formatters.Add(license => license.PackageProjectUrl);
             }
-            if (printErrors)
+            if (hasPackagesWithErrors)
             {
                 headings.Add("Errors");
                 formatters.Add(license => FormatErrors(license.ValidationErrors));
+
+                if (_omitValidLicensesIfErrorsExist)
+                {
+                    results = results.Where(r => r.ValidationErrors.Any()).ToList();
+                }
             }
 
             await TablePrinterExtensions
                 .Create(stream, headings)
                 .FromValues(
                     results,
-                    license =>
-                    {
-                        return formatters.Select(func => func(license));
-                    })
+                    license => formatters.Select(func => func(license)))
                 .Print();
         }
         private string FormatErrors(List<ValidationError> errors)

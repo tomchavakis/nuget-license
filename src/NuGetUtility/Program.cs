@@ -147,14 +147,14 @@ namespace NuGetUtility
             IEnumerable<CustomPackageInformation> overridePackageInformation,
             CancellationToken cancellation)
         {
-            var settings = Settings.LoadDefaultSettings(projectWithReferences.project);
+            var settings = Settings.LoadDefaultSettings(projectWithReferences.Project);
             var sourceProvider = new PackageSourceProvider(settings);
             using var informationReader = new PackageInformationReader.PackageInformationReader(
                 new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider,
                     Repository.Provider.GetCoreV3())),
                 overridePackageInformation);
-            return informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.project,
-                    projectWithReferences.referencedPackages),
+            return informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project,
+                    projectWithReferences.ReferencedPackages),
                 cancellation);
         }
 

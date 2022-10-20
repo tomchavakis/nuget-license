@@ -15,11 +15,11 @@ namespace NuGetUtility.Output.Table
 
         public static TablePrinter FromValues<T>(this TablePrinter printer,
             IEnumerable<T> values,
-            Func<T, IEnumerable<object?>> formatter)
+            Func<T, IEnumerable<string?>> formatter)
         {
             foreach (var value in values)
             {
-                printer.AddRow(formatter(value));
+                printer.AddRow(formatter(value).ToArray());
             }
 
             return printer;

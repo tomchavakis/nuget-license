@@ -28,20 +28,20 @@ namespace NuGetUtility.LicenseValidator
             var result = new ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult>();
             await foreach (var info in packages)
             {
-                if (info.packageInfo.LicenseMetadata != null)
+                if (info.PackageInfo.LicenseMetadata != null)
                 {
-                    ValidateLicenseByMetadata(info.packageInfo, info.context, result);
+                    ValidateLicenseByMetadata(info.PackageInfo, info.Context, result);
                 }
-                else if (info.packageInfo.LicenseUrl != null)
+                else if (info.PackageInfo.LicenseUrl != null)
                 {
-                    await ValidateLicenseByUrl(info.packageInfo, info.context, result);
+                    await ValidateLicenseByUrl(info.PackageInfo, info.Context, result);
                 }
                 else
                 {
                     AddOrUpdateLicense(result,
-                        info.packageInfo,
+                        info.PackageInfo,
                         LicenseInformationOrigin.Unknown,
-                        new ValidationError("No license information found", info.context));
+                        new ValidationError("No license information found", info.Context));
                 }
             }
             return result.Values;
@@ -184,7 +184,8 @@ namespace NuGetUtility.LicenseValidator
                 AddOrUpdateLicense(result,
                     info,
                     LicenseInformationOrigin.Url,
-                    new ValidationError($"Cannot determine License type for url {info.LicenseUrl}", context));
+                    new ValidationError($"Cannot determine License type for url {info.LicenseUrl}", context),
+                    info.LicenseUrl.ToString());
             }
         }
 

@@ -28,15 +28,15 @@ namespace NuGetUtility.PackageInformationReader
             ProjectWithReferencedPackages projectWithReferencedPackages,
             [EnumeratorCancellation] CancellationToken cancellation)
         {
-            foreach (var package in projectWithReferencedPackages.referencedPackages)
+            foreach (var package in projectWithReferencedPackages.ReferencedPackages)
             {
                 if (TryGetPackageInfoFromCustomInformation(package, out var info))
                 {
-                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.project, info!);
+                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, info!);
                 }
                 else
                 {
-                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.project,
+                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
                         await TryGetPackageInformationFromRepositoriesOrReturnInput(_sourceRepositories,
                             package,
                             cancellation));
@@ -98,7 +98,4 @@ namespace NuGetUtility.PackageInformationReader
         }
     }
 
-    public record ReferencedPackageWithContext(string context, IPackageSearchMetadata packageInfo);
-
-    public record ProjectWithReferencedPackages(string project, IEnumerable<IPackageSearchMetadata> referencedPackages);
 }
