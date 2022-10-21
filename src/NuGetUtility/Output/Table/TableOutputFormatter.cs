@@ -12,47 +12,44 @@ namespace NuGetUtility.Output.Table
 
         public async Task Write(Stream stream, IList<LicenseValidationResult> results)
         {
-            var printPackageProjectUrl = false;
-            var hasPackagesWithErrors = false;
+            var errorColumnDefinition = new ColumnDefinition("Error",
+                license => string.Join(Environment.NewLine, license.ValidationErrors.Select(e => e.Error)));
+            var columnDefinitions = new[]
+            {
+                new ColumnDefinition("Package", license => license.PackageId, true),
+                new ColumnDefinition("Version", license => license.PackageVersion.ToString() ,true),
+                new ColumnDefinition("License Information Origin", license => license.LicenseInformationOrigin.ToString(), true),
+                new ColumnDefinition("License Expression", license => license.License ?? string.Empty),
+                new ColumnDefinition("Package Project Url",license => license.PackageProjectUrl??string.Empty),
+                errorColumnDefinition,
+                new ColumnDefinition("Error Context", license => string.Join(Environment.NewLine, license.ValidationErrors.Select(e => e.Context))),
+            };
+
             foreach (var license in results)
             {
-                printPackageProjectUrl |= license.PackageProjectUrl != null;
-                hasPackagesWithErrors |= license.ValidationErrors.Any();
-            }
-            var headings = new List<string>(6)
-                { "Package", "Version", "License Information Origin", "License Expression" };
-            var formatters = new List<Func<LicenseValidationResult, string?>>(6)
-            {
-                license => license.PackageId, license => license.PackageVersion.ToString(),
-                license => license.LicenseInformationOrigin.ToString(),
-                license => license.License
-            };
-            if (printPackageProjectUrl)
-            {
-                headings.Add("Package Project Url");
-                formatters.Add(license => license.PackageProjectUrl);
-            }
-            if (hasPackagesWithErrors)
-            {
-                headings.Add("Error");
-                headings.Add("Error Context");
-                formatters.Add(license =>
-                    string.Join(Environment.NewLine, license.ValidationErrors.Select(e => e.Error)));
-                formatters.Add(license =>
-                    string.Join(Environment.NewLine, license.ValidationErrors.Select(e => e.Context)));
-
-                if (_printErrorsOnly)
+                foreach (var definition in columnDefinitions)
                 {
-                    results = results.Where(r => r.ValidationErrors.Any()).ToList();
+                    definition.Enabled |= !string.IsNullOrWhiteSpace(definition.StringAccessor(license));
                 }
             }
 
+            if (_printErrorsOnly && errorColumnDefinition.Enabled)
+            {
+                results = results.Where(r => r.ValidationErrors.Any()).ToList();
+            }
+
+            var relevantColumns = columnDefinitions.Where(c => c.Enabled).ToArray();
             await TablePrinterExtensions
-                .Create(stream, headings)
+                .Create(stream, relevantColumns.Select(d => d.Title))
                 .FromValues(
                     results,
-                    license => formatters.Select(func => func(license)))
+                    license => relevantColumns.Select(d => d.StringAccessor(license)))
                 .Print();
+        }
+
+        private record ColumnDefinition(string Title, Func<LicenseValidationResult, string> StringAccessor, bool Enabled = false)
+        {
+            public bool Enabled { get; set; } = Enabled;
         }
     }
 }
