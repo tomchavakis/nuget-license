@@ -58,7 +58,7 @@ namespace NuGetUtility.Test.Output
             var itemCount = faker.Random.Int(3, 10);
             for (var i = 0; i < itemCount; i++)
             {
-                yield return new ValidationError(faker.Name.FirstName(), faker.System.FilePath());
+                yield return new ValidationError(faker.Name.FirstName(), faker.Internet.Url());
             }
         }
 

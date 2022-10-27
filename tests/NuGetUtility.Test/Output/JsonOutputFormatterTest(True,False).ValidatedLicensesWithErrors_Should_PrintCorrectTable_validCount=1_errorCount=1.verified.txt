@@ -12,19 +12,19 @@
     "ValidationErrors": [
       {
         "Error": "Judson",
-        "Context": "/usr/local/bin/navigating_grocery__tools_\u0026_jewelery_global.odt"
+        "Context": "https://wilson.net"
       },
       {
-        "Error": "Eleanora",
-        "Context": "/etc/users_deposit.3ds"
+        "Error": "Guadalupe",
+        "Context": "http://otho.info"
       },
       {
-        "Error": "Oceane",
-        "Context": "/Library/fantastic_concrete_computer.cdmic"
+        "Error": "General",
+        "Context": "https://skylar.name"
       },
       {
-        "Error": "Verna",
-        "Context": "/var/yp/dynamic_reboot_magenta.air"
+        "Error": "Haylie",
+        "Context": "http://audreanne.info"
       }
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
