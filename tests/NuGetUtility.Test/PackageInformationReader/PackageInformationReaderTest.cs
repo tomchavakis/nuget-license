@@ -1,4 +1,4 @@
-﻿using AutoFixture;
+using AutoFixture;
 using Moq;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
@@ -25,20 +25,24 @@ namespace NuGetUtility.Test.PackageInformationReader
             _fixture = new Fixture();
             _fixture.Customizations.Add(new NuGetVersionBuilder());
             _fixture.Customizations.Add(new MockBuilder());
-            _sourceRepositories = new List<Mock<IDisposableSourceRepository>>();
+            _localRepositories = Array.Empty<Mock<ISourceRepository>>();
+            _remoteRepositories = Array.Empty<Mock<ISourceRepository>>();
 
-            _sourceRepositoryProvider.Setup(m => m.GetRepositories())
-                .Returns(() =>
+            _sourceRepositoryProvider.Setup(m => m.GetLocalRepositories())
+                .Returns((Delegate)(() =>
                 {
-                    foreach (var repository in _sourceRepositories ??
-                                               Enumerable.Empty<Mock<IDisposableSourceRepository>>())
-                    {
-                        repository.Verify(m => m.Dispose(), Times.Once);
-                    }
+                    Assert.AreEqual(Array.Empty<Mock<ISourceRepository>>(), _localRepositories);
+                    _localRepositories = _fixture.CreateMany<Mock<ISourceRepository>>().ToArray<Mock<ISourceRepository>>();
+                    return _localRepositories.Select<Mock<ISourceRepository>, ISourceRepository>(r => r.Object).ToArray();
+                }));
 
-                    _sourceRepositories = _fixture.CreateMany<Mock<IDisposableSourceRepository>>().ToList();
-                    return _sourceRepositories.Select(r => r.Object);
-                });
+            _sourceRepositoryProvider.Setup(m => m.GetRemoteRepositories())
+                .Returns((Delegate)(() =>
+                {
+                    Assert.AreEqual(Array.Empty<Mock<ISourceRepository>>(), _remoteRepositories);
+                    _remoteRepositories = _fixture.CreateMany<Mock<ISourceRepository>>().ToArray<Mock<ISourceRepository>>();
+                    return _remoteRepositories.Select<Mock<ISourceRepository>, ISourceRepository>(r => r.Object).ToArray();
+                }));
 
             SetupUut();
         }
@@ -46,28 +50,24 @@ namespace NuGetUtility.Test.PackageInformationReader
         [TearDown]
         public void TearDown()
         {
-            _uut?.Dispose();
-            foreach (var repository in _sourceRepositories ?? Enumerable.Empty<Mock<IDisposableSourceRepository>>())
-            {
-                repository.Verify(m => m.Dispose(), Times.Once);
-            }
-
-            _sourceRepositories?.Clear();
-            _uut = null;
+            _localRepositories = Array.Empty<Mock<ISourceRepository>>();
+            _remoteRepositories = Array.Empty<Mock<ISourceRepository>>();
+            _uut = null!;
         }
 
         private void SetupUut()
         {
             TearDown();
-            _uut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider!.Object,
-                _customPackageInformation!);
+            _uut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider.Object,
+                _customPackageInformation);
         }
 
-        private NuGetUtility.PackageInformationReader.PackageInformationReader? _uut;
-        private Mock<IWrappedSourceRepositoryProvider>? _sourceRepositoryProvider;
-        private List<CustomPackageInformation>? _customPackageInformation;
-        private Fixture? _fixture;
-        private List<Mock<IDisposableSourceRepository>>? _sourceRepositories;
+        private NuGetUtility.PackageInformationReader.PackageInformationReader _uut = null!;
+        private Mock<IWrappedSourceRepositoryProvider> _sourceRepositoryProvider = null!;
+        private List<CustomPackageInformation> _customPackageInformation = null!;
+        private Fixture _fixture = null!;
+        private Mock<ISourceRepository>[] _localRepositories = null!;
+        private Mock<ISourceRepository>[] _remoteRepositories = null!;
 
         [Test]
         public async Task GetPackageInfo_Should_PreferProvidedCustomInformation()
@@ -80,18 +80,18 @@ namespace NuGetUtility.Test.PackageInformationReader
                     IPackageSearchMetadata);
 
             var searchedPackageInfo =
-                await _uut!.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
+                await _uut.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
 
-            CollectionAssert.AreEquivalent(_customPackageInformation!,
+            CollectionAssert.AreEquivalent(_customPackageInformation,
                 searchedPackageInfo.Select(s => new CustomPackageInformation(s.Identity.Id,
                     s.Identity.Version,
                     s.LicenseMetadata.License)));
         }
 
         [Test]
-        public async Task GetPackageInfo_Should_IterateThroughRepositoriesToGetAdditionalInformation()
+        public async Task GetPackageInfo_Should_IterateThroughLocalRepositoriesToGetAdditionalInformation()
         {
-            var sourceRepositoriesWithPackageMetadataResource = _sourceRepositories!.Shuffle().Take(2).ToArray();
+            var sourceRepositoriesWithPackageMetadataResource = _localRepositories.Shuffle().Take(2).ToArray();
             var packageMetadataResources = sourceRepositoriesWithPackageMetadataResource.Select(r =>
                 {
                     var metadataResource = new Mock<IPackageMetadataResource>();
@@ -118,7 +118,7 @@ namespace NuGetUtility.Test.PackageInformationReader
                     IPackageSearchMetadata);
 
             var searchedPackageInfo =
-                await _uut!.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
+                await _uut.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
 
             CollectionAssert.AreEquivalent(searchedPackagesAsPackageInformation,
                 searchedPackageInfo.Select(s => new CustomPackageInformation(s.Identity.Id,
@@ -127,10 +127,60 @@ namespace NuGetUtility.Test.PackageInformationReader
         }
 
         [Test]
-        public async Task
-            GetPackageInfo_Should_IgnoreFailingPackageMetadataResourceGetting_if_IterateThroughRepositoriesToGetAdditionalInformation()
+        public async Task GetPackageInfo_Should_IterateThroughRemoteRepositoriesToGetAdditionalInformation_If_LocalRepositoriesFail()
         {
-            var shuffledRepositories = _sourceRepositories!.Shuffle();
+            var localRepositoriesMetadataResources = _localRepositories.Select(r =>
+            {
+                var metadataResource = new Mock<IPackageMetadataResource>();
+                r.Setup(m => m.GetPackageMetadataResourceAsync()).ReturnsAsync(metadataResource.Object);
+                return metadataResource;
+            }).ToArray();
+            var sourceRepositoriesWithPackageMetadataResource = _remoteRepositories.Shuffle().Take(2).ToArray();
+            var packageMetadataResources = sourceRepositoriesWithPackageMetadataResource.Select(r =>
+            {
+                var metadataResource = new Mock<IPackageMetadataResource>();
+                r.Setup(m => m.GetPackageMetadataResourceAsync()).ReturnsAsync(metadataResource.Object);
+                return metadataResource;
+            }).ToArray();
+            var searchedPackagesAsPackageInformation = _fixture.CreateMany<CustomPackageInformation>(20).ToArray();
+
+            foreach (var package in searchedPackagesAsPackageInformation)
+            {
+                var metadataReturningProperInformation = packageMetadataResources.Shuffle().First();
+                metadataReturningProperInformation
+                    .Setup(m => m.TryGetMetadataAsync(
+                        new NuGet.Packaging.Core.PackageIdentity(package.Id, package.Version),
+                        It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(new PackageMetadataWithVersionInfo(package.Id,
+                        package.Version,
+                        package.License));
+            }
+
+            var searchedPackages = searchedPackagesAsPackageInformation.Select(i =>
+                new PackageSearchMetadataMock(new PackageIdentity(i.Id, CreateMockedVersion(i.Version))) as
+                    IPackageSearchMetadata);
+
+            var searchedPackageInfo =
+                await _uut.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
+
+            CollectionAssert.AreEquivalent(searchedPackagesAsPackageInformation,
+                searchedPackageInfo.Select(s => new CustomPackageInformation(s.Identity.Id,
+                    s.Identity.Version,
+                    s.LicenseMetadata.License)));
+
+            foreach(var localRepoMetadataResource in localRepositoriesMetadataResources)
+            {
+                foreach (var package in searchedPackages) {
+                    localRepoMetadataResource.Verify(m => m.TryGetMetadataAsync(package.Identity, It.IsAny<CancellationToken>()), Times.Once);
+                }
+            }
+        }
+
+        [Test]
+        public async Task
+            GetPackageInfo_Should_IgnoreFailingPackageMetadataResourceGetting_If_IterateThroughRepositoriesToGetAdditionalInformation()
+        {
+            var shuffledRepositories = _localRepositories.Shuffle();
             var splitRepositories = shuffledRepositories.Select((repo, index) => (Index: index, Repo: repo))
                 .GroupBy(e => e.Index % 2)
                 .ToArray();
@@ -169,7 +219,7 @@ namespace NuGetUtility.Test.PackageInformationReader
                     IPackageSearchMetadata);
 
             var searchedPackageInfo =
-                await _uut!.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
+                await _uut.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
 
             CollectionAssert.AreEquivalent(searchedPackagesAsPackageInformation,
                 searchedPackageInfo.Select(s => new CustomPackageInformation(s.Identity.Id,
@@ -187,7 +237,7 @@ namespace NuGetUtility.Test.PackageInformationReader
                 .ToArray();
 
             var searchedPackageInfo =
-                await _uut!.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
+                await _uut.GetPackageInfo(searchedPackages, CancellationToken.None).Synchronize();
 
             CollectionAssert.AreEquivalent(searchedPackages, searchedPackageInfo);
         }

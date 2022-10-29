@@ -1,4 +1,4 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 using NuGetUtility.LicenseValidator;
@@ -11,6 +11,7 @@ using NuGetUtility.Serialization;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
+using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 using System.Text.Json;
 
@@ -126,10 +127,9 @@ namespace NuGetUtility
 
                 var settings = Settings.LoadDefaultSettings(project);
                 var sourceProvider = new PackageSourceProvider(settings);
-                using var informationReader = new PackageInformationReader.PackageInformationReader(
-                    new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider,
-                        Repository.Provider.GetCoreV3())),
-                    overridePackageInformation);
+
+                using var sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
+                var informationReader = new PackageInformationReader.PackageInformationReader(sourceRepositoryProvider, overridePackageInformation);
                 var downloadedInfo = informationReader.GetPackageInfo(installedPackages, CancellationToken.None);
 
                 await validator.Validate(downloadedInfo, project);

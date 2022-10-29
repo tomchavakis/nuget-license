@@ -1,4 +1,4 @@
-﻿using NuGet.Protocol.Core.Types;
+using NuGet.Protocol.Core.Types;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {

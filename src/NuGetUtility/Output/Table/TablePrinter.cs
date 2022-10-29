@@ -1,8 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-
-using System.Text;
-
-namespace Utilities
+namespace NuGetUtility.Output.Table
 {
     /// <summary>
     ///     Credits: https://stackoverflow.com/a/54943087/1199089

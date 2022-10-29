@@ -8,6 +8,7 @@ namespace NuGetUtility.LicenseValidator
             :
             base(
                 $"Failed to download license for package {packageInfo.Id} ({packageInfo.Version}).\nContext: {context}",
-                inner) { }
+                inner)
+        { }
     }
 }

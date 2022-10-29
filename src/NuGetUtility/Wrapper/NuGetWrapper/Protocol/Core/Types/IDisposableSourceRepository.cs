@@ -1,7 +1,6 @@
-﻿namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
+namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
-    public interface IDisposableSourceRepository : IDisposable
+    public interface IDisposableSourceRepository : ISourceRepository, IDisposable
     {
-        Task<IPackageMetadataResource?> GetPackageMetadataResourceAsync();
     }
 }

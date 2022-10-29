@@ -1,5 +1,3 @@
-﻿using Utilities;
-
 namespace NuGetUtility.Output.Table
 {
     internal static class TablePrinterExtensions
