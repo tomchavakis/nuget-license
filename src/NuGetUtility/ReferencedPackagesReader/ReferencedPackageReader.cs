@@ -1,9 +1,7 @@
-﻿using NuGet.Protocol.Core.Types;
 using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
-using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 
 namespace NuGetUtility.ReferencedPackagesReader
 {
@@ -12,33 +10,30 @@ namespace NuGetUtility.ReferencedPackagesReader
         private const string ProjectReferenceIdentifier = "project";
         private readonly IEnumerable<string> _ignoredPackages;
         private readonly ILockFileFactory _lockFileFactory;
-        private readonly IPackageSearchMetadataBuilderFactory _metadataBuilderFactory;
         private readonly IMsBuildAbstraction _msBuild;
 
         public ReferencedPackageReader(IEnumerable<string> ignoredPackages,
             IMsBuildAbstraction msBuild,
-            ILockFileFactory lockFileFactory,
-            IPackageSearchMetadataBuilderFactory metadataBuilderFactory)
+            ILockFileFactory lockFileFactory)
         {
             _ignoredPackages = ignoredPackages;
             _msBuild = msBuild;
             _lockFileFactory = lockFileFactory;
-            _metadataBuilderFactory = metadataBuilderFactory;
         }
 
-        public IEnumerable<IPackageSearchMetadata> GetInstalledPackages(string projectPath, bool includeTransitive)
+        public IEnumerable<PackageIdentity> GetInstalledPackages(string projectPath, bool includeTransitive)
         {
             var project = _msBuild.GetProject(projectPath);
 
             if (!project.HasNugetPackagesReferenced() && !includeTransitive)
             {
-                return Enumerable.Empty<IPackageSearchMetadata>();
+                return Enumerable.Empty<PackageIdentity>();
             }
 
             return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
         }
 
-        private IEnumerable<IPackageSearchMetadata> GetInstalledPackagesFromAssetsFile(bool includeTransitive,
+        private IEnumerable<PackageIdentity> GetInstalledPackagesFromAssetsFile(bool includeTransitive,
             IProject project)
         {
             var assetsFile = LoadAssetsFile(project);
@@ -53,8 +48,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             }
 
             return referencedLibraries.Where(IsNotIgnoredPackage)
-                .Select(r =>
-                    _metadataBuilderFactory.FromIdentity(new PackageIdentity(r.Name, r.Version)).Build());
+                .Select(r => new PackageIdentity(r.Name, r.Version));
         }
 
         private IEnumerable<ILockFileLibrary> GetReferencedLibrariesForTarget(IProject project,

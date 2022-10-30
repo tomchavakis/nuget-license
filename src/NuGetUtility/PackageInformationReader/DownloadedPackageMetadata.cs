@@ -1,39 +1,35 @@
-﻿using NuGet.Packaging;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
-using NuGet.Versioning;
-using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 
-namespace NuGetUtility.Test.Helper.NuGet.Protocol.Core.Types
+namespace NuGetUtility.PackageInformationReader
 {
-    internal record struct PackageSearchMetadataMock(PackageIdentity Id) : IPackageSearchMetadata
+    internal class DownloadedPackageMetadata : IPackageSearchMetadata
     {
-        public Task<PackageDeprecationMetadata> GetDeprecationMetadataAsync()
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<IEnumerable<VersionInfo>> GetVersionsAsync()
-        {
-            throw new NotImplementedException();
-        }
+        private readonly IPackageMetadata _baseMetadata;
 
+        public DownloadedPackageMetadata(IPackageMetadata baseMetadata)
+        {
+            _baseMetadata = baseMetadata;
+            Identity = new PackageIdentity(baseMetadata.Id, baseMetadata.Version);
+        }
         public string Authors => throw new NotImplementedException();
 
         public IEnumerable<PackageDependencyGroup> DependencySets => throw new NotImplementedException();
 
-        public string Description => throw new NotImplementedException();
+        public string Description => _baseMetadata.Description;
 
         public long? DownloadCount => throw new NotImplementedException();
 
-        public Uri IconUrl => throw new NotImplementedException();
+        public Uri IconUrl => _baseMetadata.IconUrl;
 
-        public global::NuGet.Packaging.Core.PackageIdentity Identity =>
-            new global::NuGet.Packaging.Core.PackageIdentity(Id.Name, new NuGetVersion(Id.Version.ToString()));
+        public PackageIdentity Identity { get; }
 
-        public Uri LicenseUrl => throw new NotImplementedException();
+        public Uri LicenseUrl => _baseMetadata.LicenseUrl;
 
-        public Uri ProjectUrl => throw new NotImplementedException();
+        public Uri ProjectUrl => _baseMetadata.ProjectUrl;
 
         public Uri ReadmeUrl => throw new NotImplementedException();
 
@@ -60,5 +56,15 @@ namespace NuGetUtility.Test.Helper.NuGet.Protocol.Core.Types
         public LicenseMetadata LicenseMetadata => throw new NotImplementedException();
 
         public IEnumerable<PackageVulnerabilityMetadata> Vulnerabilities => throw new NotImplementedException();
+
+        public Task<PackageDeprecationMetadata> GetDeprecationMetadataAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<VersionInfo>> GetVersionsAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

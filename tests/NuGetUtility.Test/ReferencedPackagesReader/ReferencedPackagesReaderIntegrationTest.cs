@@ -1,7 +1,6 @@
 ﻿using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
-using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 
 namespace NuGetUtility.Test.ReferencedPackagesReader
 {

@@ -1,11 +1,10 @@
-﻿using NuGet.Packaging.Core;
-using NuGet.Protocol.Core.Types;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
     public interface IPackageMetadataResource
     {
-        Task<IPackageSearchMetadata?>
-            TryGetMetadataAsync(PackageIdentity identity, CancellationToken cancellationToken);
+        Task<IPackageMetadata?> TryGetMetadataAsync(PackageIdentity identity, CancellationToken cancellationToken);
     }
 }

@@ -6,9 +6,9 @@ using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Test.Helper.AsyncEnumerableExtension;
 using NuGetUtility.Test.Helper.AutoFixture;
 using NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning;
-using NuGetUtility.Test.Helper.NuGet.Protocol.Core.Types;
 using NuGetUtility.Test.Helper.ShuffelledEnumerable;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
+using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
@@ -25,23 +25,15 @@ namespace NuGetUtility.Test.PackageInformationReader
             _fixture = new Fixture();
             _fixture.Customizations.Add(new NuGetVersionBuilder());
             _fixture.Customizations.Add(new MockBuilder());
-            _localRepositories = Array.Empty<Mock<ISourceRepository>>();
-            _remoteRepositories = Array.Empty<Mock<ISourceRepository>>();
+            _repositories = Array.Empty<Mock<ISourceRepository>>();
+            _globalPackagesFolderUtility = new();
 
-            _sourceRepositoryProvider.Setup(m => m.GetLocalRepositories())
+            _sourceRepositoryProvider.Setup(m => m.GetRepositories())
                 .Returns((Delegate)(() =>
                 {
-                    Assert.AreEqual(Array.Empty<Mock<ISourceRepository>>(), _localRepositories);
-                    _localRepositories = _fixture.CreateMany<Mock<ISourceRepository>>().ToArray<Mock<ISourceRepository>>();
-                    return _localRepositories.Select<Mock<ISourceRepository>, ISourceRepository>(r => r.Object).ToArray();
-                }));
-
-            _sourceRepositoryProvider.Setup(m => m.GetRemoteRepositories())
-                .Returns((Delegate)(() =>
-                {
-                    Assert.AreEqual(Array.Empty<Mock<ISourceRepository>>(), _remoteRepositories);
-                    _remoteRepositories = _fixture.CreateMany<Mock<ISourceRepository>>().ToArray<Mock<ISourceRepository>>();
-                    return _remoteRepositories.Select<Mock<ISourceRepository>, ISourceRepository>(r => r.Object).ToArray();
+                    Assert.AreEqual(Array.Empty<Mock<ISourceRepository>>(), _repositories);
+                    _repositories = _fixture.CreateMany<Mock<ISourceRepository>>().ToArray<Mock<ISourceRepository>>();
+                    return _repositories.Select<Mock<ISourceRepository>, ISourceRepository>(r => r.Object).ToArray();
                 }));
 
             SetupUut();
@@ -50,24 +42,22 @@ namespace NuGetUtility.Test.PackageInformationReader
         [TearDown]
         public void TearDown()
         {
-            _localRepositories = Array.Empty<Mock<ISourceRepository>>();
-            _remoteRepositories = Array.Empty<Mock<ISourceRepository>>();
+            _repositories = Array.Empty<Mock<ISourceRepository>>();
             _uut = null!;
         }
 
         private void SetupUut()
         {
             TearDown();
-            _uut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider.Object,
-                _customPackageInformation);
+            _uut = new NuGetUtility.PackageInformationReader.PackageInformationReader(_sourceRepositoryProvider.Object, _globalPackagesFolderUtility.Object, _customPackageInformation);
         }
 
         private NuGetUtility.PackageInformationReader.PackageInformationReader _uut = null!;
         private Mock<IWrappedSourceRepositoryProvider> _sourceRepositoryProvider = null!;
         private List<CustomPackageInformation> _customPackageInformation = null!;
         private Fixture _fixture = null!;
-        private Mock<ISourceRepository>[] _localRepositories = null!;
-        private Mock<ISourceRepository>[] _remoteRepositories = null!;
+        private Mock<ISourceRepository>[] _repositories = null!;
+        private Mock<IGlobalPackagesFolderUtility> _globalPackagesFolderUtility = null!;
 
         [Test]
         public async Task GetPackageInfo_Should_PreferProvidedCustomInformation()
@@ -168,9 +158,10 @@ namespace NuGetUtility.Test.PackageInformationReader
                     s.Identity.Version,
                     s.LicenseMetadata.License)));
 
-            foreach(var localRepoMetadataResource in localRepositoriesMetadataResources)
+            foreach (var localRepoMetadataResource in localRepositoriesMetadataResources)
             {
-                foreach (var package in searchedPackages) {
+                foreach (var package in searchedPackages)
+                {
                     localRepoMetadataResource.Verify(m => m.TryGetMetadataAsync(package.Identity, It.IsAny<CancellationToken>()), Times.Once);
                 }
             }
@@ -215,7 +206,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             }
 
             var searchedPackages = searchedPackagesAsPackageInformation.Select(i =>
-                new PackageSearchMetadataMock(new PackageIdentity(i.Id, CreateMockedVersion(i.Version))) as
+                new PackageIdentity(i.Id, CreateMockedVersion(i.Version))) as
                     IPackageSearchMetadata);
 
             var searchedPackageInfo =

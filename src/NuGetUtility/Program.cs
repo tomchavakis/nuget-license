@@ -10,6 +10,7 @@ using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Serialization;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.MsBuildWrapper;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
@@ -103,10 +104,7 @@ namespace NuGetUtility
 
             var msBuild = new MsBuildAbstraction();
             var projectCollector = new ProjectsCollector(msBuild);
-            var projectReader = new ReferencedPackageReader(ignoredPackages,
-                msBuild,
-                new LockFileFactory(),
-                new PackageSearchMetadataBuilderFactory());
+            var projectReader = new ReferencedPackageReader(ignoredPackages, msBuild, new LockFileFactory());
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicenses,
                 urlLicenseFileDownloader);
@@ -114,7 +112,7 @@ namespace NuGetUtility
 
             foreach (var project in inputFiles.SelectMany(file => projectCollector.GetProjects(file)))
             {
-                IEnumerable<IPackageSearchMetadata> installedPackages;
+                IEnumerable<PackageIdentity> installedPackages;
                 try
                 {
                     installedPackages = projectReader.GetInstalledPackages(project, IncludeTransitive);
@@ -129,7 +127,8 @@ namespace NuGetUtility
                 var sourceProvider = new PackageSourceProvider(settings);
 
                 using var sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
-                var informationReader = new PackageInformationReader.PackageInformationReader(sourceRepositoryProvider, overridePackageInformation);
+                var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings);
+                var informationReader = new PackageInformationReader.PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation);
                 var downloadedInfo = informationReader.GetPackageInfo(installedPackages, CancellationToken.None);
 
                 await validator.Validate(downloadedInfo, project);
@@ -195,7 +194,7 @@ namespace NuGetUtility
             }
 
             var serializerOptions = new JsonSerializerOptions();
-            serializerOptions.Converters.Add(new NuGetVersionConverter());
+            serializerOptions.Converters.Add(new NuGetVersionJsonConverter());
             return JsonSerializer.Deserialize<IEnumerable<CustomPackageInformation>>(
                 File.ReadAllText(OverridePackageInformation),
                 serializerOptions)!;

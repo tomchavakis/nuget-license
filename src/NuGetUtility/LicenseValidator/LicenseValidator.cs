@@ -1,6 +1,5 @@
-﻿using NuGet.Packaging;
-using NuGet.Protocol.Core.Types;
 using NuGetUtility.Wrapper.HttpClientWrapper;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 
 namespace NuGetUtility.LicenseValidator
 {
@@ -21,7 +20,7 @@ namespace NuGetUtility.LicenseValidator
             _fileDownloader = fileDownloader;
         }
 
-        public async Task Validate(IAsyncEnumerable<IPackageSearchMetadata> downloadedInfo, string context)
+        public async Task Validate(IAsyncEnumerable<IPackageMetadata> downloadedInfo, string context)
         {
             await foreach (var info in downloadedInfo)
             {
@@ -53,7 +52,7 @@ namespace NuGetUtility.LicenseValidator
             return _validatedLicenses;
         }
 
-        private void ValidateLicenseByMetadata(IPackageSearchMetadata info, string context)
+        private void ValidateLicenseByMetadata(IPackageMetadata info, string context)
         {
             switch (info.LicenseMetadata!.Type)
             {
@@ -84,7 +83,7 @@ namespace NuGetUtility.LicenseValidator
             }
         }
 
-        private async Task ValidateLicenseByUrl(IPackageSearchMetadata info, string context)
+        private async Task ValidateLicenseByUrl(IPackageMetadata info, string context)
         {
             if (info.LicenseUrl.IsAbsoluteUri)
             {

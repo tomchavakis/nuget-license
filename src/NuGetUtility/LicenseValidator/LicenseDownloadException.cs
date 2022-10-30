@@ -1,4 +1,4 @@
-﻿using NuGet.Packaging.Core;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 
 namespace NuGetUtility.LicenseValidator
 {
