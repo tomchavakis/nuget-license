@@ -72,6 +72,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             var (project, result) = await PerformSearch(searchedPackages);
             CheckResult(result, project, _customPackageInformation);
         }
+
         private async Task<(string Project, ReferencedPackageWithContext[] Result)> PerformSearch(
             IEnumerable<PackageIdentity> searchedPackages)
         {
@@ -97,24 +98,28 @@ namespace NuGetUtility.Test.PackageInformationReader
         }
 
         [Test]
-        public async Task GetPackageInfo_Should_IterateThroughLocalRepositoriesToGetAdditionalInformation()
+        public async Task GetPackageInfo_Should_PreferLocalPackageCacheOverRepositories()
         {
-            var sourceRepositoriesWithPackageMetadataResource = _repositories!.Shuffle(2345).Take(2).ToArray();
-            var packageMetadataResources = sourceRepositoriesWithPackageMetadataResource.Select(r =>
-                {
-                    var metadataResource = new Mock<IPackageMetadataResource>();
-                    r.Setup(m => m.GetPackageMetadataResourceAsync()).ReturnsAsync(metadataResource.Object);
-                    return metadataResource;
-                })
-                .ToArray();
             var searchedPackagesAsPackageInformation = _fixture.CreateMany<CustomPackageInformation>(20).ToArray();
 
-            SetupPackagesForRepositories(searchedPackagesAsPackageInformation, packageMetadataResources);
-
-            var searchedPackages = searchedPackagesAsPackageInformation.Select(i => new PackageIdentity(i.Id, i.Version));
+            var searchedPackages = searchedPackagesAsPackageInformation.Select(info =>
+            {
+                var identity = new PackageIdentity(info.Id, info.Version);
+                var mockedInfo = new Mock<IPackageMetadata>();
+                mockedInfo.SetupGet(m => m.Identity).Returns(identity);
+                mockedInfo.SetupGet(m => m.LicenseMetadata).Returns(new LicenseMetadata(LicenseType.Expression, info.License));
+                _globalPackagesFolderUtility.Setup(m => m.GetPackage(identity)).Returns(mockedInfo.Object);
+                
+                return identity;
+            });
 
             var (project, result) = await PerformSearch(searchedPackages);
             CheckResult(result, project, searchedPackagesAsPackageInformation);
+
+            foreach(var repo in _repositories)
+            {
+                repo.Verify(m => m.GetPackageMetadataResourceAsync(), Times.Never);
+            }
         }
 
         private void SetupPackagesForRepositories(IEnumerable<CustomPackageInformation> packages, IEnumerable<Mock<IPackageMetadataResource>> packageMetadataResources)
@@ -133,7 +138,7 @@ namespace NuGetUtility.Test.PackageInformationReader
         }
 
         [Test]
-        public async Task GetPackageInfo_Should_IterateThroughRemoteRepositoriesToGetAdditionalInformation()
+        public async Task GetPackageInfo_Should_IterateThroughRepositoriesToGetAdditionalInformation()
         {
             var shuffledRepositories = _repositories!.Shuffle(14563);
             var splitRepositories = shuffledRepositories.Select((repo, index) => (Index: index, Repo: repo))
