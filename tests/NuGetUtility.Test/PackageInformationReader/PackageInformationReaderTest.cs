@@ -1,8 +1,5 @@
 using AutoFixture;
 using Moq;
-using NuGet.Protocol;
-using NuGet.Protocol.Core.Types;
-using NuGet.Versioning;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Test.Helper.AsyncEnumerableExtension;
 using NuGetUtility.Test.Helper.AutoFixture;
@@ -12,7 +9,6 @@ using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
-using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Test.PackageInformationReader
 {
@@ -109,14 +105,14 @@ namespace NuGetUtility.Test.PackageInformationReader
                 mockedInfo.SetupGet(m => m.Identity).Returns(identity);
                 mockedInfo.SetupGet(m => m.LicenseMetadata).Returns(new LicenseMetadata(LicenseType.Expression, info.License));
                 _globalPackagesFolderUtility.Setup(m => m.GetPackage(identity)).Returns(mockedInfo.Object);
-                
+
                 return identity;
             });
 
             var (project, result) = await PerformSearch(searchedPackages);
             CheckResult(result, project, searchedPackagesAsPackageInformation);
 
-            foreach(var repo in _repositories)
+            foreach (var repo in _repositories)
             {
                 repo.Verify(m => m.GetPackageMetadataResourceAsync(), Times.Never);
             }
