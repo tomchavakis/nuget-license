@@ -1,4 +1,4 @@
-﻿using NuGetUtility.ReferencedPackagesReader;
+using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 
@@ -12,8 +12,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             _uut = new ReferencedPackageReader(Enumerable.Empty<string>(),
                 new MsBuildAbstraction(),
-                new LockFileFactory(),
-                new PackageSearchMetadataBuilderFactory());
+                new LockFileFactory());
         }
 
         private ReferencedPackageReader? _uut;
@@ -48,7 +47,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             var result = _uut!.GetInstalledPackages(path, true).ToArray();
 
             Assert.That(result.Count, Is.EqualTo(3));
-            var titles = result.Select(metadata => metadata.Title).ToArray();
+            var titles = result.Select(metadata => metadata.Id).ToArray();
             Assert.That(titles.Contains("Moq"), Is.True);
             Assert.That(titles.Contains("Castle.Core"), Is.True);
             Assert.That(titles.Contains("System.Diagnostics.EventLog"), Is.True);

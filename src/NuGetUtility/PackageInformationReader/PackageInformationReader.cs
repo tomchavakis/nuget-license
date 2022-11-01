@@ -21,32 +21,32 @@ namespace NuGetUtility.PackageInformationReader
             _repositories = sourceRepositoryProvider.GetRepositories();
         }
 
-        public async IAsyncEnumerable<IPackageMetadata> GetPackageInfo(
-            IEnumerable<PackageIdentity> packages,
+        public async IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfo(
+            ProjectWithReferencedPackages projectWithReferencedPackages,
             [EnumeratorCancellation] CancellationToken cancellation)
         {
-            foreach (var package in packages)
+            foreach (var package in projectWithReferencedPackages.ReferencedPackages)
             {
                 var result = TryGetPackageInfoFromCustomInformation(package);
                 if (result.Success)
                 {
-                    yield return result.Metadata!;
+                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
                     continue;
                 }
                 result = TryGetPackageInformationFromGlobalPackageFolder(package);
                 if (result.Success)
                 {
-                    yield return result.Metadata!;
+                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
                     continue;
                 }
                 result = await TryGetPackageInformationFromRepositories(_repositories, package, cancellation);
                 if (result.Success)
                 {
-                    yield return result.Metadata!;
+                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
                     continue;
                 }
                 // simply return input - validation will fail later, as the required fields are missing
-                yield return new PackageMetadata(package);
+                yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, new PackageMetadata(package));
             }
         }
         private PackageSearchResult TryGetPackageInformationFromGlobalPackageFolder(PackageIdentity package)

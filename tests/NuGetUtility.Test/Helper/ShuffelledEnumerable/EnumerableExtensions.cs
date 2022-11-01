@@ -5,9 +5,9 @@
     /// </summary>
     public static class EnumerableExtensions
     {
-        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source)
+        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source, int seed)
         {
-            return source.Shuffle(new Random());
+            return source.Shuffle(new Random(seed));
         }
 
         public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source, Random rng)

@@ -3,6 +3,7 @@
     public enum LicenseInformationOrigin
     {
         Expression,
-        Url
+        Url,
+        Unknown
     }
 }

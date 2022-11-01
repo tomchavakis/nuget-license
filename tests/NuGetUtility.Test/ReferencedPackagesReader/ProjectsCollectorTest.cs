@@ -95,7 +95,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             CreateFiles(existingProjects);
 
             _msBuild.Setup(m => m.GetProjectsFromSolution(It.IsAny<string>()))
-                .Returns(existingProjects.Concat(missingProjects).Shuffle());
+                .Returns(existingProjects.Concat(missingProjects).Shuffle(54321));
 
             var result = _uut.GetProjects(solutionFile);
             CollectionAssert.AreEquivalent(existingProjects, result);

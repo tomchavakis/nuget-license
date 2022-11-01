@@ -1,0 +1,37 @@
+﻿[
+  {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": {},
+    "PackageProjectUrl": "http://madisyn.name",
+    "License": "I\u0027ll override the haptic AGP feed, that should feed the AGP feed!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "International Mobility Technician",
+    "PackageVersion": {},
+    "PackageProjectUrl": "https://jayne.name",
+    "License": "I\u0027ll override the digital SMTP interface, that should interface the SMTP interface!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Principal Markets Executive",
+    "PackageVersion": {},
+    "PackageProjectUrl": "https://bettie.com",
+    "License": "Try to generate the EXE array, maybe it will generate the mobile array!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Future Identity Specialist",
+    "PackageVersion": {},
+    "PackageProjectUrl": "http://della.biz",
+    "License": "If we back up the driver, we can get to the AI driver through the bluetooth AI driver!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Forward Functionality Designer",
+    "PackageVersion": {},
+    "PackageProjectUrl": "https://jasen.biz",
+    "License": "Use the redundant AGP monitor, then you can generate the redundant monitor!",
+    "LicenseInformationOrigin": 0
+  }
+]

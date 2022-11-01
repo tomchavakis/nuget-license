@@ -1,6 +1,7 @@
 using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
+using NuGetUtility.Extension;
 using NuGetUtility.LicenseValidator;
 using NuGetUtility.Output;
 using NuGetUtility.Output.Json;
@@ -72,6 +73,12 @@ namespace NuGetUtility
             Description = "This parameter allows to choose between tabular and json output.")]
         public OutputType OutputType { get; } = OutputType.Table;
 
+        [Option(LongName = "error-only",
+            ShortName = "err",
+            Description =
+                "If this option is set and there are license validation errors, only the errors are returned as result. Otherwise all validation results are always returned.")]
+        public bool ReturnErrorsOnly { get; } = false;
+
         private HttpClient HttpClient
         {
             get
@@ -92,7 +99,7 @@ namespace NuGetUtility
             lifetime.Done(returnCode);
         }
 
-        private async Task<int> OnExecuteAsync()
+        private async Task<int> OnExecuteAsync(CancellationToken cancellationToken)
         {
             var inputFiles = GetInputFiles();
             var ignoredPackages = GetIgnoredPackages();
@@ -110,29 +117,23 @@ namespace NuGetUtility
                 urlLicenseFileDownloader);
             var projectReaderExceptions = new List<Exception>();
 
-            foreach (var project in inputFiles.SelectMany(file => projectCollector.GetProjects(file)))
+            var projects = inputFiles.SelectMany(file => projectCollector.GetProjects(file));
+            var packagesForProject = projects.Select(p =>
             {
-                IEnumerable<PackageIdentity> installedPackages;
+                IEnumerable<PackageIdentity>? installedPackages = null;
                 try
                 {
-                    installedPackages = projectReader.GetInstalledPackages(project, IncludeTransitive);
+                    installedPackages = projectReader.GetInstalledPackages(p, IncludeTransitive);
                 }
                 catch (Exception e)
                 {
                     projectReaderExceptions.Add(e);
-                    continue;
                 }
-
-                var settings = Settings.LoadDefaultSettings(project);
-                var sourceProvider = new PackageSourceProvider(settings);
-
-                using var sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
-                var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings);
-                var informationReader = new PackageInformationReader.PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation);
-                var downloadedInfo = informationReader.GetPackageInfo(installedPackages, CancellationToken.None);
-
-                await validator.Validate(downloadedInfo, project);
-            }
+                return new ProjectWithReferencedPackages(p, installedPackages ?? Enumerable.Empty<PackageIdentity>());
+            });
+            var downloadedLicenseInformation =
+                packagesForProject.SelectMany(p => GetPackageInfos(p, overridePackageInformation, cancellationToken));
+            var results = await validator.Validate(downloadedLicenseInformation);
 
             if (projectReaderExceptions.Any())
             {
@@ -142,23 +143,31 @@ namespace NuGetUtility
             }
 
             await using var outputStream = Console.OpenStandardOutput();
-            if (validator.GetErrors().Any())
-            {
-                await output.Write(outputStream, validator.GetErrors());
-                return -1;
-            }
-
-            await output.Write(outputStream, validator.GetValidatedLicenses());
+            await output.Write(outputStream, results.ToList());
             return 0;
+        }
+        private IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfos(
+            ProjectWithReferencedPackages projectWithReferences,
+            IEnumerable<CustomPackageInformation> overridePackageInformation,
+            CancellationToken cancellation)
+        {
+            var settings = Settings.LoadDefaultSettings(projectWithReferences.Project);
+            var sourceProvider = new PackageSourceProvider(settings);
+
+            using var sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
+            var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings);
+            var informationReader = new PackageInformationReader.PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation);
+
+            return informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project, projectWithReferences.ReferencedPackages), cancellation);
         }
 
         private IOutputFormatter GetOutputFormatter()
         {
             return OutputType switch
             {
-                OutputType.Json => new JsonOutputFormatter(),
-                OutputType.JsonPretty => new JsonOutputFormatter(true),
-                OutputType.Table => new TableOutputFormatter(),
+                OutputType.Json => new JsonOutputFormatter(false, ReturnErrorsOnly),
+                OutputType.JsonPretty => new JsonOutputFormatter(true, ReturnErrorsOnly),
+                OutputType.Table => new TableOutputFormatter(ReturnErrorsOnly),
                 _ => throw new ArgumentOutOfRangeException($"{OutputType} not supported")
             };
         }
