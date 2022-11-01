@@ -24,21 +24,22 @@ namespace NuGetUtility.PackageInformationReader
             }
         }
 
-        public async IAsyncEnumerable<IPackageSearchMetadata> GetPackageInfo(
-            IEnumerable<IPackageSearchMetadata> packageMetadata,
+        public async IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfo(
+            ProjectWithReferencedPackages projectWithReferencedPackages,
             [EnumeratorCancellation] CancellationToken cancellation)
         {
-            foreach (var package in packageMetadata)
+            foreach (var package in projectWithReferencedPackages.ReferencedPackages)
             {
                 if (TryGetPackageInfoFromCustomInformation(package, out var info))
                 {
-                    yield return info!;
+                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, info!);
                 }
                 else
                 {
-                    yield return await TryGetPackageInformationFromRepositoriesOrReturnInput(_sourceRepositories,
-                        package,
-                        cancellation);
+                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
+                        await TryGetPackageInformationFromRepositoriesOrReturnInput(_sourceRepositories,
+                            package,
+                            cancellation));
                 }
             }
         }
@@ -96,4 +97,5 @@ namespace NuGetUtility.PackageInformationReader
             }
         }
     }
+
 }

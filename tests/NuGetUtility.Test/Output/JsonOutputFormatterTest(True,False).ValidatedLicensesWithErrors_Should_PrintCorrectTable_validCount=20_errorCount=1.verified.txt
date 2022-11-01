@@ -1,0 +1,166 @@
+﻿[
+  {
+    "PackageId": "Chief Integration Architect",
+    "PackageVersion": "1.6.8",
+    "PackageProjectUrl": "https://davion.net",
+    "License": "Try to override the TCP firewall, maybe it will override the solid state firewall!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Principal Functionality Agent",
+    "PackageVersion": "1.5.3",
+    "ValidationErrors": [
+      {
+        "Error": "Judson",
+        "Context": "https://wilson.net"
+      },
+      {
+        "Error": "Guadalupe",
+        "Context": "http://otho.info"
+      },
+      {
+        "Error": "General",
+        "Context": "https://skylar.name"
+      },
+      {
+        "Error": "Haylie",
+        "Context": "http://audreanne.info"
+      }
+    ],
+    "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Central Creative Manager",
+    "PackageVersion": "8.4.8",
+    "PackageProjectUrl": "https://carleton.info",
+    "License": "Use the cross-platform THX system, then you can generate the cross-platform system!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Customer Research Associate",
+    "PackageVersion": "4.6.5",
+    "PackageProjectUrl": "http://wilmer.name",
+    "License": "I\u0027ll navigate the neural SAS card, that should card the SAS card!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Customer Infrastructure Liaison",
+    "PackageVersion": "0.8.0",
+    "PackageProjectUrl": "https://otho.biz",
+    "License": "Use the haptic RSS hard drive, then you can back up the haptic hard drive!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Customer Assurance Officer",
+    "PackageVersion": "0.3.1",
+    "PackageProjectUrl": "https://kyla.biz",
+    "License": "Try to override the EXE program, maybe it will override the mobile program!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Forward Functionality Designer",
+    "PackageVersion": "5.5.7",
+    "PackageProjectUrl": "https://jasen.biz",
+    "License": "Use the redundant AGP monitor, then you can generate the redundant monitor!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Future Identity Specialist",
+    "PackageVersion": "4.7.4",
+    "PackageProjectUrl": "http://della.biz",
+    "License": "If we back up the driver, we can get to the AI driver through the bluetooth AI driver!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "National Assurance Representative",
+    "PackageVersion": "2.0.7",
+    "PackageProjectUrl": "http://kelley.com",
+    "License": "transmitting the capacitor won\u0027t do anything, we need to synthesize the back-end RAM capacitor!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "National Tactics Architect",
+    "PackageVersion": "6.7.8",
+    "PackageProjectUrl": "https://valentina.net",
+    "License": "The PNG protocol is down, index the digital protocol so we can index the PNG protocol!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Customer Infrastructure Planner",
+    "PackageVersion": "6.6.0",
+    "PackageProjectUrl": "https://laurie.biz",
+    "License": "If we program the pixel, we can get to the SMS pixel through the neural SMS pixel!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Forward Integration Executive",
+    "PackageVersion": "6.6.8",
+    "PackageProjectUrl": "http://grayce.info",
+    "License": "You can\u0027t index the protocol without indexing the open-source XML protocol!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Corporate Marketing Associate",
+    "PackageVersion": "3.3.2",
+    "PackageProjectUrl": "http://nash.name",
+    "License": "I\u0027ll program the auxiliary XSS bus, that should bus the XSS bus!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Principal Markets Executive",
+    "PackageVersion": "4.2.2",
+    "PackageProjectUrl": "https://bettie.com",
+    "License": "Try to generate the EXE array, maybe it will generate the mobile array!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "District Intranet Strategist",
+    "PackageVersion": "2.2.2",
+    "PackageProjectUrl": "http://everett.name",
+    "License": "We need to reboot the virtual RSS alarm!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "PackageProjectUrl": "http://madisyn.name",
+    "License": "I\u0027ll override the haptic AGP feed, that should feed the AGP feed!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Internal Operations Executive",
+    "PackageVersion": "1.8.1",
+    "PackageProjectUrl": "http://angel.info",
+    "License": "We need to back up the solid state XML application!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Global Implementation Engineer",
+    "PackageVersion": "6.0.7",
+    "PackageProjectUrl": "http://antonette.org",
+    "License": "I\u0027ll calculate the 1080p HDD system, that should system the HDD system!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Dynamic Program Administrator",
+    "PackageVersion": "9.8.6",
+    "PackageProjectUrl": "https://malcolm.net",
+    "License": "I\u0027ll quantify the bluetooth SQL circuit, that should circuit the SQL circuit!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "National Tactics Liaison",
+    "PackageVersion": "6.8.9",
+    "PackageProjectUrl": "http://jillian.net",
+    "License": "hacking the capacitor won\u0027t do anything, we need to compress the digital AGP capacitor!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "International Mobility Technician",
+    "PackageVersion": "3.7.5",
+    "PackageProjectUrl": "https://jayne.name",
+    "License": "I\u0027ll override the digital SMTP interface, that should interface the SMTP interface!",
+    "LicenseInformationOrigin": 0
+  }
+]

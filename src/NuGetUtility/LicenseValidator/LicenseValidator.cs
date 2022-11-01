@@ -1,16 +1,17 @@
 ﻿using NuGet.Packaging;
 using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
+using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
+using System.Collections.Concurrent;
 
 namespace NuGetUtility.LicenseValidator
 {
     public class LicenseValidator
     {
         private readonly IEnumerable<string> _allowedLicenses;
-        private readonly List<LicenseValidationError> _errors = new List<LicenseValidationError>();
         private readonly IFileDownloader _fileDownloader;
         private readonly Dictionary<Uri, string> _licenseMapping;
-        private readonly HashSet<ValidatedLicense> _validatedLicenses = new HashSet<ValidatedLicense>();
 
         public LicenseValidator(Dictionary<Uri, string> licenseMapping,
             IEnumerable<string> allowedLicenses,
@@ -21,39 +22,88 @@ namespace NuGetUtility.LicenseValidator
             _fileDownloader = fileDownloader;
         }
 
-        public async Task Validate(IAsyncEnumerable<IPackageSearchMetadata> downloadedInfo, string context)
+        public async Task<IEnumerable<LicenseValidationResult>> Validate(
+            IAsyncEnumerable<ReferencedPackageWithContext> packages)
         {
-            await foreach (var info in downloadedInfo)
+            var result = new ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult>();
+            await foreach (var info in packages)
             {
-                if (info.LicenseMetadata != null)
+                if (info.PackageInfo.LicenseMetadata != null)
                 {
-                    ValidateLicenseByMetadata(info, context);
+                    ValidateLicenseByMetadata(info.PackageInfo, info.Context, result);
                 }
-                else if (info.LicenseUrl != null)
+                else if (info.PackageInfo.LicenseUrl != null)
                 {
-                    await ValidateLicenseByUrl(info, context);
+                    await ValidateLicenseByUrl(info.PackageInfo, info.Context, result);
                 }
                 else
                 {
-                    _errors.Add(new LicenseValidationError(context,
-                        info.Identity.Id,
-                        info.Identity.Version,
-                        "No license information found"));
+                    AddOrUpdateLicense(result,
+                        info.PackageInfo,
+                        LicenseInformationOrigin.Unknown,
+                        new ValidationError("No license information found", info.Context));
                 }
             }
+            return result.Values;
         }
 
-        public IEnumerable<LicenseValidationError> GetErrors()
+        private void AddOrUpdateLicense(
+            ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result,
+            IPackageSearchMetadata info,
+            LicenseInformationOrigin origin,
+            ValidationError error,
+            string? license = null)
         {
-            return _errors;
+            var newValue = new LicenseValidationResult(
+                info.Identity.Id,
+                info.Identity.Version,
+                info.ProjectUrl?.ToString(),
+                license,
+                origin,
+                new List<ValidationError> { error });
+            result.AddOrUpdate(new LicenseNameAndVersion(info.Identity.Id, info.Identity.Version),
+                key => CreateResult(key, newValue),
+                (key, oldValue) => UpdateResult(key, oldValue, newValue));
         }
 
-        public IEnumerable<ValidatedLicense> GetValidatedLicenses()
+        private void AddOrUpdateLicense(
+            ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result,
+            IPackageSearchMetadata info,
+            LicenseInformationOrigin origin,
+            string? license = null)
         {
-            return _validatedLicenses;
+            var newValue = new LicenseValidationResult(
+                info.Identity.Id,
+                info.Identity.Version,
+                info.ProjectUrl?.ToString(),
+                license,
+                origin);
+            result.AddOrUpdate(new LicenseNameAndVersion(info.Identity.Id, info.Identity.Version),
+                key => CreateResult(key, newValue),
+                (key, oldValue) => UpdateResult(key, oldValue, newValue));
         }
 
-        private void ValidateLicenseByMetadata(IPackageSearchMetadata info, string context)
+        private LicenseValidationResult UpdateResult(LicenseNameAndVersion _,
+            LicenseValidationResult oldValue,
+            LicenseValidationResult newValue)
+        {
+            oldValue.ValidationErrors.AddRange(newValue.ValidationErrors);
+            if (oldValue.License is null && newValue.License is not null)
+            {
+                oldValue.License = newValue.License;
+                oldValue.LicenseInformationOrigin = newValue.LicenseInformationOrigin;
+            }
+            return oldValue;
+        }
+
+        private LicenseValidationResult CreateResult(LicenseNameAndVersion _, LicenseValidationResult newValue)
+        {
+            return newValue;
+        }
+
+        private void ValidateLicenseByMetadata(IPackageSearchMetadata info,
+            string context,
+            ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result)
         {
             switch (info.LicenseMetadata!.Type)
             {
@@ -61,30 +111,35 @@ namespace NuGetUtility.LicenseValidator
                     var licenseId = info.LicenseMetadata!.License;
                     if (IsLicenseValid(licenseId))
                     {
-                        _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
-                            info.Identity.Version,
-                            info.LicenseMetadata.License,
-                            LicenseInformationOrigin.Expression));
+                        AddOrUpdateLicense(result,
+                            info,
+                            LicenseInformationOrigin.Expression,
+                            info.LicenseMetadata.License);
                     }
                     else
                     {
-                        _errors.Add(new LicenseValidationError(context,
-                            info.Identity.Id,
-                            info.Identity.Version,
-                            GetLicenseNotAllowedMessage(info.LicenseMetadata.License)));
+                        AddOrUpdateLicense(result,
+                            info,
+                            LicenseInformationOrigin.Expression,
+                            new ValidationError(GetLicenseNotAllowedMessage(info.LicenseMetadata.License), context),
+                            info.LicenseMetadata.License);
                     }
 
                     break;
                 default:
-                    _errors.Add(new LicenseValidationError(context,
-                        info.Identity.Id,
-                        info.Identity.Version,
-                        $"Validation for licenses of type {info.LicenseMetadata!.Type} not yet supported"));
+                    AddOrUpdateLicense(result,
+                        info,
+                        LicenseInformationOrigin.Unknown,
+                        new ValidationError(
+                            $"Validation for licenses of type {info.LicenseMetadata!.Type} not yet supported",
+                            context));
                     break;
             }
         }
 
-        private async Task ValidateLicenseByUrl(IPackageSearchMetadata info, string context)
+        private async Task ValidateLicenseByUrl(IPackageSearchMetadata info,
+            string context,
+            ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result)
         {
             if (info.LicenseUrl.IsAbsoluteUri)
             {
@@ -103,32 +158,34 @@ namespace NuGetUtility.LicenseValidator
             {
                 if (IsLicenseValid(licenseId))
                 {
-                    _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
-                        info.Identity.Version,
-                        licenseId,
-                        LicenseInformationOrigin.Url));
+                    AddOrUpdateLicense(result,
+                        info,
+                        LicenseInformationOrigin.Url,
+                        licenseId);
                 }
                 else
                 {
-                    _errors.Add(new LicenseValidationError(context,
-                        info.Identity.Id,
-                        info.Identity.Version,
-                        GetLicenseNotAllowedMessage(licenseId)));
+                    AddOrUpdateLicense(result,
+                        info,
+                        LicenseInformationOrigin.Url,
+                        new ValidationError(GetLicenseNotAllowedMessage(licenseId), context),
+                        licenseId);
                 }
             }
             else if (!_allowedLicenses.Any())
             {
-                _validatedLicenses.Add(new ValidatedLicense(info.Identity.Id,
-                    info.Identity.Version,
-                    info.LicenseUrl.ToString(),
-                    LicenseInformationOrigin.Url));
+                AddOrUpdateLicense(result,
+                    info,
+                    LicenseInformationOrigin.Url,
+                    info.LicenseUrl.ToString());
             }
             else
             {
-                _errors.Add(new LicenseValidationError(context,
-                    info.Identity.Id,
-                    info.Identity.Version,
-                    $"Cannot determine License type for url {info.LicenseUrl}"));
+                AddOrUpdateLicense(result,
+                    info,
+                    LicenseInformationOrigin.Url,
+                    new ValidationError($"Cannot determine License type for url {info.LicenseUrl}", context),
+                    info.LicenseUrl.ToString());
             }
         }
 
@@ -154,5 +211,7 @@ namespace NuGetUtility.LicenseValidator
         {
             return $"License {license} not found in list of supported licenses";
         }
+
+        private record LicenseNameAndVersion(string LicenseName, NuGetVersion Version);
     }
 }

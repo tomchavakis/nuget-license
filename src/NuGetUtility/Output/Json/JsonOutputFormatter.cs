@@ -5,23 +5,32 @@ namespace NuGetUtility.Output.Json
 {
     public class JsonOutputFormatter : IOutputFormatter
     {
+        private readonly bool _printErrorsOnly;
         private readonly JsonSerializerOptions _options;
-        public JsonOutputFormatter(bool prettyPrint = false)
+        public JsonOutputFormatter(bool prettyPrint = false, bool printErrorsOnly = false)
         {
+            _printErrorsOnly = printErrorsOnly;
             _options = new JsonSerializerOptions
             {
-                Converters = { new NuGetVersionJsonConverter() },
+                Converters =
+                    { new NuGetVersionJsonConverter(), new ValidatedLicenseJsonConverterWithOmittingEmptyErrorList() },
                 WriteIndented = prettyPrint
             };
         }
 
-        public async Task Write(Stream stream, IEnumerable<LicenseValidationError> errors)
+        public async Task Write(Stream stream, IList<LicenseValidationResult> results)
         {
-            await JsonSerializer.SerializeAsync(stream, errors, _options);
-        }
-        public async Task Write(Stream stream, IEnumerable<ValidatedLicense> validated)
-        {
-            await JsonSerializer.SerializeAsync(stream, validated, _options);
+            if (_printErrorsOnly)
+            {
+                var resultsWithErrors = results.Where(r => r.ValidationErrors.Any()).ToList();
+                if (resultsWithErrors.Any())
+                {
+                    await JsonSerializer.SerializeAsync(stream, resultsWithErrors, _options);
+                    return;
+                }
+            }
+
+            await JsonSerializer.SerializeAsync(stream, results, _options);
         }
     }
 }

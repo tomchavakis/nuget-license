@@ -4,31 +4,52 @@ namespace NuGetUtility.Output.Table
 {
     public class TableOutputFormatter : IOutputFormatter
     {
-        public async Task Write(Stream stream, IEnumerable<LicenseValidationError> errors)
+        private readonly bool _printErrorsOnly;
+        public TableOutputFormatter(bool printErrorsOnly = false)
         {
-            await TablePrinterExtensions.Create(stream, "Context", "Package", "Version", "LicenseError")
-                .FromValues(errors,
-                    error =>
-                    {
-                        return new object[] { error.Context, error.PackageId, error.PackageVersion, error.Message };
-                    })
+            _printErrorsOnly = printErrorsOnly;
+        }
+
+        public async Task Write(Stream stream, IList<LicenseValidationResult> results)
+        {
+            var errorColumnDefinition = new ColumnDefinition("Error",
+                license => string.Join(Environment.NewLine, license.ValidationErrors.Select(e => e.Error)));
+            var columnDefinitions = new[]
+            {
+                new ColumnDefinition("Package", license => license.PackageId, true),
+                new ColumnDefinition("Version", license => license.PackageVersion.ToString() ,true),
+                new ColumnDefinition("License Information Origin", license => license.LicenseInformationOrigin.ToString(), true),
+                new ColumnDefinition("License Expression", license => license.License ?? string.Empty),
+                new ColumnDefinition("Package Project Url",license => license.PackageProjectUrl??string.Empty),
+                errorColumnDefinition,
+                new ColumnDefinition("Error Context", license => string.Join(Environment.NewLine, license.ValidationErrors.Select(e => e.Context))),
+            };
+
+            foreach (var license in results)
+            {
+                foreach (var definition in columnDefinitions)
+                {
+                    definition.Enabled |= !string.IsNullOrWhiteSpace(definition.StringAccessor(license));
+                }
+            }
+
+            if (_printErrorsOnly && errorColumnDefinition.Enabled)
+            {
+                results = results.Where(r => r.ValidationErrors.Any()).ToList();
+            }
+
+            var relevantColumns = columnDefinitions.Where(c => c.Enabled).ToArray();
+            await TablePrinterExtensions
+                .Create(stream, relevantColumns.Select(d => d.Title))
+                .FromValues(
+                    results,
+                    license => relevantColumns.Select(d => d.StringAccessor(license)))
                 .Print();
         }
 
-        public async Task Write(Stream stream, IEnumerable<ValidatedLicense> validated)
+        private record ColumnDefinition(string Title, Func<LicenseValidationResult, string> StringAccessor, bool Enabled = false)
         {
-            await TablePrinterExtensions
-                .Create(stream, "Package", "Version", "License Information Origin", "License Expression")
-                .FromValues(
-                    validated,
-                    license =>
-                    {
-                        return new object[]
-                        {
-                            license.PackageId, license.PackageVersion, license.LicenseInformationOrigin, license.License
-                        };
-                    })
-                .Print();
+            public bool Enabled { get; set; } = Enabled;
         }
     }
 }
