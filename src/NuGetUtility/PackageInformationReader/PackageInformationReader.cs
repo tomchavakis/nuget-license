@@ -3,7 +3,6 @@ using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 
 namespace NuGetUtility.PackageInformationReader
 {
@@ -87,19 +86,13 @@ namespace NuGetUtility.PackageInformationReader
         private PackageSearchResult TryGetPackageInfoFromCustomInformation(PackageIdentity package)
         {
             var resolvedCustomInformation = _customPackageInformation.FirstOrDefault(info =>
-                Regex.IsMatch(package.Id, WildCardToRegular(info.Id))
-                && (info.Version is null || info.Version.Equals(package.Version)));
-
+                info.Id.Equals(package.Id) && info.Version.Equals(package.Version));
             if (resolvedCustomInformation == default)
             {
                 return new PackageSearchResult();
             }
 
             return new PackageSearchResult(new PackageMetadata(package, resolvedCustomInformation.License));
-        }
-        private static string WildCardToRegular(string value)
-        {
-            return "^" + Regex.Escape(value).Replace("\\*", ".*") + "$";
         }
 
         private static async Task<IPackageMetadataResource?> TryGetPackageMetadataResource(ISourceRepository repository)

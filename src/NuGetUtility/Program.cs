@@ -59,7 +59,7 @@ namespace NuGetUtility
         [Option(LongName = "override-package-information",
             ShortName = "override",
             Description =
-                "File in json format that contains a list of package and license information which should be used in favor of the online version. This option can be used to override the license type of packages that e.g. specify the license as file. Wildcard * is supported for Id and Version can be omitted if license is never going to change.")]
+                "File in json format that contains a list of package and license information which should be used in favor of the online version. This option can be used to override the license type of packages that e.g. specify the license as file.")]
         public string? OverridePackageInformation { get; } = null;
 
         [Option(LongName = "license-information-download-location",
