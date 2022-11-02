@@ -1,4 +1,5 @@
-﻿using NuGetUtility.LicenseValidator;
+using NuGetUtility.LicenseValidator;
+using NuGetUtility.Serialization;
 using System.Text.Json;
 
 namespace NuGetUtility.Output.Json
@@ -12,8 +13,7 @@ namespace NuGetUtility.Output.Json
             _printErrorsOnly = printErrorsOnly;
             _options = new JsonSerializerOptions
             {
-                Converters =
-                    { new NuGetVersionJsonConverter(), new ValidatedLicenseJsonConverterWithOmittingEmptyErrorList() },
+                Converters = { new NuGetVersionJsonConverter(), new ValidatedLicenseJsonConverterWithOmittingEmptyErrorList() },
                 WriteIndented = prettyPrint
             };
         }

@@ -1,5 +1,5 @@
-﻿using AutoFixture.Kernel;
-using NuGet.Versioning;
+using AutoFixture.Kernel;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning
 {
@@ -11,7 +11,7 @@ namespace NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning
         {
             if (request is System.Type t)
             {
-                if (t == typeof(NuGetVersion))
+                if (t == typeof(INuGetVersion))
                 {
                     return new NuGetVersion($"{_rnd.Next(100, 999)}.{_rnd.Next(100, 999)}{GetPatch()}{GetBeta()}");
                 }
@@ -33,6 +33,21 @@ namespace NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning
         private bool RandomBool()
         {
             return (_rnd.Next() % 2) == 0;
+        }
+
+        private class NuGetVersion : INuGetVersion
+        {
+            private readonly string _version;
+
+            public NuGetVersion(string version)
+            {
+                _version = version;
+            }
+
+            public override string ToString()
+            {
+                return _version;
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using NuGet.Protocol.Core.Types;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 
 namespace NuGetUtility.PackageInformationReader
 {
-    public record ProjectWithReferencedPackages(string Project, IEnumerable<IPackageSearchMetadata> ReferencedPackages);
+    public record ProjectWithReferencedPackages(string Project, IEnumerable<PackageIdentity> ReferencedPackages);
 }

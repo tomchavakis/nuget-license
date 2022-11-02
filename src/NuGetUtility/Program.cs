@@ -1,4 +1,4 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 using NuGetUtility.Extension;
@@ -11,7 +11,9 @@ using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Serialization;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.MsBuildWrapper;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
+using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 using System.Text.Json;
 
@@ -109,10 +111,7 @@ namespace NuGetUtility
 
             var msBuild = new MsBuildAbstraction();
             var projectCollector = new ProjectsCollector(msBuild);
-            var projectReader = new ReferencedPackageReader(ignoredPackages,
-                msBuild,
-                new LockFileFactory(),
-                new PackageSearchMetadataBuilderFactory());
+            var projectReader = new ReferencedPackageReader(ignoredPackages, msBuild, new LockFileFactory());
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicenses,
                 urlLicenseFileDownloader);
@@ -121,7 +120,7 @@ namespace NuGetUtility
             var projects = inputFiles.SelectMany(file => projectCollector.GetProjects(file));
             var packagesForProject = projects.Select(p =>
             {
-                IEnumerable<IPackageSearchMetadata>? installedPackages = null;
+                IEnumerable<PackageIdentity>? installedPackages = null;
                 try
                 {
                     installedPackages = projectReader.GetInstalledPackages(p, IncludeTransitive);
@@ -130,8 +129,7 @@ namespace NuGetUtility
                 {
                     projectReaderExceptions.Add(e);
                 }
-                return new ProjectWithReferencedPackages(p,
-                    installedPackages ?? Enumerable.Empty<IPackageSearchMetadata>());
+                return new ProjectWithReferencedPackages(p, installedPackages ?? Enumerable.Empty<PackageIdentity>());
             });
             var downloadedLicenseInformation =
                 packagesForProject.SelectMany(p => GetPackageInfos(p, overridePackageInformation, cancellationToken));
@@ -145,7 +143,7 @@ namespace NuGetUtility
             }
 
             await using var outputStream = Console.OpenStandardOutput();
-            await output.Write(outputStream, results.ToList());
+            await output.Write(outputStream, results.OrderBy(r => r.PackageId).ToList());
             return 0;
         }
         private IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfos(
@@ -155,13 +153,12 @@ namespace NuGetUtility
         {
             var settings = Settings.LoadDefaultSettings(projectWithReferences.Project);
             var sourceProvider = new PackageSourceProvider(settings);
-            using var informationReader = new PackageInformationReader.PackageInformationReader(
-                new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider,
-                    Repository.Provider.GetCoreV3())),
-                overridePackageInformation);
-            return informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project,
-                    projectWithReferences.ReferencedPackages),
-                cancellation);
+
+            using var sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
+            var globalPackagesFolderUtility = new GlobalPackagesFolderUtility(settings);
+            var informationReader = new PackageInformationReader.PackageInformationReader(sourceRepositoryProvider, globalPackagesFolderUtility, overridePackageInformation);
+
+            return informationReader.GetPackageInfo(new ProjectWithReferencedPackages(projectWithReferences.Project, projectWithReferences.ReferencedPackages), cancellation);
         }
 
         private IOutputFormatter GetOutputFormatter()
@@ -206,7 +203,7 @@ namespace NuGetUtility
             }
 
             var serializerOptions = new JsonSerializerOptions();
-            serializerOptions.Converters.Add(new NuGetVersionConverter());
+            serializerOptions.Converters.Add(new NuGetVersionJsonConverter());
             return JsonSerializer.Deserialize<IEnumerable<CustomPackageInformation>>(
                 File.ReadAllText(OverridePackageInformation),
                 serializerOptions)!;

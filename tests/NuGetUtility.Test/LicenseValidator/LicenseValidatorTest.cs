@@ -1,10 +1,5 @@
-﻿using AutoFixture;
+using AutoFixture;
 using Moq;
-using NuGet.Packaging;
-using NuGet.Packaging.Core;
-using NuGet.Packaging.Licenses;
-using NuGet.Protocol.Core.Types;
-using NuGet.Versioning;
 using NuGetUtility.LicenseValidator;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Test.Helper.AsyncEnumerableExtension;
@@ -12,6 +7,9 @@ using NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning;
 using NuGetUtility.Test.Helper.NUnitExtension;
 using NuGetUtility.Test.Helper.ShuffelledEnumerable;
 using NuGetUtility.Wrapper.HttpClientWrapper;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Test.LicenseValidator
 {
@@ -48,37 +46,33 @@ namespace NuGetUtility.Test.LicenseValidator
             CollectionAssert.AreEqual(Enumerable.Empty<LicenseValidationResult>(), results);
         }
 
-        private Mock<IPackageSearchMetadata> SetupPackage(string packageId, NuGetVersion packageVersion)
+        private Mock<IPackageMetadata> SetupPackage(string packageId, INuGetVersion packageVersion)
         {
-            var packageInfo = new Mock<IPackageSearchMetadata>();
+            var packageInfo = new Mock<IPackageMetadata>();
             packageInfo.SetupGet(m => m.Identity).Returns(new PackageIdentity(packageId, packageVersion));
-            packageInfo.SetupGet(m => m.ProjectUrl).Returns(_projectUrl);
+            packageInfo.SetupGet(m => m.ProjectUrl).Returns(_projectUrl.ToString());
             return packageInfo;
         }
 
-        private Mock<IPackageSearchMetadata> SetupPackageWithLicenseInformationOfType(string packageId,
-            NuGetVersion packageVersion,
+        private Mock<IPackageMetadata> SetupPackageWithLicenseInformationOfType(string packageId,
+            INuGetVersion packageVersion,
             string license,
             LicenseType type)
         {
             var packageInfo = SetupPackage(packageId, packageVersion);
             packageInfo.SetupGet(m => m.LicenseMetadata)
-                .Returns(new LicenseMetadata(type,
-                    license,
-                    NuGetLicenseExpression.Parse(license),
-                    new string[] { },
-                    LicenseMetadata.EmptyVersion));
+                .Returns(new LicenseMetadata(type, license));
             return packageInfo;
         }
 
-        private Mock<IPackageSearchMetadata> SetupPackageWithProperLicenseInformation(string packageId,
-            NuGetVersion packageVersion,
+        private Mock<IPackageMetadata> SetupPackageWithProperLicenseInformation(string packageId,
+            INuGetVersion packageVersion,
             string license)
         {
             return SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, LicenseType.Expression);
         }
 
-        private IAsyncEnumerable<ReferencedPackageWithContext> CreateInput(Mock<IPackageSearchMetadata> metadata,
+        private IAsyncEnumerable<ReferencedPackageWithContext> CreateInput(Mock<IPackageMetadata> metadata,
             string context)
         {
             return new[] { new ReferencedPackageWithContext(context, metadata.Object) }.AsAsyncEnumerable();
@@ -88,7 +82,7 @@ namespace NuGetUtility.Test.LicenseValidator
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithProperLicenseInformation_Should_GiveCorrectValidatedLicenseList(
             string packageId,
-            NuGetVersion packageVersion,
+            INuGetVersion packageVersion,
             string license)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
@@ -111,8 +105,8 @@ namespace NuGetUtility.Test.LicenseValidator
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
 
-        private Mock<IPackageSearchMetadata> SetupPackageWithLicenseUrl(string packageId,
-            NuGetVersion packageVersion,
+        private Mock<IPackageMetadata> SetupPackageWithLicenseUrl(string packageId,
+            INuGetVersion packageVersion,
             Uri url)
         {
             var packageInfo = SetupPackage(packageId, packageVersion);
@@ -124,7 +118,7 @@ namespace NuGetUtility.Test.LicenseValidator
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithMatchingLicenseUrl_Should_GiveCorrectValidatedLicenseList(
             string packageId,
-            NuGetVersion packageVersion)
+            INuGetVersion packageVersion)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
                 new string[] { },
@@ -151,7 +145,7 @@ namespace NuGetUtility.Test.LicenseValidator
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithMatchingLicenseUrl_Should_GiveCorrectValidatedLicenseList(
             string packageId,
-            NuGetVersion packageVersion,
+            INuGetVersion packageVersion,
             Uri licenseUrl)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
@@ -181,7 +175,7 @@ namespace NuGetUtility.Test.LicenseValidator
             var fixture = new Fixture();
             fixture.Customizations.Add(new NuGetVersionBuilder());
             var packageId = fixture.Create<string>();
-            var packageVersion = fixture.Create<NuGetVersion>();
+            var packageVersion = fixture.Create<INuGetVersion>();
             var license = fixture.Create<string>();
 
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
@@ -213,7 +207,7 @@ namespace NuGetUtility.Test.LicenseValidator
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithoutLicenseInformation_Should_GiveCorrectResult(
             string packageId,
-            NuGetVersion packageVersion)
+            INuGetVersion packageVersion)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
                 new string[] { },
@@ -244,7 +238,7 @@ namespace NuGetUtility.Test.LicenseValidator
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithProperLicenseInformation_Should_GiveCorrectResult_If_NotAllowed(
             string packageId,
-            NuGetVersion packageVersion,
+            INuGetVersion packageVersion,
             string license)
         {
             var package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, license);
@@ -272,7 +266,7 @@ namespace NuGetUtility.Test.LicenseValidator
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithProperLicenseInformation_Should_GiveCorrectResult_If_Allowed(
             string packageId,
-            NuGetVersion packageVersion)
+            INuGetVersion packageVersion)
         {
             var validLicense = _allowedLicenses.Shuffle(135643).First();
             var package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, validLicense);
@@ -295,7 +289,7 @@ namespace NuGetUtility.Test.LicenseValidator
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithMatchingUrlInformation_Should_GiveCorrectResult_If_NotAllowed(
             string packageId,
-            NuGetVersion packageVersion)
+            INuGetVersion packageVersion)
         {
             var urlMatch = _licenseMapping.Shuffle(765).First();
             var package = SetupPackageWithLicenseUrl(packageId, packageVersion, urlMatch.Key);
@@ -323,14 +317,14 @@ namespace NuGetUtility.Test.LicenseValidator
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithUrlInformation_Should_StartDownloadingSaidLicense(
             string packageId,
-            NuGetVersion packageVersion)
+            INuGetVersion packageVersion)
         {
             var urlMatch = _licenseMapping.Shuffle(4567).First();
             var package = SetupPackageWithLicenseUrl(packageId, packageVersion, urlMatch.Key);
 
             _ = await _uut.Validate(CreateInput(package, _context));
 
-            _fileDownloader.Verify(m => m.DownloadFile(package.Object.LicenseUrl,
+            _fileDownloader.Verify(m => m.DownloadFile(package.Object.LicenseUrl!,
                     $"{package.Object.Identity.Id}__{package.Object.Identity.Version}.html"),
                 Times.Once);
         }
@@ -339,11 +333,11 @@ namespace NuGetUtility.Test.LicenseValidator
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public void ValidatingLicensesWithUrlInformation_Should_ThrowLicenseDownloadInformation_If_DownloadThrows(
             string packageId,
-            NuGetVersion packageVersion)
+            INuGetVersion packageVersion)
         {
             var urlMatch = _licenseMapping.Shuffle(12345).First();
             var package = SetupPackageWithLicenseUrl(packageId, packageVersion, urlMatch.Key);
-            _fileDownloader.Setup(m => m.DownloadFile(package.Object.LicenseUrl, It.IsAny<string>()))
+            _fileDownloader.Setup(m => m.DownloadFile(package.Object.LicenseUrl!, It.IsAny<string>()))
                 .ThrowsAsync(new Exception());
 
             var exception =
@@ -358,7 +352,7 @@ namespace NuGetUtility.Test.LicenseValidator
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithMatchingUrlInformation_Should_GiveCorrectResult_If_Allowed(
             string packageId,
-            NuGetVersion packageVersion)
+            INuGetVersion packageVersion)
         {
             var urlMatch = _licenseMapping.Shuffle(43562).First();
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
@@ -384,7 +378,7 @@ namespace NuGetUtility.Test.LicenseValidator
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithNotMatchingUrlInformation_Should_GiveCorrectResult_If_NotAllowed(
             string packageId,
-            NuGetVersion packageVersion,
+            INuGetVersion packageVersion,
             Uri licenseUrl)
         {
             var package = SetupPackageWithLicenseUrl(packageId, packageVersion, licenseUrl);

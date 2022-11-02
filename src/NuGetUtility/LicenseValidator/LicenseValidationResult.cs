@@ -1,9 +1,9 @@
-﻿using NuGet.Versioning;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.LicenseValidator
 {
     public record LicenseValidationResult(string PackageId,
-        NuGetVersion PackageVersion,
+        INuGetVersion PackageVersion,
         string? PackageProjectUrl,
         string? License,
         LicenseInformationOrigin LicenseInformationOrigin,

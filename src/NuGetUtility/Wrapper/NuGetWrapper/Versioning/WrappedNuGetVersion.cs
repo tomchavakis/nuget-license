@@ -1,4 +1,4 @@
-﻿using NuGet.Versioning;
+using NuGet.Versioning;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Versioning
 {
@@ -54,6 +54,17 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Versioning
         public NuGetVersion Unwrap()
         {
             return _version;
+        }
+
+        internal static bool TryParse(string stringVersion, out WrappedNuGetVersion version)
+        {
+            if (NuGetVersion.TryParse(stringVersion, out var internalVersion))
+            {
+                version = new WrappedNuGetVersion(internalVersion);
+                return true;
+            }
+            version = default!;
+            return false;
         }
     }
 }

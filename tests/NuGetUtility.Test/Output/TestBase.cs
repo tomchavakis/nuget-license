@@ -1,9 +1,9 @@
-﻿using Bogus;
-using NuGet.Versioning;
+using Bogus;
 using NuGetUtility.LicenseValidator;
 using NuGetUtility.Output;
 using NuGetUtility.Test.Extensions;
 using NuGetUtility.Test.Helper.ShuffelledEnumerable;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Test.Output
 {
@@ -87,6 +87,21 @@ namespace NuGetUtility.Test.Output
             await _uut.Write(stream, validated);
 
             await Verify(stream.AsString());
+        }
+
+        private class NuGetVersion : INuGetVersion
+        {
+            private readonly string _version;
+
+            public NuGetVersion(string version)
+            {
+                _version = version;
+            }
+
+            public override string ToString()
+            {
+                return _version;
+            }
         }
     }
 }

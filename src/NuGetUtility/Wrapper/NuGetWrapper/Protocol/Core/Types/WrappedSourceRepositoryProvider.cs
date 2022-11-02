@@ -1,19 +1,27 @@
-﻿using NuGet.Protocol.Core.Types;
+using NuGet.Protocol.Core.Types;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
-    internal class WrappedSourceRepositoryProvider : IWrappedSourceRepositoryProvider
+    internal class WrappedSourceRepositoryProvider : IWrappedSourceRepositoryProvider, IDisposable
     {
-        private readonly ISourceRepositoryProvider _provider;
+        private readonly IDisposableSourceRepository[] _repositories;
 
         public WrappedSourceRepositoryProvider(ISourceRepositoryProvider provider)
         {
-            _provider = provider;
+            _repositories = provider.GetRepositories().Where(r => r.PackageSource.IsEnabled).Select(r => new CachingDisposableSourceRepository(r)).ToArray();
         }
 
-        public IEnumerable<IDisposableSourceRepository> GetRepositories()
+        public void Dispose()
         {
-            return _provider.GetRepositories().Select(r => new CachingDisposableSourceRepository(r)).ToArray();
+            foreach (var repository in _repositories)
+            {
+                repository.Dispose();
+            }
+        }
+
+        public ISourceRepository[] GetRepositories()
+        {
+            return _repositories;
         }
     }
 }

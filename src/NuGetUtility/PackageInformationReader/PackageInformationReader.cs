@@ -1,27 +1,24 @@
-﻿using NuGet.Protocol.Core.Types;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
+using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 using System.Runtime.CompilerServices;
 
 namespace NuGetUtility.PackageInformationReader
 {
-    public class PackageInformationReader : IDisposable
+    public class PackageInformationReader
     {
+        private readonly IGlobalPackagesFolderUtility _globalPackagesFolderUtility;
         private readonly IEnumerable<CustomPackageInformation> _customPackageInformation;
-        private readonly IDisposableSourceRepository[] _sourceRepositories;
+        private readonly ISourceRepository[] _repositories;
 
         public PackageInformationReader(IWrappedSourceRepositoryProvider sourceRepositoryProvider,
+            IGlobalPackagesFolderUtility globalPackagesFolderUtility,
             IEnumerable<CustomPackageInformation> customPackageInformation)
         {
+            _globalPackagesFolderUtility = globalPackagesFolderUtility;
             _customPackageInformation = customPackageInformation;
-            _sourceRepositories = sourceRepositoryProvider.GetRepositories().ToArray();
-        }
-
-        public void Dispose()
-        {
-            foreach (var repo in _sourceRepositories)
-            {
-                repo.Dispose();
-            }
+            _repositories = sourceRepositoryProvider.GetRepositories();
         }
 
         public async IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfo(
@@ -30,23 +27,41 @@ namespace NuGetUtility.PackageInformationReader
         {
             foreach (var package in projectWithReferencedPackages.ReferencedPackages)
             {
-                if (TryGetPackageInfoFromCustomInformation(package, out var info))
+                var result = TryGetPackageInfoFromCustomInformation(package);
+                if (result.Success)
                 {
-                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, info!);
+                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
+                    continue;
                 }
-                else
+                result = TryGetPackageInformationFromGlobalPackageFolder(package);
+                if (result.Success)
                 {
-                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project,
-                        await TryGetPackageInformationFromRepositoriesOrReturnInput(_sourceRepositories,
-                            package,
-                            cancellation));
+                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
+                    continue;
                 }
+                result = await TryGetPackageInformationFromRepositories(_repositories, package, cancellation);
+                if (result.Success)
+                {
+                    yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
+                    continue;
+                }
+                // simply return input - validation will fail later, as the required fields are missing
+                yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, new PackageMetadata(package));
             }
         }
+        private PackageSearchResult TryGetPackageInformationFromGlobalPackageFolder(PackageIdentity package)
+        {
+            var metadata = _globalPackagesFolderUtility.GetPackage(package);
+            if (metadata != null)
+            {
+                return new PackageSearchResult(metadata);
+            }
+            return new PackageSearchResult();
+        }
 
-        private async Task<IPackageSearchMetadata> TryGetPackageInformationFromRepositoriesOrReturnInput(
-            IDisposableSourceRepository[] cachedRepositories,
-            IPackageSearchMetadata package,
+        private async Task<PackageSearchResult> TryGetPackageInformationFromRepositories(
+            ISourceRepository[] cachedRepositories,
+            PackageIdentity package,
             CancellationToken cancellation)
         {
             foreach (var repository in cachedRepositories)
@@ -57,35 +72,30 @@ namespace NuGetUtility.PackageInformationReader
                     continue;
                 }
 
-                var updatedPackageMetadata = await resource.TryGetMetadataAsync(package.Identity, cancellation);
+                var updatedPackageMetadata = await resource.TryGetMetadataAsync(package, cancellation);
 
                 if (updatedPackageMetadata != null)
                 {
-                    return updatedPackageMetadata;
+                    return new PackageSearchResult(updatedPackageMetadata);
                 }
             }
 
-            // simply return input - validation will fail later, as the required fields are missing
-            return package;
+            return new PackageSearchResult();
         }
 
-        private bool TryGetPackageInfoFromCustomInformation(IPackageSearchMetadata package,
-            out IPackageSearchMetadata? resolved)
+        private PackageSearchResult TryGetPackageInfoFromCustomInformation(PackageIdentity package)
         {
-            resolved = default;
             var resolvedCustomInformation = _customPackageInformation.FirstOrDefault(info =>
-                info.Id.Equals(package.Identity.Id) && info.Version.Equals(package.Identity.Version));
+                info.Id.Equals(package.Id) && info.Version.Equals(package.Version));
             if (resolvedCustomInformation == default)
             {
-                return false;
+                return new PackageSearchResult();
             }
 
-            resolved = new PackageMetadataWithLicenseInformation(package, resolvedCustomInformation.License);
-            return true;
+            return new PackageSearchResult(new PackageMetadata(package, resolvedCustomInformation.License));
         }
 
-        private static async Task<IPackageMetadataResource?> TryGetPackageMetadataResource(
-            IDisposableSourceRepository repository)
+        private static async Task<IPackageMetadataResource?> TryGetPackageMetadataResource(ISourceRepository repository)
         {
             try
             {
@@ -96,6 +106,22 @@ namespace NuGetUtility.PackageInformationReader
                 return null;
             }
         }
-    }
 
+        private record PackageSearchResult
+        {
+            public bool Success { get; }
+            public IPackageMetadata? Metadata { get; }
+
+            public PackageSearchResult(IPackageMetadata metadata)
+            {
+                Success = true;
+                Metadata = metadata;
+            }
+
+            public PackageSearchResult()
+            {
+                Success = false;
+            }
+        }
+    }
 }

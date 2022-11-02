@@ -1,7 +1,7 @@
-﻿namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
+namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 {
     public interface IWrappedSourceRepositoryProvider
     {
-        IEnumerable<IDisposableSourceRepository> GetRepositories();
+        ISourceRepository[] GetRepositories();
     }
 }

@@ -1,6 +1,4 @@
-﻿// ReSharper disable once CheckNamespace
-
-namespace Utilities
+namespace NuGetUtility.Output.Table
 {
     /// <summary>
     ///     Credits: https://stackoverflow.com/a/54943087/1199089
@@ -19,7 +17,7 @@ namespace Utilities
             _lengths = _titles.Select(t => t.Length).ToArray();
         }
 
-        public void AddRow(string?[] row)
+        public void AddRow(object?[] row)
         {
             if (row.Length != _titles.Length)
             {
@@ -27,7 +25,7 @@ namespace Utilities
                     $"Added row length [{row.Length}] is not equal to title row length [{_titles.Length}]");
             }
 
-            var rowElements = row.Select(item => SplitToLines(item?.ToString() ?? string.Empty).ToArray()).ToArray();
+            var rowElements = row.Select(GetLines).ToArray();
             for (var i = 0; i < _titles.Length; i++)
             {
                 var maxLineLength = rowElements[i].Any() ? rowElements[i].Max(line => line.Length) : 0;
@@ -37,6 +35,15 @@ namespace Utilities
                 }
             }
             _rows.Add(rowElements);
+        }
+
+        private string[] GetLines(object? lines)
+        {
+            if (lines is IEnumerable<object> enumerable)
+            {
+                return enumerable.Select(o => o.ToString() ?? string.Empty).ToArray();
+            }
+            return new[] { lines?.ToString() ?? string.Empty };
         }
 
         public async Task Print()
@@ -82,20 +89,6 @@ namespace Utilities
                 await writer.WriteAsync("+-" + new string('-', l) + '-');
             }
             await writer.WriteLineAsync("+");
-        }
-
-        /// <summary>
-        ///     Credit: https://stackoverflow.com/a/23408020/1199089
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        private static IEnumerable<string> SplitToLines(string input)
-        {
-            using var reader = new StringReader(input);
-            while (reader.ReadLine() is { } line)
-            {
-                yield return line;
-            }
         }
     }
 }

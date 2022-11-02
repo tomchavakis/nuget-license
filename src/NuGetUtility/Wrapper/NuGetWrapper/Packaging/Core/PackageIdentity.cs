@@ -1,6 +1,6 @@
-﻿using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core
 {
-    public record PackageIdentity(string Name, INuGetVersion Version);
+    public record PackageIdentity(string Id, INuGetVersion Version);
 }

@@ -1,8 +1,7 @@
-﻿using NuGet.Packaging;
-using NuGet.Protocol.Core.Types;
-using NuGet.Versioning;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 using System.Collections.Concurrent;
 
 namespace NuGetUtility.LicenseValidator
@@ -49,7 +48,7 @@ namespace NuGetUtility.LicenseValidator
 
         private void AddOrUpdateLicense(
             ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result,
-            IPackageSearchMetadata info,
+            IPackageMetadata info,
             LicenseInformationOrigin origin,
             ValidationError error,
             string? license = null)
@@ -68,7 +67,7 @@ namespace NuGetUtility.LicenseValidator
 
         private void AddOrUpdateLicense(
             ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result,
-            IPackageSearchMetadata info,
+            IPackageMetadata info,
             LicenseInformationOrigin origin,
             string? license = null)
         {
@@ -101,7 +100,7 @@ namespace NuGetUtility.LicenseValidator
             return newValue;
         }
 
-        private void ValidateLicenseByMetadata(IPackageSearchMetadata info,
+        private void ValidateLicenseByMetadata(IPackageMetadata info,
             string context,
             ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result)
         {
@@ -137,11 +136,11 @@ namespace NuGetUtility.LicenseValidator
             }
         }
 
-        private async Task ValidateLicenseByUrl(IPackageSearchMetadata info,
+        private async Task ValidateLicenseByUrl(IPackageMetadata info,
             string context,
             ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result)
         {
-            if (info.LicenseUrl.IsAbsoluteUri)
+            if (info.LicenseUrl!.IsAbsoluteUri)
             {
                 try
                 {
@@ -212,6 +211,6 @@ namespace NuGetUtility.LicenseValidator
             return $"License {license} not found in list of supported licenses";
         }
 
-        private record LicenseNameAndVersion(string LicenseName, NuGetVersion Version);
+        private record LicenseNameAndVersion(string LicenseName, INuGetVersion Version);
     }
 }

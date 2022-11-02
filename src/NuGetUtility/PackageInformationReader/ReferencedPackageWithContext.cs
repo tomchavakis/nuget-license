@@ -1,6 +1,6 @@
-﻿using NuGet.Protocol.Core.Types;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 
 namespace NuGetUtility.PackageInformationReader
 {
-    public record ReferencedPackageWithContext(string Context, IPackageSearchMetadata PackageInfo);
+    public record ReferencedPackageWithContext(string Context, IPackageMetadata PackageInfo);
 }
