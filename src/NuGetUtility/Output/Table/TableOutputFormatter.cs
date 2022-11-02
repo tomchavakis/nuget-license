@@ -1,4 +1,4 @@
-﻿using NuGetUtility.LicenseValidator;
+using NuGetUtility.LicenseValidator;
 
 namespace NuGetUtility.Output.Table
 {
@@ -17,7 +17,7 @@ namespace NuGetUtility.Output.Table
             var columnDefinitions = new[]
             {
                 new ColumnDefinition("Package", license => license.PackageId, true),
-                new ColumnDefinition("Version", license => license.PackageVersion.ToString() ,true),
+                new ColumnDefinition("Version", license => license.PackageVersion.ToString()??string.Empty ,true),
                 new ColumnDefinition("License Information Origin", license => license.LicenseInformationOrigin.ToString(), true),
                 new ColumnDefinition("License Expression", license => license.License ?? string.Empty),
                 new ColumnDefinition("Package Project Url",license => license.PackageProjectUrl??string.Empty),
