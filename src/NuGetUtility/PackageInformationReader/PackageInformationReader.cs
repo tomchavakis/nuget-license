@@ -46,7 +46,7 @@ namespace NuGetUtility.PackageInformationReader
                     continue;
                 }
                 // simply return input - validation will fail later, as the required fields are missing
-                yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, new IdentityOnlyPackageMetadata(package));
+                yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, new PackageMetadata(package));
             }
         }
         private PackageSearchResult TryGetPackageInformationFromGlobalPackageFolder(PackageIdentity package)
