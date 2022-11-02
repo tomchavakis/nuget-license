@@ -43,18 +43,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
             public WrappedPackageSearchMetadata(IPackageSearchMetadata searchMetadata)
             {
                 Identity = new PackageIdentity(searchMetadata.Identity.Id, new WrappedNuGetVersion(searchMetadata.Identity.Version));
-                LicenseMetadata = new LicenseMetadata(Convert(searchMetadata.LicenseMetadata.Type), searchMetadata.LicenseMetadata.License);
+                LicenseMetadata = searchMetadata.LicenseMetadata;
                 _searchMetadata = searchMetadata;
-            }
-
-            private LicenseType Convert(NuGet.Packaging.LicenseType type)
-            {
-                return type switch
-                {
-                    NuGet.Packaging.LicenseType.File => LicenseType.File,
-                    NuGet.Packaging.LicenseType.Expression => LicenseType.Expression,
-                    _ => throw new InvalidEnumArgumentException(nameof(type), (int)type, typeof(NuGet.Packaging.LicenseType)),
-                };
             }
 
             public PackageIdentity Identity { get; }
