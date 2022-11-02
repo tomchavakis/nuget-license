@@ -43,7 +43,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
             public WrappedPackageSearchMetadata(IPackageSearchMetadata searchMetadata)
             {
                 Identity = new PackageIdentity(searchMetadata.Identity.Id, new WrappedNuGetVersion(searchMetadata.Identity.Version));
-                LicenseMetadata = new LicenseMetadata(Convert(searchMetadata.LicenseMetadata.Type), searchMetadata.LicenseMetadata.License);
+                LicenseMetadata = searchMetadata.LicenseMetadata;
                 _searchMetadata = searchMetadata;
             }
 

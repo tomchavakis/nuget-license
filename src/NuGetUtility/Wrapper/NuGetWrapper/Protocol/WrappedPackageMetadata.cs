@@ -1,7 +1,6 @@
 using NuGet.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
-using System.ComponentModel;
 using IWrappedPackageMetadata = NuGetUtility.Wrapper.NuGetWrapper.Packaging.IPackageMetadata;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
@@ -13,18 +12,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
         public WrappedPackageMetadata(ManifestMetadata metadata)
         {
             Identity = new PackageIdentity(metadata.Id, new WrappedNuGetVersion(metadata.Version));
-            LicenseMetadata = (metadata.LicenseMetadata == null) ? null : new Packaging.LicenseMetadata(Convert(metadata.LicenseMetadata.Type), metadata.LicenseMetadata.LicenseExpression?.ToString() ?? string.Empty);
+            LicenseMetadata = metadata.LicenseMetadata;
             _metadata = metadata;
-        }
-
-        private Packaging.LicenseType Convert(LicenseType type)
-        {
-            return type switch
-            {
-                LicenseType.Expression => Packaging.LicenseType.Expression,
-                LicenseType.File => Packaging.LicenseType.File,
-                _ => throw new InvalidEnumArgumentException(nameof(type), (int)type, typeof(LicenseType)),
-            };
         }
 
         public PackageIdentity Identity { get; }
