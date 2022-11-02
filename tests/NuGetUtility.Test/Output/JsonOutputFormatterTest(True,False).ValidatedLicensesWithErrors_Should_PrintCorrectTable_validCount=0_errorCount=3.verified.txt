@@ -1,7 +1,7 @@
 ﻿[
   {
     "PackageId": "Direct Intranet Facilitator",
-    "PackageVersion": {},
+    "PackageVersion": "7.1.7",
     "PackageProjectUrl": "https://garnet.net",
     "ValidationErrors": [
       {
@@ -46,7 +46,7 @@
   },
   {
     "PackageId": "Principal Functionality Agent",
-    "PackageVersion": {},
+    "PackageVersion": "1.5.3",
     "ValidationErrors": [
       {
         "Error": "Judson",
@@ -70,7 +70,7 @@
   },
   {
     "PackageId": "Regional Accounts Technician",
-    "PackageVersion": {},
+    "PackageVersion": "2.8.7",
     "ValidationErrors": [
       {
         "Error": "Dawson",

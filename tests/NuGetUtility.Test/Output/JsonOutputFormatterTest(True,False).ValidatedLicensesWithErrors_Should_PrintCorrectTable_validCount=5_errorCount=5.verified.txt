@@ -1,14 +1,14 @@
 ﻿[
   {
     "PackageId": "Forward Functionality Designer",
-    "PackageVersion": {},
+    "PackageVersion": "5.5.7",
     "PackageProjectUrl": "https://jasen.biz",
     "License": "Use the redundant AGP monitor, then you can generate the redundant monitor!",
     "LicenseInformationOrigin": 0
   },
   {
     "PackageId": "Principal Functionality Agent",
-    "PackageVersion": {},
+    "PackageVersion": "1.5.3",
     "ValidationErrors": [
       {
         "Error": "Judson",
@@ -32,14 +32,14 @@
   },
   {
     "PackageId": "Principal Markets Executive",
-    "PackageVersion": {},
+    "PackageVersion": "4.2.2",
     "PackageProjectUrl": "https://bettie.com",
     "License": "Try to generate the EXE array, maybe it will generate the mobile array!",
     "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Direct Intranet Facilitator",
-    "PackageVersion": {},
+    "PackageVersion": "7.1.7",
     "PackageProjectUrl": "https://garnet.net",
     "ValidationErrors": [
       {
@@ -84,7 +84,7 @@
   },
   {
     "PackageId": "Senior Brand Developer",
-    "PackageVersion": {},
+    "PackageVersion": "4.4.1",
     "PackageProjectUrl": "http://adelbert.net",
     "ValidationErrors": [
       {
@@ -121,7 +121,7 @@
   },
   {
     "PackageId": "Regional Accounts Technician",
-    "PackageVersion": {},
+    "PackageVersion": "2.8.7",
     "ValidationErrors": [
       {
         "Error": "Dawson",
@@ -148,28 +148,28 @@
   },
   {
     "PackageId": "Legacy Metrics Planner",
-    "PackageVersion": {},
+    "PackageVersion": "9.5.0",
     "PackageProjectUrl": "http://madisyn.name",
     "License": "I\u0027ll override the haptic AGP feed, that should feed the AGP feed!",
     "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Future Identity Specialist",
-    "PackageVersion": {},
+    "PackageVersion": "4.7.4",
     "PackageProjectUrl": "http://della.biz",
     "License": "If we back up the driver, we can get to the AI driver through the bluetooth AI driver!",
     "LicenseInformationOrigin": 0
   },
   {
     "PackageId": "International Mobility Technician",
-    "PackageVersion": {},
+    "PackageVersion": "3.7.5",
     "PackageProjectUrl": "https://jayne.name",
     "License": "I\u0027ll override the digital SMTP interface, that should interface the SMTP interface!",
     "LicenseInformationOrigin": 0
   },
   {
     "PackageId": "National Solutions Coordinator",
-    "PackageVersion": {},
+    "PackageVersion": "8.7.3",
     "PackageProjectUrl": "https://adrianna.name",
     "ValidationErrors": [
       {

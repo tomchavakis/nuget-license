@@ -1,7 +1,7 @@
 ﻿[
   {
     "PackageId": "Principal Functionality Agent",
-    "PackageVersion": {},
+    "PackageVersion": "1.5.3",
     "ValidationErrors": [
       {
         "Error": "Judson",

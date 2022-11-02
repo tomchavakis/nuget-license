@@ -21,5 +21,10 @@ namespace NuGetUtility.Serialization
         {
             JsonSerializer.Serialize(writer, value.ToString(), options);
         }
+
+        public override bool CanConvert(Type typeToConvert)
+        {
+            return typeToConvert.IsAssignableTo(typeof(INuGetVersion));
+        }
     }
 }

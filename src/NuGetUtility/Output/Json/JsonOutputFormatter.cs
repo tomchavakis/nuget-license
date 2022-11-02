@@ -13,8 +13,7 @@ namespace NuGetUtility.Output.Json
             _printErrorsOnly = printErrorsOnly;
             _options = new JsonSerializerOptions
             {
-                Converters =
-                    { new NuGetVersionJsonConverter(), new ValidatedLicenseJsonConverterWithOmittingEmptyErrorList() },
+                Converters = { new NuGetVersionJsonConverter(), new ValidatedLicenseJsonConverterWithOmittingEmptyErrorList() },
                 WriteIndented = prettyPrint
             };
         }

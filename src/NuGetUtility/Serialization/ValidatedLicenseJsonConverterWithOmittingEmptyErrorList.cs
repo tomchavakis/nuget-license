@@ -1,8 +1,8 @@
-﻿using NuGetUtility.LicenseValidator;
+using NuGetUtility.LicenseValidator;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace NuGetUtility.Output.Json
+namespace NuGetUtility.Serialization
 {
     public class ValidatedLicenseJsonConverterWithOmittingEmptyErrorList : JsonConverter<LicenseValidationResult>
     {

@@ -1,14 +1,14 @@
 ﻿[
   {
     "PackageId": "Legacy Metrics Planner",
-    "PackageVersion": {},
+    "PackageVersion": "9.5.0",
     "PackageProjectUrl": "http://madisyn.name",
     "License": "I\u0027ll override the haptic AGP feed, that should feed the AGP feed!",
     "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Principal Functionality Agent",
-    "PackageVersion": {},
+    "PackageVersion": "1.5.3",
     "ValidationErrors": [
       {
         "Error": "Judson",
@@ -32,7 +32,7 @@
   },
   {
     "PackageId": "Regional Accounts Technician",
-    "PackageVersion": {},
+    "PackageVersion": "2.8.7",
     "ValidationErrors": [
       {
         "Error": "Dawson",
@@ -59,7 +59,7 @@
   },
   {
     "PackageId": "Direct Intranet Facilitator",
-    "PackageVersion": {},
+    "PackageVersion": "7.1.7",
     "PackageProjectUrl": "https://garnet.net",
     "ValidationErrors": [
       {

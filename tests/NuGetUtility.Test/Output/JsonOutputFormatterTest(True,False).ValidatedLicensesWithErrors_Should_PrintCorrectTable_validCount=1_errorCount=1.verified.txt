@@ -1,14 +1,14 @@
 ﻿[
   {
     "PackageId": "Legacy Metrics Planner",
-    "PackageVersion": {},
+    "PackageVersion": "9.5.0",
     "PackageProjectUrl": "http://madisyn.name",
     "License": "I\u0027ll override the haptic AGP feed, that should feed the AGP feed!",
     "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Principal Functionality Agent",
-    "PackageVersion": {},
+    "PackageVersion": "1.5.3",
     "ValidationErrors": [
       {
         "Error": "Judson",

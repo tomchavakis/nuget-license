@@ -1,7 +1,7 @@
 ﻿[
   {
     "PackageId": "Principal Functionality Agent",
-    "PackageVersion": {},
+    "PackageVersion": "1.5.3",
     "ValidationErrors": [
       {
         "Error": "Judson",
@@ -25,7 +25,7 @@
   },
   {
     "PackageId": "Legacy Creative Liaison",
-    "PackageVersion": {},
+    "PackageVersion": "0.4.6",
     "ValidationErrors": [
       {
         "Error": "Mervin",
@@ -64,7 +64,7 @@
   },
   {
     "PackageId": "Lead Markets Designer",
-    "PackageVersion": {},
+    "PackageVersion": "2.8.4",
     "PackageProjectUrl": "https://amara.info",
     "ValidationErrors": [
       {
@@ -92,7 +92,7 @@
   },
   {
     "PackageId": "Customer Program Technician",
-    "PackageVersion": {},
+    "PackageVersion": "1.7.7",
     "ValidationErrors": [
       {
         "Error": "Keely",
@@ -135,7 +135,7 @@
   },
   {
     "PackageId": "Global Branding Associate",
-    "PackageVersion": {},
+    "PackageVersion": "0.5.9",
     "PackageProjectUrl": "http://cory.com",
     "ValidationErrors": [
       {
@@ -172,7 +172,7 @@
   },
   {
     "PackageId": "Lead Intranet Officer",
-    "PackageVersion": {},
+    "PackageVersion": "6.4.9",
     "ValidationErrors": [
       {
         "Error": "Margaret",
@@ -191,7 +191,7 @@
   },
   {
     "PackageId": "National Solutions Coordinator",
-    "PackageVersion": {},
+    "PackageVersion": "8.7.3",
     "PackageProjectUrl": "https://adrianna.name",
     "ValidationErrors": [
       {
@@ -224,7 +224,7 @@
   },
   {
     "PackageId": "Investor Research Facilitator",
-    "PackageVersion": {},
+    "PackageVersion": "5.7.5",
     "ValidationErrors": [
       {
         "Error": "Avery",
@@ -271,7 +271,7 @@
   },
   {
     "PackageId": "Corporate Tactics Analyst",
-    "PackageVersion": {},
+    "PackageVersion": "3.0.8",
     "ValidationErrors": [
       {
         "Error": "Bill",
@@ -307,7 +307,7 @@
   },
   {
     "PackageId": "Human Usability Specialist",
-    "PackageVersion": {},
+    "PackageVersion": "3.2.8",
     "PackageProjectUrl": "http://micah.info",
     "ValidationErrors": [
       {
@@ -335,7 +335,7 @@
   },
   {
     "PackageId": "International Integration Orchestrator",
-    "PackageVersion": {},
+    "PackageVersion": "5.4.5",
     "ValidationErrors": [
       {
         "Error": "Steve",
@@ -362,7 +362,7 @@
   },
   {
     "PackageId": "Direct Accounts Associate",
-    "PackageVersion": {},
+    "PackageVersion": "3.2.6",
     "PackageProjectUrl": "https://vesta.com",
     "ValidationErrors": [
       {
@@ -406,7 +406,7 @@
   },
   {
     "PackageId": "Senior Brand Developer",
-    "PackageVersion": {},
+    "PackageVersion": "4.4.1",
     "PackageProjectUrl": "http://adelbert.net",
     "ValidationErrors": [
       {
@@ -443,7 +443,7 @@
   },
   {
     "PackageId": "National Accounts Liaison",
-    "PackageVersion": {},
+    "PackageVersion": "7.2.6",
     "ValidationErrors": [
       {
         "Error": "Cedrick",
@@ -462,7 +462,7 @@
   },
   {
     "PackageId": "Regional Accounts Technician",
-    "PackageVersion": {},
+    "PackageVersion": "2.8.7",
     "ValidationErrors": [
       {
         "Error": "Dawson",
@@ -489,7 +489,7 @@
   },
   {
     "PackageId": "Global Response Associate",
-    "PackageVersion": {},
+    "PackageVersion": "1.9.8",
     "ValidationErrors": [
       {
         "Error": "Sandra",
@@ -525,7 +525,7 @@
   },
   {
     "PackageId": "Dynamic Marketing Consultant",
-    "PackageVersion": {},
+    "PackageVersion": "2.4.9",
     "ValidationErrors": [
       {
         "Error": "Angie",
@@ -548,7 +548,7 @@
   },
   {
     "PackageId": "Global Optimization Representative",
-    "PackageVersion": {},
+    "PackageVersion": "8.2.6",
     "ValidationErrors": [
       {
         "Error": "Brandi",
@@ -595,7 +595,7 @@
   },
   {
     "PackageId": "Legacy Optimization Orchestrator",
-    "PackageVersion": {},
+    "PackageVersion": "2.4.2",
     "ValidationErrors": [
       {
         "Error": "Damien",
@@ -631,7 +631,7 @@
   },
   {
     "PackageId": "Direct Intranet Facilitator",
-    "PackageVersion": {},
+    "PackageVersion": "7.1.7",
     "PackageProjectUrl": "https://garnet.net",
     "ValidationErrors": [
       {
