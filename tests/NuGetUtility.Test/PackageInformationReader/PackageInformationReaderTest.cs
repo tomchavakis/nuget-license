@@ -9,6 +9,7 @@ using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Test.PackageInformationReader
 {
@@ -63,10 +64,53 @@ namespace NuGetUtility.Test.PackageInformationReader
             _customPackageInformation = _fixture.CreateMany<CustomPackageInformation>().ToList();
             SetupUut();
 
-            var searchedPackages = _customPackageInformation.Select(p => new PackageIdentity(p.Id, p.Version));
+            var searchedPackages = _customPackageInformation.Select(p => new PackageIdentity(p.Id, p.Version!));
 
             var (project, result) = await PerformSearch(searchedPackages);
             CheckResult(result, project, _customPackageInformation);
+        }
+
+        [Test]
+        public async Task GetPackageInfo_Should_PreferProvidedCustomInformationAndMatchOnWildcard()
+        {
+            _customPackageInformation = _fixture.CreateMany<CustomPackageInformation>().ToList();
+            _customPackageInformation = _customPackageInformation.Select(x => x with
+            {
+                Id = x.Id + ".*"
+            }).ToList();
+            
+            SetupUut();
+            
+            var searchedPackages = _customPackageInformation.Select(p => new PackageIdentity(p.Id + ".Foo", p.Version!));
+            var (_, result) = await PerformSearch(searchedPackages);
+
+            Assert.AreNotEqual(_customPackageInformation[0].Id, result[0].PackageInfo.Identity.Id);
+            Assert.AreEqual(_customPackageInformation[0].Version, result[0].PackageInfo.Identity.Version);
+            Assert.AreEqual(_customPackageInformation[0].License, result[0].PackageInfo.LicenseMetadata?.License);
+        }
+
+        [Test]
+        public async Task GetPackageInfo_Should_PreferProvidedCustomInformationAnyVersion()
+        {
+            _customPackageInformation = _fixture.CreateMany<CustomPackageInformation>().ToList();
+            _customPackageInformation = _customPackageInformation.Select(x => x with
+            {
+                Id = x.Id + ".*",
+                Version = null
+            }).ToList();
+
+            _customPackageInformation = new List<CustomPackageInformation>()
+            {
+                new CustomPackageInformation("Internal.*", null, "http://www.example.com/LICENSE.txt")
+            };
+            SetupUut();
+
+            var searchedPackages = _customPackageInformation.Select(p => new PackageIdentity(p.Id + ".Foo", new NuGetVersion("1.0.0")));
+            var (_, result) = await PerformSearch(searchedPackages);
+            
+            Assert.AreNotEqual(_customPackageInformation[0].Id, result[0].PackageInfo.Identity.Id);
+            Assert.AreNotEqual(_customPackageInformation[0].Version, result[0].PackageInfo.Identity.Version);
+            Assert.AreEqual(_customPackageInformation[0].License, result[0].PackageInfo.LicenseMetadata?.License);
         }
 
         private async Task<(string Project, ReferencedPackageWithContext[] Result)> PerformSearch(
@@ -83,10 +127,11 @@ namespace NuGetUtility.Test.PackageInformationReader
             string project,
             IEnumerable<CustomPackageInformation> packages)
         {
+            var customPackageInformations = result.Select(s => new CustomPackageInformation(s.PackageInfo.Identity.Id,
+                s.PackageInfo.Identity.Version,
+                s.PackageInfo.LicenseMetadata?.License!)).ToList();
             CollectionAssert.AreEquivalent(packages,
-                result.Select(s => new CustomPackageInformation(s.PackageInfo.Identity.Id,
-                    s.PackageInfo.Identity.Version,
-                    s.PackageInfo.LicenseMetadata!.License)));
+                customPackageInformations);
             foreach (var r in result)
             {
                 Assert.AreEqual(project, r.Context);
@@ -100,7 +145,7 @@ namespace NuGetUtility.Test.PackageInformationReader
 
             var searchedPackages = searchedPackagesAsPackageInformation.Select(info =>
             {
-                var identity = new PackageIdentity(info.Id, info.Version);
+                var identity = new PackageIdentity(info.Id, info.Version!);
                 var mockedInfo = new Mock<IPackageMetadata>();
                 mockedInfo.SetupGet(m => m.Identity).Returns(identity);
                 mockedInfo.SetupGet(m => m.LicenseMetadata).Returns(new LicenseMetadata(LicenseType.Expression, info.License));
@@ -124,11 +169,11 @@ namespace NuGetUtility.Test.PackageInformationReader
             {
                 var metadataReturningProperInformation = packageMetadataResources.Shuffle(6435).First();
                 var resultingInfo = new Mock<IPackageMetadata>();
-                resultingInfo.SetupGet(m => m.Identity).Returns(new PackageIdentity(package.Id, package.Version));
+                resultingInfo.SetupGet(m => m.Identity).Returns(new PackageIdentity(package.Id, package.Version!));
                 resultingInfo.SetupGet(m => m.LicenseMetadata).Returns(new LicenseMetadata(LicenseType.Expression, package.License));
 
                 metadataReturningProperInformation
-                    .Setup(m => m.TryGetMetadataAsync(new PackageIdentity(package.Id, package.Version), It.IsAny<CancellationToken>()))
+                    .Setup(m => m.TryGetMetadataAsync(new PackageIdentity(package.Id, package.Version!), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(resultingInfo.Object);
             }
         }
@@ -160,7 +205,7 @@ namespace NuGetUtility.Test.PackageInformationReader
 
             SetupPackagesForRepositories(searchedPackagesAsPackageInformation, packageMetadataResources);
 
-            var searchedPackages = searchedPackagesAsPackageInformation.Select(i => new PackageIdentity(i.Id, i.Version));
+            var searchedPackages = searchedPackagesAsPackageInformation.Select(i => new PackageIdentity(i.Id, i.Version!));
 
             var (project, result) = await PerformSearch(searchedPackages);
             CheckResult(result, project, searchedPackagesAsPackageInformation);
@@ -170,7 +215,7 @@ namespace NuGetUtility.Test.PackageInformationReader
         public async Task GetPackageInfo_Should_ReturnDummyPackageMetadataForPackagesNotFound()
         {
             var searchedPackagesAsPackageInformation = _fixture.CreateMany<CustomPackageInformation>().ToArray();
-            var searchedPackages = searchedPackagesAsPackageInformation.Select(p => new PackageIdentity(p.Id, p.Version)).ToArray();
+            var searchedPackages = searchedPackagesAsPackageInformation.Select(p => new PackageIdentity(p.Id, p.Version!)).ToArray();
 
             var (project, results) = await PerformSearch(searchedPackages);
 
@@ -186,6 +231,20 @@ namespace NuGetUtility.Test.PackageInformationReader
                 Assert.IsNull(result.PackageInfo.LicenseUrl);
                 Assert.AreEqual(string.Empty, result.PackageInfo.Summary);
                 Assert.AreEqual(string.Empty, result.PackageInfo.Title);
+            }
+        }
+        private class NuGetVersion : INuGetVersion
+        {
+            private readonly string _version;
+
+            public NuGetVersion(string version)
+            {
+                _version = version;
+            }
+
+            public override string ToString()
+            {
+                return _version;
             }
         }
     }
