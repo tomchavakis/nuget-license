@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "NuGetUtility": {
-      "commandName": "Project",
-      "commandLineArgs": "-i D:\\GIT\\Private\\nuget-license\\src\\NuGetUtility\\NuGetUtility.csproj -t"
-    }
-  }
-}
