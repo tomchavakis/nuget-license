@@ -13,7 +13,7 @@ namespace NuGetUtility.Output.Table
 
         public static TablePrinter FromValues<T>(this TablePrinter printer,
             IEnumerable<T> values,
-            Func<T, IEnumerable<string?>> formatter)
+            Func<T, IEnumerable<object?>> formatter)
         {
             foreach (var value in values)
             {
