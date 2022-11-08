@@ -7,7 +7,7 @@
     {
         public static bool IsOfGenericType(this System.Type typeToCheck, System.Type genericType)
         {
-            return typeToCheck.IsOfGenericType(genericType, out var _);
+            return typeToCheck.IsOfGenericType(genericType, out System.Type? _);
         }
 
         public static bool IsOfGenericType(this System.Type typeToCheck,
@@ -48,7 +48,7 @@
 
                 if (genericType.IsInterface)
                 {
-                    foreach (var i in typeToCheck.GetInterfaces())
+                    foreach (System.Type i in typeToCheck.GetInterfaces())
                     {
                         if (i.IsOfGenericType(genericType, out concreteGenericType))
                         {

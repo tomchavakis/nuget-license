@@ -49,39 +49,39 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _msBuild.Setup(m => m.GetPackageReferencesFromProjectForFramework(_projectMock.Object, It.IsAny<string>()))
                 .Returns((IProject _, string framework) => _packageReferencesFromProjectForFramework[framework]);
 
-            foreach (var lockFileLibrary in _lockFileLibraries)
+            foreach (Mock<ILockFileLibrary> lockFileLibrary in _lockFileLibraries)
             {
                 var version = new Mock<INuGetVersion>();
                 lockFileLibrary.SetupGet(m => m.Version).Returns(version.Object);
                 lockFileLibrary.SetupGet(m => m.Name).Returns(fixture.Create<string>());
             }
 
-            foreach (var targetFramework in _targetFrameworks)
+            foreach (Mock<INuGetFramework> targetFramework in _targetFrameworks)
             {
                 targetFramework.Setup(m => m.ToString()).Returns(fixture.Create<string>());
             }
 
-            foreach (var targetFramework in _targetFrameworks)
+            foreach (Mock<INuGetFramework> targetFramework in _targetFrameworks)
             {
-                var returnedLibraries = _lockFileLibraries.Shuffle(75643)
+                PackageReference[] returnedLibraries = _lockFileLibraries.Shuffle(75643)
                     .Take(5)
                     .Select(l => new PackageReference(l.Object.Name, l.Object.Version))
                     .ToArray();
                 _packageReferencesFromProjectForFramework[targetFramework.Object.ToString()!] = returnedLibraries;
             }
 
-            using (var targetFrameworksIterator = _targetFrameworks.GetEnumerator())
+            using (IEnumerator<Mock<INuGetFramework>> targetFrameworksIterator = _targetFrameworks.GetEnumerator())
             {
-                foreach (var lockFileTarget in _lockFileTargets)
+                foreach (Mock<ILockFileTarget> lockFileTarget in _lockFileTargets)
                 {
                     targetFrameworksIterator.MoveNext();
                     lockFileTarget.SetupGet(m => m.TargetFramework).Returns(targetFrameworksIterator.Current.Object);
                 }
             }
 
-            using (var targetFrameworksIterator = _targetFrameworks.GetEnumerator())
+            using (IEnumerator<Mock<INuGetFramework>> targetFrameworksIterator = _targetFrameworks.GetEnumerator())
             {
-                foreach (var packageSpecTargetFramework in _packageSpecTargetFrameworks)
+                foreach (Mock<ITargetFrameworkInformation> packageSpecTargetFramework in _packageSpecTargetFrameworks)
                 {
                     targetFrameworksIterator.MoveNext();
                     packageSpecTargetFramework.SetupGet(m => m.FrameworkName)
@@ -117,7 +117,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _packageSpecMock.Setup(m => m.IsValid()).Returns(false);
             _projectMock.SetupGet(m => m.FullPath).Returns(_projectPath);
 
-            var exception = Assert.Throws<ReferencedPackageReaderException>(() =>
+            ReferencedPackageReaderException? exception = Assert.Throws<ReferencedPackageReaderException>(() =>
                 _uut.GetInstalledPackages(_projectPath, includeTransitive));
 
             Assert.AreEqual($"Failed to validate project assets for project {_projectPath}", exception!.Message);
@@ -129,7 +129,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             _lockFileMock.SetupGet(m => m.Targets).Returns((IEnumerable<ILockFileTarget>?)null);
 
-            var exception = Assert.Throws<ReferencedPackageReaderException>(() =>
+            ReferencedPackageReaderException? exception = Assert.Throws<ReferencedPackageReaderException>(() =>
                 _uut.GetInstalledPackages(_projectPath, includeTransitive));
 
             Assert.AreEqual($"Failed to validate project assets for project {_projectPath}", exception!.Message);
@@ -142,7 +142,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             _lockFileMock.SetupGet(m => m.Targets).Returns(Enumerable.Empty<ILockFileTarget>());
 
-            var exception = Assert.Throws<ReferencedPackageReaderException>(() =>
+            ReferencedPackageReaderException? exception = Assert.Throws<ReferencedPackageReaderException>(() =>
                 _uut.GetInstalledPackages(_projectPath, includeTransitive));
 
             Assert.AreEqual($"Failed to validate project assets for project {_projectPath}", exception!.Message);
@@ -154,7 +154,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             _packageSpecMock.SetupGet(m => m.TargetFrameworks)
                 .Returns(Enumerable.Empty<ITargetFrameworkInformation>());
-            var exception = Assert.Throws<ReferencedPackageReaderException>(() =>
+            ReferencedPackageReaderException? exception = Assert.Throws<ReferencedPackageReaderException>(() =>
                 _uut.GetInstalledPackages(_projectPath, false));
 
             Assert.AreEqual(
@@ -170,7 +170,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             _packageSpecMock.SetupGet(m => m.TargetFrameworks)
                 .Returns(Enumerable.Empty<ITargetFrameworkInformation>());
-            var result = _uut.GetInstalledPackages(_projectPath, true);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true);
             CollectionAssert.AreEquivalent(
                 _lockFileLibraries.Select(l =>
                     new PackageIdentity(l.Object.Name, l.Object.Version)),
@@ -197,7 +197,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Test]
         public void GetInstalledPackages_Should_ReturnCorrectValues_If_IncludingTransitive()
         {
-            var result = _uut.GetInstalledPackages(_projectPath, true);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true);
             CollectionAssert.AreEquivalent(
                 _lockFileLibraries.Select(l =>
                     new PackageIdentity(l.Object.Name, l.Object.Version)),
@@ -207,12 +207,12 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Test]
         public void GetInstalledPackages_Should_ReturnCorrectValues_If_NotIncludingTransitive()
         {
-            var result = _uut.GetInstalledPackages(_projectPath, false);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, false);
 
-            var expectedReferences = _packageReferencesFromProjectForFramework.SelectMany(p => p.Value)
+            PackageReference[] expectedReferences = _packageReferencesFromProjectForFramework.SelectMany(p => p.Value)
                 .Distinct()
                 .ToArray();
-            var expectedResult = _lockFileLibraries.Where(l =>
+            Mock<ILockFileLibrary>[] expectedResult = _lockFileLibraries.Where(l =>
                     expectedReferences.Any(e => e.PackageName.Equals(l.Object.Name)) &&
                     expectedReferences.Any(e => e.Version!.Equals(l.Object.Version)))
                 .ToArray();
@@ -225,13 +225,13 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Test]
         public void GetInstalledPackages_Should_ReturnCorrectValues_If_IncludingTransitive_if_IgnoringPackages()
         {
-            var ignoredPackageName = _lockFileLibraries!.Shuffle(6543154).First().Object.Name;
+            string ignoredPackageName = _lockFileLibraries!.Shuffle(6543154).First().Object.Name;
             _ignoredPackages = _ignoredPackages!.Append(ignoredPackageName);
 
             _uut = new ReferencedPackageReader(_ignoredPackages,
                 _msBuild.Object,
                 _lockFileFactory.Object);
-            var result = _uut.GetInstalledPackages(_projectPath, true);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true);
 
             CollectionAssert.AreEquivalent(
                 _lockFileLibraries.Where(l => l.Object.Name != ignoredPackageName)
@@ -243,21 +243,21 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Test]
         public void GetInstalledPackages_Should_ReturnCorrectValues_If_NotIncludingTransitive_If_IgnoringPackages()
         {
-            var directReferences = _packageReferencesFromProjectForFramework.SelectMany(p => p.Value)
+            PackageReference[] directReferences = _packageReferencesFromProjectForFramework.SelectMany(p => p.Value)
                 .Distinct()
                 .ToArray();
-            var directReferencesResult = _lockFileLibraries.Where(l =>
+            Mock<ILockFileLibrary>[] directReferencesResult = _lockFileLibraries.Where(l =>
                     directReferences.Any(e => e.PackageName.Equals(l.Object.Name)) &&
                     directReferences.Any(e => e.Version!.Equals(l.Object.Version)))
                 .ToArray();
 
-            var ignoredPackageName = directReferencesResult.Shuffle(9).First().Object.Name;
+            string ignoredPackageName = directReferencesResult.Shuffle(9).First().Object.Name;
             _ignoredPackages = _ignoredPackages!.Append(ignoredPackageName);
 
             _uut = new ReferencedPackageReader(_ignoredPackages,
                 _msBuild.Object,
                 _lockFileFactory.Object);
-            var result = _uut.GetInstalledPackages(_projectPath, false);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, false);
 
             CollectionAssert.AreEquivalent(
                 directReferencesResult.Where(l => l.Object.Name != ignoredPackageName)
@@ -272,7 +272,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             _projectMock.Setup(m => m.GetPackageReferenceCount()).Returns(0);
             _projectMock.Setup(m => m.GetEvaluatedIncludes()).Returns(Enumerable.Empty<string>());
-            var result = _uut.GetInstalledPackages(_projectPath, false);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, false);
 
             Assert.That(result.Count(), Is.EqualTo(0));
         }

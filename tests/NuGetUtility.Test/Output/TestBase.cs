@@ -55,8 +55,8 @@ namespace NuGetUtility.Test.Output
 
         private IEnumerable<ValidationError> GetErrorList(Faker faker)
         {
-            var itemCount = faker.Random.Int(3, 10);
-            for (var i = 0; i < itemCount; i++)
+            int itemCount = faker.Random.Int(3, 10);
+            for (int i = 0; i < itemCount; i++)
             {
                 yield return new ValidationError(faker.Name.FirstName(), faker.Internet.Url());
             }

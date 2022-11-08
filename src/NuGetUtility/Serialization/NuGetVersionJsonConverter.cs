@@ -8,8 +8,8 @@ namespace NuGetUtility.Serialization
     {
         public override INuGetVersion? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var stringVersion = JsonSerializer.Deserialize<string>(ref reader, options)!;
-            if (WrappedNuGetVersion.TryParse(stringVersion, out var version))
+            string stringVersion = JsonSerializer.Deserialize<string>(ref reader, options)!;
+            if (WrappedNuGetVersion.TryParse(stringVersion, out WrappedNuGetVersion? version))
             {
                 return version;
             }

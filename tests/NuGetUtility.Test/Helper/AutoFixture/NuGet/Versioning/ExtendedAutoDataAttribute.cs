@@ -13,7 +13,7 @@ namespace NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning
         {
             var fixture = new Fixture();
 
-            foreach (var customization in customizations)
+            foreach (System.Type customization in customizations)
             {
                 if (Activator.CreateInstance(customization) is ISpecimenBuilder builder)
                 {

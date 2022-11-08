@@ -21,8 +21,6 @@ namespace NuGetUtility
 {
     public class Program
     {
-        private HttpClient? _httpClient;
-
         [Option(ShortName = "i",
             LongName = "input",
             Description = "The project (or solution) file who's dependencies should be analyzed")]
@@ -79,35 +77,23 @@ namespace NuGetUtility
                 "If this option is set and there are license validation errors, only the errors are returned as result. Otherwise all validation results are always returned.")]
         public bool ReturnErrorsOnly { get; } = false;
 
-        private HttpClient HttpClient
-        {
-            get
-            {
-                if (_httpClient == null)
-                {
-                    _httpClient = new HttpClient();
-                }
-
-                return _httpClient;
-            }
-        }
-
         public static async Task Main(string[] args)
         {
             var lifetime = new AppLifetime();
-            var returnCode = await CommandLineApplication.ExecuteAsync<Program>(args, lifetime.Token);
+            int returnCode = await CommandLineApplication.ExecuteAsync<Program>(args, lifetime.Token);
             lifetime.Done(returnCode);
         }
 
         private async Task<int> OnExecuteAsync(CancellationToken cancellationToken)
         {
-            var inputFiles = GetInputFiles();
-            var ignoredPackages = GetIgnoredPackages();
-            var licenseMappings = GetLicenseMappings();
-            var allowedLicenses = GetAllowedLicenses();
-            var overridePackageInformation = GetOverridePackageInformation();
-            var urlLicenseFileDownloader = GetFileDownloader();
-            var output = GetOutputFormatter();
+            using var httpClient = new HttpClient();
+            IEnumerable<string> inputFiles = GetInputFiles();
+            IEnumerable<string> ignoredPackages = GetIgnoredPackages();
+            Dictionary<Uri, string> licenseMappings = GetLicenseMappings();
+            IEnumerable<string> allowedLicenses = GetAllowedLicenses();
+            IEnumerable<CustomPackageInformation> overridePackageInformation = GetOverridePackageInformation();
+            IFileDownloader urlLicenseFileDownloader = GetFileDownloader(httpClient);
+            IOutputFormatter output = GetOutputFormatter();
 
             var msBuild = new MsBuildAbstraction();
             var projectCollector = new ProjectsCollector(msBuild);
@@ -117,8 +103,8 @@ namespace NuGetUtility
                 urlLicenseFileDownloader);
             var projectReaderExceptions = new List<Exception>();
 
-            var projects = inputFiles.SelectMany(file => projectCollector.GetProjects(file));
-            var packagesForProject = projects.Select(p =>
+            IEnumerable<string> projects = inputFiles.SelectMany(file => projectCollector.GetProjects(file));
+            IEnumerable<ProjectWithReferencedPackages> packagesForProject = projects.Select(p =>
             {
                 IEnumerable<PackageIdentity>? installedPackages = null;
                 try
@@ -131,9 +117,9 @@ namespace NuGetUtility
                 }
                 return new ProjectWithReferencedPackages(p, installedPackages ?? Enumerable.Empty<PackageIdentity>());
             });
-            var downloadedLicenseInformation =
+            IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
                 packagesForProject.SelectMany(p => GetPackageInfos(p, overridePackageInformation, cancellationToken));
-            var results = await validator.Validate(downloadedLicenseInformation);
+            IEnumerable<LicenseValidationResult> results = await validator.Validate(downloadedLicenseInformation);
 
             if (projectReaderExceptions.Any())
             {
@@ -142,16 +128,16 @@ namespace NuGetUtility
                 return -1;
             }
 
-            await using var outputStream = Console.OpenStandardOutput();
+            await using Stream outputStream = Console.OpenStandardOutput();
             await output.Write(outputStream, results.OrderBy(r => r.PackageId).ToList());
             return 0;
         }
-        private IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfos(
+        private static IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfos(
             ProjectWithReferencedPackages projectWithReferences,
             IEnumerable<CustomPackageInformation> overridePackageInformation,
             CancellationToken cancellation)
         {
-            var settings = Settings.LoadDefaultSettings(projectWithReferences.Project);
+            ISettings settings = Settings.LoadDefaultSettings(projectWithReferences.Project);
             var sourceProvider = new PackageSourceProvider(settings);
 
             using var sourceRepositoryProvider = new WrappedSourceRepositoryProvider(new SourceRepositoryProvider(sourceProvider, Repository.Provider.GetCoreV3()));
@@ -172,7 +158,7 @@ namespace NuGetUtility
             };
         }
 
-        private IFileDownloader GetFileDownloader()
+        private IFileDownloader GetFileDownloader(HttpClient httpClient)
         {
             if (DownloadLicenseInformation == null)
             {
@@ -184,12 +170,12 @@ namespace NuGetUtility
                 Directory.CreateDirectory(DownloadLicenseInformation);
             }
 
-            return new FileDownloader(HttpClient, DownloadLicenseInformation);
+            return new FileDownloader(httpClient, DownloadLicenseInformation);
         }
 
         private static async Task WriteValidationExceptions(List<Exception> validationExceptions)
         {
-            foreach (var exception in validationExceptions)
+            foreach (Exception exception in validationExceptions)
             {
                 await Console.Error.WriteLineAsync(exception.ToString());
             }

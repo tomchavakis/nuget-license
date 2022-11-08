@@ -24,7 +24,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
         {
             try
             {
-                var result = await _metadataResource.GetMetadataAsync(new NuGet.Packaging.Core.PackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString())),
+                IPackageSearchMetadata result = await _metadataResource.GetMetadataAsync(new NuGet.Packaging.Core.PackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString())),
                     _cacheContext,
                     new NullLogger(),
                     cancellationToken);

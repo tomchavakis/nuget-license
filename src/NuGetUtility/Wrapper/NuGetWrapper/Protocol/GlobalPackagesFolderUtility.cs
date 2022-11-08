@@ -18,13 +18,13 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 
         public IWrappedPackageMetadata? GetPackage(PackageIdentity identity)
         {
-            var cachedPackage = NuGet.Protocol.GlobalPackagesFolderUtility.GetPackage(new OriginalPackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString())), _globalPackagesFolder);
+            NuGet.Protocol.Core.Types.DownloadResourceResult cachedPackage = NuGet.Protocol.GlobalPackagesFolderUtility.GetPackage(new OriginalPackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString())), _globalPackagesFolder);
             if (cachedPackage == null)
             {
                 return null;
             }
 
-            using var pkgStream = cachedPackage.PackageReader;
+            using PackageReaderBase pkgStream = cachedPackage.PackageReader;
             var manifest = Manifest.ReadFrom(pkgStream.GetNuspec(), true);
 
             if (manifest.Metadata.Version.ToString() != identity.Version.ToString())

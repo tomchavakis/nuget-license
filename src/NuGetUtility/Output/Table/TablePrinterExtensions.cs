@@ -15,7 +15,7 @@ namespace NuGetUtility.Output.Table
             IEnumerable<T> values,
             Func<T, IEnumerable<object?>> formatter)
         {
-            foreach (var value in values)
+            foreach (T? value in values)
             {
                 printer.AddRow(formatter(value).ToArray());
             }

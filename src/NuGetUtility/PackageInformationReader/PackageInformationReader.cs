@@ -25,9 +25,9 @@ namespace NuGetUtility.PackageInformationReader
             ProjectWithReferencedPackages projectWithReferencedPackages,
             [EnumeratorCancellation] CancellationToken cancellation)
         {
-            foreach (var package in projectWithReferencedPackages.ReferencedPackages)
+            foreach (PackageIdentity package in projectWithReferencedPackages.ReferencedPackages)
             {
-                var result = TryGetPackageInfoFromCustomInformation(package);
+                PackageSearchResult result = TryGetPackageInfoFromCustomInformation(package);
                 if (result.Success)
                 {
                     yield return new ReferencedPackageWithContext(projectWithReferencedPackages.Project, result.Metadata!);
@@ -51,7 +51,7 @@ namespace NuGetUtility.PackageInformationReader
         }
         private PackageSearchResult TryGetPackageInformationFromGlobalPackageFolder(PackageIdentity package)
         {
-            var metadata = _globalPackagesFolderUtility.GetPackage(package);
+            IPackageMetadata? metadata = _globalPackagesFolderUtility.GetPackage(package);
             if (metadata != null)
             {
                 return new PackageSearchResult(metadata);
@@ -64,15 +64,15 @@ namespace NuGetUtility.PackageInformationReader
             PackageIdentity package,
             CancellationToken cancellation)
         {
-            foreach (var repository in cachedRepositories)
+            foreach (ISourceRepository repository in cachedRepositories)
             {
-                var resource = await TryGetPackageMetadataResource(repository);
+                IPackageMetadataResource? resource = await TryGetPackageMetadataResource(repository);
                 if (resource == null)
                 {
                     continue;
                 }
 
-                var updatedPackageMetadata = await resource.TryGetMetadataAsync(package, cancellation);
+                IPackageMetadata? updatedPackageMetadata = await resource.TryGetMetadataAsync(package, cancellation);
 
                 if (updatedPackageMetadata != null)
                 {
@@ -85,7 +85,7 @@ namespace NuGetUtility.PackageInformationReader
 
         private PackageSearchResult TryGetPackageInfoFromCustomInformation(PackageIdentity package)
         {
-            var resolvedCustomInformation = _customPackageInformation.FirstOrDefault(info =>
+            CustomPackageInformation resolvedCustomInformation = _customPackageInformation.FirstOrDefault(info =>
                 info.Id.Equals(package.Id) && info.Version.Equals(package.Version));
             if (resolvedCustomInformation == default)
             {

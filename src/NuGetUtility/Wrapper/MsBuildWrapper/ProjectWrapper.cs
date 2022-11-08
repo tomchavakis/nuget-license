@@ -18,7 +18,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
         public string GetAssetsPath()
         {
-            var assetsFile = _project.GetPropertyValue(ProjectAssetsFile);
+            string assetsFile = _project.GetPropertyValue(ProjectAssetsFile);
             if (!File.Exists(assetsFile))
             {
                 throw new MsBuildAbstractionException(

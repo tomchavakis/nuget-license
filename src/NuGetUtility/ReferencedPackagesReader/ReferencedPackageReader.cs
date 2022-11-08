@@ -23,7 +23,7 @@ namespace NuGetUtility.ReferencedPackagesReader
 
         public IEnumerable<PackageIdentity> GetInstalledPackages(string projectPath, bool includeTransitive)
         {
-            var project = _msBuild.GetProject(projectPath);
+            IProject project = _msBuild.GetProject(projectPath);
 
             if (!project.HasNugetPackagesReferenced() && !includeTransitive)
             {
@@ -36,13 +36,13 @@ namespace NuGetUtility.ReferencedPackagesReader
         private IEnumerable<PackageIdentity> GetInstalledPackagesFromAssetsFile(bool includeTransitive,
             IProject project)
         {
-            var assetsFile = LoadAssetsFile(project);
+            ILockFile assetsFile = LoadAssetsFile(project);
 
             var referencedLibraries = new HashSet<ILockFileLibrary>();
 
-            foreach (var target in assetsFile.Targets!)
+            foreach (ILockFileTarget target in assetsFile.Targets!)
             {
-                var referencedLibrariesForTarget =
+                IEnumerable<ILockFileLibrary> referencedLibrariesForTarget =
                     GetReferencedLibrariesForTarget(project, includeTransitive, assetsFile, target);
                 referencedLibraries.AddRange(referencedLibrariesForTarget);
             }
@@ -56,12 +56,12 @@ namespace NuGetUtility.ReferencedPackagesReader
             ILockFile assetsFile,
             ILockFileTarget target)
         {
-            var referencedLibrariesForTarget = assetsFile.Libraries.Where(l => l.Type != ProjectReferenceIdentifier);
+            IEnumerable<ILockFileLibrary> referencedLibrariesForTarget = assetsFile.Libraries.Where(l => l.Type != ProjectReferenceIdentifier);
 
             if (!includeTransitive)
             {
-                var targetFrameworkInformation = GetTargetFrameworkInformation(target, assetsFile);
-                var directlyReferencedPackages = _msBuild.GetPackageReferencesFromProjectForFramework(project,
+                ITargetFrameworkInformation targetFrameworkInformation = GetTargetFrameworkInformation(target, assetsFile);
+                IEnumerable<PackageReference> directlyReferencedPackages = _msBuild.GetPackageReferencesFromProjectForFramework(project,
                     targetFrameworkInformation.FrameworkName.ToString()!);
 
                 referencedLibrariesForTarget =
@@ -102,8 +102,8 @@ namespace NuGetUtility.ReferencedPackagesReader
 
         private ILockFile LoadAssetsFile(IProject project)
         {
-            var assetsPath = project.GetAssetsPath();
-            var assetsFile = _lockFileFactory.GetFromFile(assetsPath);
+            string assetsPath = project.GetAssetsPath();
+            ILockFile assetsFile = _lockFileFactory.GetFromFile(assetsPath);
 
             if (!assetsFile.PackageSpec.IsValid() || !(assetsFile.Targets?.Any() ?? false))
             {

@@ -13,7 +13,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 
         public void Dispose()
         {
-            foreach (var repository in _repositories)
+            foreach (IDisposableSourceRepository repository in _repositories)
             {
                 repository.Dispose();
             }

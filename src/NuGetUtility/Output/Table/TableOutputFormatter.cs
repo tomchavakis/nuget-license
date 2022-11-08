@@ -13,7 +13,7 @@ namespace NuGetUtility.Output.Table
         public async Task Write(Stream stream, IList<LicenseValidationResult> results)
         {
             var errorColumnDefinition = new ColumnDefinition("Error", license => license.ValidationErrors.Select(e => e.Error), license => license.ValidationErrors.Any());
-            var columnDefinitions = new[]
+            ColumnDefinition[] columnDefinitions = new[]
             {
                 new ColumnDefinition("Package", license => license.PackageId, license => true, true),
                 new ColumnDefinition("Version", license => license.PackageVersion, license => true, true),
@@ -24,9 +24,9 @@ namespace NuGetUtility.Output.Table
                 new ColumnDefinition("Error Context", license => license.ValidationErrors.Select(e => e.Context), license => license.ValidationErrors.Any()),
             };
 
-            foreach (var license in results)
+            foreach (LicenseValidationResult license in results)
             {
-                foreach (var definition in columnDefinitions)
+                foreach (ColumnDefinition? definition in columnDefinitions)
                 {
                     definition.Enabled |= definition.IsRelevant(license);
                 }
@@ -37,7 +37,7 @@ namespace NuGetUtility.Output.Table
                 results = results.Where(r => r.ValidationErrors.Any()).ToList();
             }
 
-            var relevantColumns = columnDefinitions.Where(c => c.Enabled).ToArray();
+            ColumnDefinition[] relevantColumns = columnDefinitions.Where(c => c.Enabled).ToArray();
             await TablePrinterExtensions
                 .Create(stream, relevantColumns.Select(d => d.Title))
                 .FromValues(
