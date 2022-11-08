@@ -133,7 +133,7 @@ namespace NuGetUtility
             }
 
             await using Stream outputStream = Console.OpenStandardOutput();
-            await output.Write(outputStream, results.OrderBy(r => r.PackageId).ToList());
+            await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
             return 0;
         }
         private static IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfos(

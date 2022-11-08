@@ -24,7 +24,7 @@ namespace NuGetUtility.Output.Json
         {
             if (_printErrorsOnly)
             {
-                var resultsWithErrors = results.Where(r => r.ValidationErrors.Any());
+                IEnumerable<LicenseValidationResult> resultsWithErrors = results.Where(r => r.ValidationErrors.Any());
                 if (resultsWithErrors.Any())
                 {
                     await JsonSerializer.SerializeAsync(stream, resultsWithErrors, _options);
