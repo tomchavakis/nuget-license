@@ -3,23 +3,29 @@ using NuGetUtility.Output.Json;
 
 namespace NuGetUtility.Test.Output.Json
 {
-
-    [TestFixture(false, false)]
-    [TestFixture(true, false)]
-    [TestFixture(false, true)]
-    [TestFixture(true, true)]
+    [TestFixture(false, false, false)]
+    [TestFixture(true, false, false)]
+    [TestFixture(false, true, false)]
+    [TestFixture(true, true, false)]
+    [TestFixture(false, false, true)]
+    [TestFixture(true, false, true)]
+    [TestFixture(false, true, true)]
+    [TestFixture(true, true, true)]
     public class JsonOutputFormatterTest : TestBase
     {
         private readonly bool _prettyPrint;
         private readonly bool _omitValidLicensesOnError;
-        public JsonOutputFormatterTest(bool prettyPrint, bool omitValidLicensesOnError)
+        private readonly bool _skipIgnoredPackages;
+
+        public JsonOutputFormatterTest(bool prettyPrint, bool omitValidLicensesOnError, bool skipIgnoredPackages)
         {
             _prettyPrint = prettyPrint;
             _omitValidLicensesOnError = omitValidLicensesOnError;
+            _skipIgnoredPackages = skipIgnoredPackages;
         }
         protected override IOutputFormatter CreateUut()
         {
-            return new JsonOutputFormatter(_prettyPrint, _omitValidLicensesOnError);
+            return new JsonOutputFormatter(_prettyPrint, _omitValidLicensesOnError, _skipIgnoredPackages);
         }
     }
 }

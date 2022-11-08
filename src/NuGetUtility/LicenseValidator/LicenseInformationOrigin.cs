@@ -4,6 +4,7 @@
     {
         Expression,
         Url,
-        Unknown
+        Unknown,
+        Ignored
     }
 }

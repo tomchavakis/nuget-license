@@ -3,18 +3,23 @@ using NuGetUtility.Output.Table;
 
 namespace NuGetUtility.Test.Output.Table
 {
-    [TestFixture(false)]
-    [TestFixture(true)]
+    [TestFixture(false, false)]
+    [TestFixture(false, true)]
+    [TestFixture(true, false)]
+    [TestFixture(true, true)]
     public class TableOutputFormatterTest : TestBase
     {
         private readonly bool _omitValidLicensesOnError;
-        public TableOutputFormatterTest(bool omitValidLicensesOnError)
+        private readonly bool _skipIgnoredPackages;
+
+        public TableOutputFormatterTest(bool omitValidLicensesOnError, bool skipIgnoredPackages)
         {
             _omitValidLicensesOnError = omitValidLicensesOnError;
+            _skipIgnoredPackages = skipIgnoredPackages;
         }
         protected override IOutputFormatter CreateUut()
         {
-            return new TableOutputFormatter(_omitValidLicensesOnError);
+            return new TableOutputFormatter(_omitValidLicensesOnError, _skipIgnoredPackages);
         }
     }
 }

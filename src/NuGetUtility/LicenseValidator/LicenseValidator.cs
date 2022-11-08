@@ -1,8 +1,10 @@
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 
 namespace NuGetUtility.LicenseValidator
 {
@@ -10,15 +12,18 @@ namespace NuGetUtility.LicenseValidator
     {
         private readonly IEnumerable<string> _allowedLicenses;
         private readonly IFileDownloader _fileDownloader;
+        private readonly string[] _ignoredPackages;
         private readonly Dictionary<Uri, string> _licenseMapping;
 
         public LicenseValidator(Dictionary<Uri, string> licenseMapping,
             IEnumerable<string> allowedLicenses,
-            IFileDownloader fileDownloader)
+            IFileDownloader fileDownloader,
+            string[] ignoredPackages)
         {
             _licenseMapping = licenseMapping;
             _allowedLicenses = allowedLicenses;
             _fileDownloader = fileDownloader;
+            _ignoredPackages = ignoredPackages;
         }
 
         public async Task<IEnumerable<LicenseValidationResult>> Validate(
@@ -27,6 +32,12 @@ namespace NuGetUtility.LicenseValidator
             var result = new ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult>();
             await foreach (ReferencedPackageWithContext info in packages)
             {
+                if (IsIgnoredPackage(info.PackageInfo.Identity))
+                {
+                    AddOrUpdateLicense(result,
+                        info.PackageInfo,
+                        LicenseInformationOrigin.Ignored);
+                }
                 if (info.PackageInfo.LicenseMetadata != null)
                 {
                     ValidateLicenseByMetadata(info.PackageInfo, info.Context, result);
@@ -44,6 +55,11 @@ namespace NuGetUtility.LicenseValidator
                 }
             }
             return result.Values;
+        }
+
+        private bool IsIgnoredPackage(PackageIdentity identity)
+        {
+            return _ignoredPackages.Any(ignored => Regex.IsMatch(identity.Id, ignored));
         }
 
         private void AddOrUpdateLicense(

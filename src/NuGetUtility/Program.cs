@@ -45,8 +45,7 @@ namespace NuGetUtility
 
         [Option(LongName = "ignored-packages",
             ShortName = "ignore",
-            Description =
-                "File in json format that contains an array of nuget package names to completely ignore (e.g. useful for nuget packages built in-house. Note that even though the packages are ignored, their transitive dependencies are not.")]
+            Description = "File in json format that contains an array of nuget package names (as regex patterns) to ignore (e.g. useful for nuget packages built in-house. Note that even though the packages are ignored, their transitive dependencies are not.")]
         public string? IgnoredPackages { get; } = null;
 
         [Option(LongName = "licenseurl-to-license-mappings",
@@ -73,9 +72,13 @@ namespace NuGetUtility
 
         [Option(LongName = "error-only",
             ShortName = "err",
-            Description =
-                "If this option is set and there are license validation errors, only the errors are returned as result. Otherwise all validation results are always returned.")]
+            Description = "If this option is set and there are license validation errors, only the errors are returned as result. Otherwise all validation results are always returned.")]
         public bool ReturnErrorsOnly { get; } = false;
+
+        [Option(LongName = "skip_ignored",
+            ShortName = "skip",
+            Description = "If this option is set, the packages matching the ignore regexes are not printed to the output.")]
+        public bool SkipIgnoredPackages { get; } = false;
 
         public static async Task Main(string[] args)
         {
@@ -87,20 +90,21 @@ namespace NuGetUtility
         private async Task<int> OnExecuteAsync(CancellationToken cancellationToken)
         {
             using var httpClient = new HttpClient();
-            IEnumerable<string> inputFiles = GetInputFiles();
-            IEnumerable<string> ignoredPackages = GetIgnoredPackages();
+            string[] inputFiles = GetInputFiles();
+            string[] ignoredPackages = GetIgnoredPackages();
             Dictionary<Uri, string> licenseMappings = GetLicenseMappings();
-            IEnumerable<string> allowedLicenses = GetAllowedLicenses();
-            IEnumerable<CustomPackageInformation> overridePackageInformation = GetOverridePackageInformation();
+            string[] allowedLicenses = GetAllowedLicenses();
+            CustomPackageInformation[] overridePackageInformation = GetOverridePackageInformation();
             IFileDownloader urlLicenseFileDownloader = GetFileDownloader(httpClient);
             IOutputFormatter output = GetOutputFormatter();
 
             var msBuild = new MsBuildAbstraction();
             var projectCollector = new ProjectsCollector(msBuild);
-            var projectReader = new ReferencedPackageReader(ignoredPackages, msBuild, new LockFileFactory());
+            var projectReader = new ReferencedPackageReader(msBuild, new LockFileFactory());
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicenses,
-                urlLicenseFileDownloader);
+                urlLicenseFileDownloader,
+                ignoredPackages);
             var projectReaderExceptions = new List<Exception>();
 
             IEnumerable<string> projects = inputFiles.SelectMany(file => projectCollector.GetProjects(file));
@@ -151,9 +155,9 @@ namespace NuGetUtility
         {
             return OutputType switch
             {
-                OutputType.Json => new JsonOutputFormatter(false, ReturnErrorsOnly),
-                OutputType.JsonPretty => new JsonOutputFormatter(true, ReturnErrorsOnly),
-                OutputType.Table => new TableOutputFormatter(ReturnErrorsOnly),
+                OutputType.Json => new JsonOutputFormatter(false, ReturnErrorsOnly, SkipIgnoredPackages),
+                OutputType.JsonPretty => new JsonOutputFormatter(true, ReturnErrorsOnly, SkipIgnoredPackages),
+                OutputType.Table => new TableOutputFormatter(ReturnErrorsOnly, SkipIgnoredPackages),
                 _ => throw new ArgumentOutOfRangeException($"{OutputType} not supported")
             };
         }
@@ -181,28 +185,26 @@ namespace NuGetUtility
             }
         }
 
-        private IEnumerable<CustomPackageInformation> GetOverridePackageInformation()
+        private CustomPackageInformation[] GetOverridePackageInformation()
         {
             if (OverridePackageInformation == null)
             {
-                return Enumerable.Empty<CustomPackageInformation>();
+                return Array.Empty<CustomPackageInformation>();
             }
 
             var serializerOptions = new JsonSerializerOptions();
             serializerOptions.Converters.Add(new NuGetVersionJsonConverter());
-            return JsonSerializer.Deserialize<IEnumerable<CustomPackageInformation>>(
-                File.ReadAllText(OverridePackageInformation),
-                serializerOptions)!;
+            return JsonSerializer.Deserialize<CustomPackageInformation[]>(File.ReadAllText(OverridePackageInformation),serializerOptions)!;
         }
 
-        private IEnumerable<string> GetAllowedLicenses()
+        private string[] GetAllowedLicenses()
         {
             if (AllowedLicenses == null)
             {
-                return Enumerable.Empty<string>();
+                return Array.Empty<string>();
             }
 
-            return JsonSerializer.Deserialize<IEnumerable<string>>(File.ReadAllText(AllowedLicenses))!;
+            return JsonSerializer.Deserialize<string[]>(File.ReadAllText(AllowedLicenses))!;
         }
 
         private Dictionary<Uri, string> GetLicenseMappings()
@@ -214,21 +216,20 @@ namespace NuGetUtility
 
             var serializerOptions = new JsonSerializerOptions();
             serializerOptions.Converters.Add(new UriDictionaryJsonConverter<string>());
-            return JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping),
-                serializerOptions)!;
+            return JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping), serializerOptions)!;
         }
 
-        private IEnumerable<string> GetIgnoredPackages()
+        private string[] GetIgnoredPackages()
         {
             if (IgnoredPackages == null)
             {
-                return Enumerable.Empty<string>();
+                return Array.Empty<string>();
             }
 
-            return JsonSerializer.Deserialize<IEnumerable<string>>(File.ReadAllText(IgnoredPackages))!;
+            return JsonSerializer.Deserialize<string[]>(File.ReadAllText(IgnoredPackages))!;
         }
 
-        private IEnumerable<string> GetInputFiles()
+        private string[] GetInputFiles()
         {
             if (InputFile != null)
             {
@@ -237,7 +238,7 @@ namespace NuGetUtility
 
             if (InputJsonFile != null)
             {
-                return JsonSerializer.Deserialize<IEnumerable<string>>(File.ReadAllText(InputJsonFile))!;
+                return JsonSerializer.Deserialize<string[]>(File.ReadAllText(InputJsonFile))!;
             }
 
             throw new FileNotFoundException("Please provide an input file");

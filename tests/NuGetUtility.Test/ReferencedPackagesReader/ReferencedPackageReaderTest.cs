@@ -19,7 +19,6 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             var fixture = new Fixture();
             fixture.Customizations.Add(new MockBuilder());
-            _ignoredPackages = fixture.CreateMany<string>();
             _msBuild = new Mock<IMsBuildAbstraction>();
             _lockFileFactory = new Mock<ILockFileFactory>();
             _projectPath = fixture.Create<string>();
@@ -89,14 +88,11 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 }
             }
 
-            _uut = new ReferencedPackageReader(_ignoredPackages,
-                _msBuild.Object,
-                _lockFileFactory.Object);
+            _uut = new ReferencedPackageReader(_msBuild.Object, _lockFileFactory.Object);
         }
 
         private const int TargetFrameworkCount = 5;
         private ReferencedPackageReader _uut = null!;
-        private IEnumerable<string> _ignoredPackages = null!;
         private Mock<IMsBuildAbstraction> _msBuild = null!;
         private Mock<ILockFileFactory> _lockFileFactory = null!;
         private string _projectPath = null!;
@@ -219,50 +215,6 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             CollectionAssert.AreEquivalent(
                 expectedResult.Select(l =>
                     new PackageIdentity(l.Object.Name, l.Object.Version)),
-                result);
-        }
-
-        [Test]
-        public void GetInstalledPackages_Should_ReturnCorrectValues_If_IncludingTransitive_if_IgnoringPackages()
-        {
-            string ignoredPackageName = _lockFileLibraries!.Shuffle(6543154).First().Object.Name;
-            _ignoredPackages = _ignoredPackages!.Append(ignoredPackageName);
-
-            _uut = new ReferencedPackageReader(_ignoredPackages,
-                _msBuild.Object,
-                _lockFileFactory.Object);
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true);
-
-            CollectionAssert.AreEquivalent(
-                _lockFileLibraries.Where(l => l.Object.Name != ignoredPackageName)
-                    .Select(l =>
-                        new PackageIdentity(l.Object.Name, l.Object.Version)),
-                result);
-        }
-
-        [Test]
-        public void GetInstalledPackages_Should_ReturnCorrectValues_If_NotIncludingTransitive_If_IgnoringPackages()
-        {
-            PackageReference[] directReferences = _packageReferencesFromProjectForFramework.SelectMany(p => p.Value)
-                .Distinct()
-                .ToArray();
-            Mock<ILockFileLibrary>[] directReferencesResult = _lockFileLibraries.Where(l =>
-                    directReferences.Any(e => e.PackageName.Equals(l.Object.Name)) &&
-                    directReferences.Any(e => e.Version!.Equals(l.Object.Version)))
-                .ToArray();
-
-            string ignoredPackageName = directReferencesResult.Shuffle(9).First().Object.Name;
-            _ignoredPackages = _ignoredPackages!.Append(ignoredPackageName);
-
-            _uut = new ReferencedPackageReader(_ignoredPackages,
-                _msBuild.Object,
-                _lockFileFactory.Object);
-            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, false);
-
-            CollectionAssert.AreEquivalent(
-                directReferencesResult.Where(l => l.Object.Name != ignoredPackageName)
-                    .Select(l =>
-                        new PackageIdentity(l.Object.Name, l.Object.Version)),
                 result);
         }
 

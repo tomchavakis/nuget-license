@@ -1,0 +1,18 @@
+﻿+-----------------------------------+---------+----------------------------+-------------------------------------------------------------------------------------------------+-----------------------+
+| Package                           | Version | License Information Origin | License Expression                                                                              | Package Project Url   |
++-----------------------------------+---------+----------------------------+-------------------------------------------------------------------------------------------------+-----------------------+
+| International Mobility Technician | 3.7.5   | Expression                 | I'll override the digital SMTP interface, that should interface the SMTP interface!             | https://jayne.name    |
+| Future Identity Specialist        | 4.7.4   | Expression                 | If we back up the driver, we can get to the AI driver through the bluetooth AI driver!          | http://della.biz      |
+| Forward Functionality Designer    | 5.5.7   | Expression                 | Use the redundant AGP monitor, then you can generate the redundant monitor!                     | https://jasen.biz     |
+| National Assurance Representative | 2.0.7   | Expression                 | transmitting the capacitor won't do anything, we need to synthesize the back-end RAM capacitor! | http://kelley.com     |
+| National Tactics Liaison          | 6.8.9   | Unknown                    | hacking the capacitor won't do anything, we need to compress the digital AGP capacitor!         | http://jillian.net    |
+| Global Implementation Engineer    | 6.0.7   | Expression                 | I'll calculate the 1080p HDD system, that should system the HDD system!                         | http://antonette.org  |
+| Forward Integration Executive     | 6.6.8   | Expression                 | You can't index the protocol without indexing the open-source XML protocol!                     | http://grayce.info    |
+| Customer Infrastructure Planner   | 6.6.0   | Url                        | If we program the pixel, we can get to the SMS pixel through the neural SMS pixel!              | https://laurie.biz    |
+| Customer Research Associate       | 4.6.5   | Url                        | I'll navigate the neural SAS card, that should card the SAS card!                               | http://wilmer.name    |
+| Central Creative Manager          | 8.4.8   | Expression                 | Use the cross-platform THX system, then you can generate the cross-platform system!             | https://carleton.info |
+| Corporate Marketing Associate     | 3.3.2   | Expression                 | I'll program the auxiliary XSS bus, that should bus the XSS bus!                                | http://nash.name      |
+| District Intranet Strategist      | 2.2.2   | Unknown                    | We need to reboot the virtual RSS alarm!                                                        | http://everett.name   |
+| Customer Assurance Officer        | 0.3.1   | Url                        | Try to override the EXE program, maybe it will override the mobile program!                     | https://kyla.biz      |
+| Chief Integration Architect       | 1.6.8   | Url                        | Try to override the TCP firewall, maybe it will override the solid state firewall!              | https://davion.net    |
++-----------------------------------+---------+----------------------------+-------------------------------------------------------------------------------------------------+-----------------------+

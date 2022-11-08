@@ -8,15 +8,12 @@ namespace NuGetUtility.ReferencedPackagesReader
     public class ReferencedPackageReader
     {
         private const string ProjectReferenceIdentifier = "project";
-        private readonly IEnumerable<string> _ignoredPackages;
         private readonly ILockFileFactory _lockFileFactory;
         private readonly IMsBuildAbstraction _msBuild;
 
-        public ReferencedPackageReader(IEnumerable<string> ignoredPackages,
-            IMsBuildAbstraction msBuild,
+        public ReferencedPackageReader(IMsBuildAbstraction msBuild,
             ILockFileFactory lockFileFactory)
         {
-            _ignoredPackages = ignoredPackages;
             _msBuild = msBuild;
             _lockFileFactory = lockFileFactory;
         }
@@ -47,8 +44,7 @@ namespace NuGetUtility.ReferencedPackagesReader
                 referencedLibraries.AddRange(referencedLibrariesForTarget);
             }
 
-            return referencedLibraries.Where(IsNotIgnoredPackage)
-                .Select(r => new PackageIdentity(r.Name, r.Version));
+            return referencedLibraries.Select(r => new PackageIdentity(r.Name, r.Version));
         }
 
         private IEnumerable<ILockFileLibrary> GetReferencedLibrariesForTarget(IProject project,
@@ -69,11 +65,6 @@ namespace NuGetUtility.ReferencedPackagesReader
             }
 
             return referencedLibrariesForTarget;
-        }
-
-        private bool IsNotIgnoredPackage(ILockFileLibrary packageInfo)
-        {
-            return !_ignoredPackages.Any(p => p.Equals(packageInfo.Name));
         }
 
         private bool IsDirectlyReferenced(ILockFileLibrary library,

@@ -11,9 +11,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [SetUp]
         public void SetUp()
         {
-            _uut = new ReferencedPackageReader(Enumerable.Empty<string>(),
-                new MsBuildAbstraction(),
-                new LockFileFactory());
+            _uut = new ReferencedPackageReader(new MsBuildAbstraction(), new LockFileFactory());
         }
 
         private ReferencedPackageReader? _uut;
