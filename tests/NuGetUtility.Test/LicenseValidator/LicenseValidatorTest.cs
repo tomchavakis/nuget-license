@@ -83,6 +83,179 @@ namespace NuGetUtility.Test.LicenseValidator
 
         [Test]
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicenses_Should_IgnorePackage_If_PackageNameMatchesExactly(
+            string packageId,
+            INuGetVersion packageVersion)
+        {
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
+                new string[] { },
+                _fileDownloader.Object,
+                _ignoredLicenses.Append(packageId).ToArray());
+
+            Mock<IPackageMetadata> package = SetupPackage(packageId, packageVersion);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            null,
+                            LicenseInformationOrigin.Ignored)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicenses_Should_NotIgnorePackage_If_PackageNameDoesNotMatchExactly(
+            string packageId,
+            INuGetVersion packageVersion,
+            string license)
+        {
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
+                new string[] { },
+                _fileDownloader.Object,
+                _ignoredLicenses.Append(packageId.Substring(1)).ToArray());
+
+            Mock<IPackageMetadata> package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, license);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            license,
+                            LicenseInformationOrigin.Expression)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedInlineAutoData(typeof(NuGetVersionBuilder), 1)]
+        [ExtendedInlineAutoData(typeof(NuGetVersionBuilder), 5)]
+        [ExtendedInlineAutoData(typeof(NuGetVersionBuilder), int.MaxValue)]
+        public async Task ValidatingLicenses_Should_IgnorePackage_If_IgnoreWildcardMatches_If_WildcardMatchesStart(
+            int matchedCharacters,
+            string packageId,
+            INuGetVersion packageVersion)
+        {
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
+                new string[] { },
+                _fileDownloader.Object,
+                _ignoredLicenses.Append($"*{packageId.Substring(Math.Min(matchedCharacters, packageId.Length))}").ToArray());
+
+            Mock<IPackageMetadata> package = SetupPackage(packageId, packageVersion);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            null,
+                            LicenseInformationOrigin.Ignored)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedInlineAutoData(typeof(NuGetVersionBuilder), 0)]
+        [ExtendedInlineAutoData(typeof(NuGetVersionBuilder), 1)]
+        [ExtendedInlineAutoData(typeof(NuGetVersionBuilder), 5)]
+        public async Task ValidatingLicenses_Should_IgnorePackage_If_IgnoreWildcardMatches_If_WildcardMatchesEnd(
+            int remainingCharacters,
+            string packageId,
+            INuGetVersion packageVersion)
+        {
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
+                new string[] { },
+                _fileDownloader.Object,
+                _ignoredLicenses.Append($"{packageId.Substring(0, remainingCharacters)}*").ToArray());
+
+            Mock<IPackageMetadata> package = SetupPackage(packageId, packageVersion);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            null,
+                            LicenseInformationOrigin.Ignored)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedInlineAutoData(typeof(NuGetVersionBuilder), 1, 2)]
+        [ExtendedInlineAutoData(typeof(NuGetVersionBuilder), 1, 5)]
+        [ExtendedInlineAutoData(typeof(NuGetVersionBuilder), 5, 10)]
+        public async Task ValidatingLicenses_Should_IgnorePackage_If_IgnoreWildcardMatches_If_WildcardMatchesMiddle(
+            int wildcardMatchStartIndex,
+            int wildcardMatchEndIndex,
+            string packageId,
+            INuGetVersion packageVersion)
+        {
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
+                new string[] { },
+                _fileDownloader.Object,
+                _ignoredLicenses.Append($"{packageId.Substring(0, wildcardMatchStartIndex)}*{packageId.Substring(wildcardMatchEndIndex)}").ToArray());
+
+            Mock<IPackageMetadata> package = SetupPackage(packageId, packageVersion);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            null,
+                            LicenseInformationOrigin.Ignored)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicenses_Should_IgnorePackage_If_IgnoreWildcardMatches_If_MultipleWildcards(
+            string packageId,
+            INuGetVersion packageVersion)
+        {
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
+                new string[] { },
+                _fileDownloader.Object,
+                _ignoredLicenses.Append($"*{packageId.Substring(2, 5)}*{packageId.Substring(10, 2)}*").ToArray());
+
+            Mock<IPackageMetadata> package = SetupPackage(packageId, packageVersion);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            null,
+                            LicenseInformationOrigin.Ignored)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithProperLicenseInformation_Should_GiveCorrectValidatedLicenseList(
             string packageId,
             INuGetVersion packageVersion,

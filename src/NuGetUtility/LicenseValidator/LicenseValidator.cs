@@ -1,3 +1,4 @@
+using NuGetUtility.Extensions;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
@@ -38,7 +39,7 @@ namespace NuGetUtility.LicenseValidator
                         info.PackageInfo,
                         LicenseInformationOrigin.Ignored);
                 }
-                if (info.PackageInfo.LicenseMetadata != null)
+                else if (info.PackageInfo.LicenseMetadata != null)
                 {
                     ValidateLicenseByMetadata(info.PackageInfo, info.Context, result);
                 }
@@ -59,7 +60,7 @@ namespace NuGetUtility.LicenseValidator
 
         private bool IsIgnoredPackage(PackageIdentity identity)
         {
-            return _ignoredPackages.Any(ignored => Regex.IsMatch(identity.Id, ignored));
+            return _ignoredPackages.Any(ignored => identity.Id.Like(ignored));
         }
 
         private void AddOrUpdateLicense(

@@ -1,24 +1,14 @@
 ﻿using AutoFixture;
-using AutoFixture.Kernel;
 using AutoFixture.NUnit3;
+using NuGetUtility.Test.Extensions;
 
 namespace NuGetUtility.Test.Helper.AutoFixture.NuGet.Versioning
 {
     public class ExtendedInlineAutoDataAttribute : InlineAutoDataAttribute
     {
         public ExtendedInlineAutoDataAttribute(System.Type customization, params object[] arguments)
-            : base(() => CreateFixture(customization), arguments) { }
-
-        private static IFixture CreateFixture(System.Type customization)
-        {
-            var fixture = new Fixture();
-
-            if (Activator.CreateInstance(customization) is ISpecimenBuilder builder)
-            {
-                fixture.Customizations.Add(builder);
-            }
-
-            return fixture;
-        }
+            : base(() => new Fixture().AddCustomizations(customization), arguments) { }
+        public ExtendedInlineAutoDataAttribute(System.Type[] customizations, params object[] arguments)
+            : base(() => new Fixture().AddCustomizations(customizations), arguments) { }
     }
 }

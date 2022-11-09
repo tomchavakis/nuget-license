@@ -45,7 +45,7 @@ namespace NuGetUtility
 
         [Option(LongName = "ignored-packages",
             ShortName = "ignore",
-            Description = "File in json format that contains an array of nuget package names (as regex patterns) to ignore (e.g. useful for nuget packages built in-house. Note that even though the packages are ignored, their transitive dependencies are not.")]
+            Description = "File in json format that contains an array of nuget package names to ignore (e.g. useful for nuget packages built in-house). Note that even though the packages are ignored, their transitive dependencies are not. Wildcard characters (*) are supported to specify ranges of ignored packages.")]
         public string? IgnoredPackages { get; } = null;
 
         [Option(LongName = "licenseurl-to-license-mappings",
