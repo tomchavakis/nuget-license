@@ -2,7 +2,7 @@ using NuGet.Versioning;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Versioning
 {
-    internal class WrappedNuGetVersion : INuGetVersion
+    internal class WrappedNuGetVersion : INuGetVersion, IComparable
     {
         private readonly NuGetVersion _version;
 
@@ -49,6 +49,15 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Versioning
         public override string ToString()
         {
             return _version.ToString();
+        }
+
+        public int CompareTo(object? obj)
+        {
+            if (obj is not WrappedNuGetVersion wrappedNuGetVersion)
+            {
+                throw new ArgumentException("obj is not the same type as this instance.");
+            }
+            return _version.CompareTo(wrappedNuGetVersion._version);
         }
 
         public NuGetVersion Unwrap()
