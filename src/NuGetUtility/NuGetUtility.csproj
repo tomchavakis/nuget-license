@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -9,7 +9,6 @@
         <RepositoryType>git</RepositoryType>
         <PackageId>dotnet-project-licenses</PackageId>
         <ToolCommandName>dotnet-project-licenses</ToolCommandName>
-        <Version>3.0.0-alpha.6</Version>
         <Authors>Tom Chavakis,Simon Ensslen</Authors>
         <Company>-</Company>
         <Title>.NET Core Tool to print a list of the licenses of a projects</Title>
