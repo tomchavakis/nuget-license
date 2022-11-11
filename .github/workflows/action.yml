@@ -2,11 +2,8 @@ name: Main workflow
 
 on: [push, pull_request]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  ci:
-    # The type of runner that the job will run on
+  - test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -23,18 +20,37 @@ jobs:
             buildConfiguration: "Release"
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - name: Setup dotnet 6.0.x
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: "6.0.x" # SDK Version to use (x uses the latest version).
-      # dotnet restore
+          dotnet-version: "6.0.x"
+
       - name: restore
         run: dotnet restore
-      # dotnet build and publish
-      - name: Build with dotnet
+
+      - name: build
         run: dotnet build --configuration ${{ matrix.buildConfiguration }}
-      # dotnet test
+
       - name: test
         run: dotnet test --configuration ${{ matrix.buildConfiguration }}
+
+  - check_licenses:
+    runs-on: ubuntu-latest
+    strategy:
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup dotnet 6.0.x
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: restore
+        run: dotnet restore
+
+      - name: build
+        run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj --configuration Release -o ./release
+
+      - name: check
+        run: dotnet ./release NuGetUtility.dll -i ./NuGetUtility.sln -t -a ./.github/workflows/assets/allowedLicenses.json
