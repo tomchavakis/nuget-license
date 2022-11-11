@@ -3,7 +3,7 @@ name: Main workflow
 on: [push, pull_request]
 
 jobs:
-  - test:
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -35,7 +35,7 @@ jobs:
       - name: test
         run: dotnet test --configuration ${{ matrix.buildConfiguration }}
 
-  - check_licenses:
+  check_licenses:
     runs-on: ubuntu-latest
     strategy:
 
