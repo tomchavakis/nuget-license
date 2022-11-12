@@ -1,1 +1,1 @@
-["./src/NuGetUtility/NuGetUtility.csporj", "./tests/NuGetUtility.Test/NuGetUtility.Test.csproj"]
+["./src/NuGetUtility/NuGetUtility.csproj", "./tests/NuGetUtility.Test/NuGetUtility.Test.csproj"]
