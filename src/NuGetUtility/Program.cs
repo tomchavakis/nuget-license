@@ -1,4 +1,4 @@
-using McMaster.Extensions.CommandLineUtils;
+﻿using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 using NuGetUtility.Extension;
@@ -133,7 +133,7 @@ namespace NuGetUtility
             });
             var downloadedLicenseInformation =
                 packagesForProject.SelectMany(p => GetPackageInfos(p, overridePackageInformation, cancellationToken));
-            var results = await validator.Validate(downloadedLicenseInformation);
+            var results = (await validator.Validate(downloadedLicenseInformation)).ToList();
 
             if (projectReaderExceptions.Any())
             {
@@ -144,7 +144,7 @@ namespace NuGetUtility
 
             await using var outputStream = Console.OpenStandardOutput();
             await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
-            return 0;
+            return results.Count(r => r.ValidationErrors.Any());
         }
         private IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfos(
             ProjectWithReferencedPackages projectWithReferences,

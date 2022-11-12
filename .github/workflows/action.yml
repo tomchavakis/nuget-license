@@ -51,5 +51,6 @@ jobs:
       - name: build
         run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj --configuration Release -o ./release
 
-      - script: dotnet ./release/NuGetUtility.dll -ji ./.github/workflows/assets/projectsToCheck.json -t -a ./.github/workflows/assets/allowedLicenses.json -o JsonPretty
-        name: check
+      - name: check
+        run: dotnet ./release/NuGetUtility.dll -ji ./.github/workflows/assets/projectsToCheck.json -t -a ./.github/workflows/assets/allowedLicenses.json -o JsonPretty
+        
