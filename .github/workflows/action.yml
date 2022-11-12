@@ -52,4 +52,4 @@ jobs:
         run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj --configuration Release -o ./release
 
       - name: check
-        run: dotnet ./release/NuGetUtility.dll -i ./NuGetUtility.sln -t -a ./.github/workflows/assets/allowedLicenses.json
+        run: dotnet ./release/NuGetUtility.dll -ji ./.github/workflows/assets/projectsToCheck.json -t -a ./.github/workflows/assets/allowedLicenses.json
