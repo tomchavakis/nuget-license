@@ -1,0 +1,12 @@
+[
+    {
+        "Id": "NUnit",
+        "Version": "3.13.3",
+        "License": "MIT"
+    },
+    {
+        "Id": "NetArchTest.Rules",
+        "Version": "1.3.2",
+        "License": "MIT"
+    }
+]

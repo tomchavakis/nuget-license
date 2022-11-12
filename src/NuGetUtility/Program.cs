@@ -228,8 +228,15 @@ namespace NuGetUtility
 
             var serializerOptions = new JsonSerializerOptions();
             serializerOptions.Converters.Add(new UriDictionaryJsonConverter<string>());
-            return JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping),
+            var userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping),
                 serializerOptions)!;
+
+            UrlToLicenseMapping.Default.ToList().ForEach(x => {
+                if(!userDictionary.ContainsKey(x.Key)){
+                    userDictionary.Add(x.Key, x.Value);
+                }
+            });
+            return userDictionary;
         }
 
         private IEnumerable<string> GetIgnoredPackages()
