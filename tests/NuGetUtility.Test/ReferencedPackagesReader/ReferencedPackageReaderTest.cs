@@ -239,6 +239,25 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                         new PackageIdentity(l.Object.Name, l.Object.Version)),
                 result);
         }
+        
+        [Test]
+        public void GetInstalledPackages_Should_ReturnCorrectValues_If_IncludingTransitive_if_IgnoringPackagesWithWildCardAtEnd()
+        {
+            var shouldBeIgnored = _lockFileLibraries!.Shuffle(6543154).First().Object.Name;
+            var ignoredPackageName = shouldBeIgnored[..30] + "*";
+            _ignoredPackages = _ignoredPackages!.Append(ignoredPackageName);
+
+            _uut = new ReferencedPackageReader(_ignoredPackages,
+                _msBuild.Object,
+                _lockFileFactory.Object);
+            var result = _uut.GetInstalledPackages(_projectPath, true);
+
+            CollectionAssert.AreEquivalent(
+                _lockFileLibraries.Where(l => l.Object.Name != shouldBeIgnored)
+                    .Select(l =>
+                        new PackageIdentity(l.Object.Name, l.Object.Version)),
+                result);
+        }
 
         [Test]
         public void GetInstalledPackages_Should_ReturnCorrectValues_If_NotIncludingTransitive_If_IgnoringPackages()
@@ -261,6 +280,114 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             CollectionAssert.AreEquivalent(
                 directReferencesResult.Where(l => l.Object.Name != ignoredPackageName)
+                    .Select(l =>
+                        new PackageIdentity(l.Object.Name, l.Object.Version)),
+                result);
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_ReturnCorrectValues_If_NotIncludingTransitive_If_IgnoringPackagesWithWildCardAtStart()
+        {
+            var directReferences = _packageReferencesFromProjectForFramework.SelectMany(p => p.Value)
+                .Distinct()
+                .ToArray();
+            var directReferencesResult = _lockFileLibraries.Where(l =>
+                    directReferences.Any(e => e.PackageName.Equals(l.Object.Name)) &&
+                    directReferences.Any(e => e.Version!.Equals(l.Object.Version)))
+                .ToArray();
+
+            var shouldBeIgnored = directReferencesResult.Shuffle(9).First().Object.Name;
+            var ignoredPackageName = "*" + shouldBeIgnored[5..];
+            _ignoredPackages = _ignoredPackages!.Append(ignoredPackageName);
+
+            _uut = new ReferencedPackageReader(_ignoredPackages,
+                _msBuild.Object,
+                _lockFileFactory.Object);
+            var result = _uut.GetInstalledPackages(_projectPath, false);
+
+            CollectionAssert.AreEquivalent(
+                directReferencesResult.Where(l => l.Object.Name != shouldBeIgnored)
+                    .Select(l =>
+                        new PackageIdentity(l.Object.Name, l.Object.Version)),
+                result);
+        }
+        
+        [Test]
+        public void GetInstalledPackages_Should_ReturnCorrectValues_If_NotIncludingTransitive_If_IgnoringPackagesWithWildCardInMiddle()
+        {
+            var directReferences = _packageReferencesFromProjectForFramework.SelectMany(p => p.Value)
+                .Distinct()
+                .ToArray();
+            var directReferencesResult = _lockFileLibraries.Where(l =>
+                    directReferences.Any(e => e.PackageName.Equals(l.Object.Name)) &&
+                    directReferences.Any(e => e.Version!.Equals(l.Object.Version)))
+                .ToArray();
+
+            var shouldBeIgnored = directReferencesResult.Shuffle(9).First().Object.Name;
+            var ignoredPackageName = shouldBeIgnored[..15] + "*" + shouldBeIgnored[20..];
+            _ignoredPackages = _ignoredPackages!.Append(ignoredPackageName);
+
+            _uut = new ReferencedPackageReader(_ignoredPackages,
+                _msBuild.Object,
+                _lockFileFactory.Object);
+            var result = _uut.GetInstalledPackages(_projectPath, false);
+
+            CollectionAssert.AreEquivalent(
+                directReferencesResult.Where(l => l.Object.Name != shouldBeIgnored)
+                    .Select(l =>
+                        new PackageIdentity(l.Object.Name, l.Object.Version)),
+                result);
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_ReturnCorrectValues_If_NotIncludingTransitive_If_IgnoringPackagesWithWildCardAtEnd()
+        {
+            var directReferences = _packageReferencesFromProjectForFramework.SelectMany(p => p.Value)
+                .Distinct()
+                .ToArray();
+            var directReferencesResult = _lockFileLibraries.Where(l =>
+                    directReferences.Any(e => e.PackageName.Equals(l.Object.Name)) &&
+                    directReferences.Any(e => e.Version!.Equals(l.Object.Version)))
+                .ToArray();
+
+            var shouldBeIgnored = directReferencesResult.Shuffle(9).First().Object.Name;
+            var ignoredPackageName = shouldBeIgnored[..30] + "*";
+            _ignoredPackages = _ignoredPackages!.Append(ignoredPackageName);
+
+            _uut = new ReferencedPackageReader(_ignoredPackages,
+                _msBuild.Object,
+                _lockFileFactory.Object);
+            var result = _uut.GetInstalledPackages(_projectPath, false);
+
+            CollectionAssert.AreEquivalent(
+                directReferencesResult.Where(l => l.Object.Name != shouldBeIgnored)
+                    .Select(l =>
+                        new PackageIdentity(l.Object.Name, l.Object.Version)),
+                result);
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_ReturnCorrectValues_If_NotIncludingTransitive_If_IgnoringPackagesWithWildCardAtStartAndEnd()
+        {
+            var directReferences = _packageReferencesFromProjectForFramework.SelectMany(p => p.Value)
+                .Distinct()
+                .ToArray();
+            var directReferencesResult = _lockFileLibraries.Where(l =>
+                    directReferences.Any(e => e.PackageName.Equals(l.Object.Name)) &&
+                    directReferences.Any(e => e.Version!.Equals(l.Object.Version)))
+                .ToArray();
+
+            var shouldBeIgnored = directReferencesResult.Shuffle(9).First().Object.Name;
+            var ignoredPackageName = "*" + shouldBeIgnored[5..30] + "*";
+            _ignoredPackages = _ignoredPackages!.Append(ignoredPackageName);
+
+            _uut = new ReferencedPackageReader(_ignoredPackages,
+                _msBuild.Object,
+                _lockFileFactory.Object);
+            var result = _uut.GetInstalledPackages(_projectPath, false);
+
+            CollectionAssert.AreEquivalent(
+                directReferencesResult.Where(l => l.Object.Name != shouldBeIgnored)
                     .Select(l =>
                         new PackageIdentity(l.Object.Name, l.Object.Version)),
                 result);
