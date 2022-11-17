@@ -244,7 +244,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public void GetInstalledPackages_Should_ReturnCorrectValues_If_IncludingTransitive_if_IgnoringPackagesWithWildCard()
         {
             var shouldBeIgnored = _lockFileLibraries!.Shuffle(6543154).First().Object.Name;
-            var ignoredPackageName = shouldBeIgnored.Substring(0, 30) + "*";
+            var ignoredPackageName = shouldBeIgnored[..30] + "*";
             _ignoredPackages = _ignoredPackages!.Append(ignoredPackageName);
 
             _uut = new ReferencedPackageReader(_ignoredPackages,
@@ -297,7 +297,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 .ToArray();
 
             var shouldBeIgnored = directReferencesResult.Shuffle(9).First().Object.Name;
-            var ignoredPackageName = "*" + shouldBeIgnored.Substring(5);
+            var ignoredPackageName = "*" + shouldBeIgnored[5..];
             _ignoredPackages = _ignoredPackages!.Append(ignoredPackageName);
 
             _uut = new ReferencedPackageReader(_ignoredPackages,
