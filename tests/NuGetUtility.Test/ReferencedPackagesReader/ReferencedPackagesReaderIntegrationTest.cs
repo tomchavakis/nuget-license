@@ -1,6 +1,7 @@
 using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
+using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 
 namespace NuGetUtility.Test.ReferencedPackagesReader
 {
@@ -20,9 +21,9 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Test]
         public void GetInstalledPackagesShould_ReturnPackagesForActualProjectCorrectly()
         {
-            var path = Path.GetFullPath("../../../../targets/PackageReferenceProject/PackageReferenceProject.csproj");
+            string path = Path.GetFullPath("../../../../targets/PackageReferenceProject/PackageReferenceProject.csproj");
 
-            var result = _uut!.GetInstalledPackages(path, false);
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false);
 
             Assert.That(result.Count, Is.EqualTo(1));
         }
@@ -30,10 +31,10 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Test]
         public void GetInstalledPackagesShould_ReturnTransitivePackages()
         {
-            var path = Path.GetFullPath(
+            string path = Path.GetFullPath(
                 "../../../../targets/ProjectWithTransitiveReferences/ProjectWithTransitiveReferences.csproj");
 
-            var result = _uut!.GetInstalledPackages(path, true);
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, true);
 
             Assert.That(result.Count, Is.EqualTo(1));
         }
@@ -41,13 +42,13 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Test]
         public void GetInstalledPackagesShould_ReturnTransitiveNuget()
         {
-            var path = Path.GetFullPath(
+            string path = Path.GetFullPath(
                 "../../../../targets/ProjectWithTransitiveNuget/ProjectWithTransitiveNuget.csproj");
 
-            var result = _uut!.GetInstalledPackages(path, true).ToArray();
+            PackageIdentity[] result = _uut!.GetInstalledPackages(path, true).ToArray();
 
             Assert.That(result.Count, Is.EqualTo(3));
-            var titles = result.Select(metadata => metadata.Id).ToArray();
+            string[] titles = result.Select(metadata => metadata.Id).ToArray();
             Assert.That(titles.Contains("Moq"), Is.True);
             Assert.That(titles.Contains("Castle.Core"), Is.True);
             Assert.That(titles.Contains("System.Diagnostics.EventLog"), Is.True);
@@ -56,10 +57,10 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Test]
         public void GetInstalledPackagesShould_ReturnEmptyEnumerableForProjectsWithoutPackages()
         {
-            var path = Path.GetFullPath(
+            string path = Path.GetFullPath(
                 "../../../../targets/ProjectWithoutNugetReferences/ProjectWithoutNugetReferences.csproj");
 
-            var result = _uut!.GetInstalledPackages(path, false);
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false);
 
             Assert.That(result.Count, Is.EqualTo(0));
         }
@@ -68,9 +69,9 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [Platform(Include = "Win")]
         public void GetInstalledPackagesShould_ThrowMsBuildAbstractionException_If_ProjectUsesPackagesConfig()
         {
-            var path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");
+            string path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");
 
-            var exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, false));
+            MsBuildAbstractionException? exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, false));
             Assert.AreEqual(
                 $"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {path})",
                 exception?.Message);

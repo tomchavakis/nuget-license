@@ -1,0 +1,14 @@
+# Top level entry required to mark this as a global AnalyzerConfig file
+is_global = true
+
+# NOTE: No section headers for configuration entries
+
+#### .NET Coding Conventions ####
+
+# this. and Me. preferences
+dotnet_style_qualification_for_method = true:warning
+
+#### Diagnostic configuration ####
+
+# CA1000: Do not declare static members on generic types
+dotnet_diagnostic.CA1000.severity = warning

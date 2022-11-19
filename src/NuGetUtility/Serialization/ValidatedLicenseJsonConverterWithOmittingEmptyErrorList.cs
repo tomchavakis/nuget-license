@@ -15,7 +15,7 @@ namespace NuGetUtility.Serialization
         public override void Write(Utf8JsonWriter writer, LicenseValidationResult value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
-            foreach (var propertyInfo in value.GetType().GetProperties())
+            foreach (System.Reflection.PropertyInfo propertyInfo in value.GetType().GetProperties())
             {
                 if (propertyInfo.Name == nameof(value.ValidationErrors))
                 {
@@ -24,7 +24,7 @@ namespace NuGetUtility.Serialization
                         continue;
                     }
                 }
-                var writeValue = propertyInfo.GetValue(value);
+                object? writeValue = propertyInfo.GetValue(value);
                 if (writeValue != null)
                 {
                     writer.WritePropertyName(propertyInfo.Name);

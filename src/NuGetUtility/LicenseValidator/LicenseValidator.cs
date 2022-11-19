@@ -25,7 +25,7 @@ namespace NuGetUtility.LicenseValidator
             IAsyncEnumerable<ReferencedPackageWithContext> packages)
         {
             var result = new ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult>();
-            await foreach (var info in packages)
+            await foreach (ReferencedPackageWithContext info in packages)
             {
                 if (info.PackageInfo.LicenseMetadata != null)
                 {
@@ -107,7 +107,7 @@ namespace NuGetUtility.LicenseValidator
             switch (info.LicenseMetadata!.Type)
             {
                 case LicenseType.Expression:
-                    var licenseId = info.LicenseMetadata!.License;
+                    string licenseId = info.LicenseMetadata!.License;
                     if (IsLicenseValid(licenseId))
                     {
                         AddOrUpdateLicense(result,
@@ -153,7 +153,7 @@ namespace NuGetUtility.LicenseValidator
                 }
             }
 
-            if (_licenseMapping.TryGetValue(info.LicenseUrl, out var licenseId))
+            if (_licenseMapping.TryGetValue(info.LicenseUrl, out string? licenseId))
             {
                 if (IsLicenseValid(licenseId))
                 {
@@ -195,7 +195,7 @@ namespace NuGetUtility.LicenseValidator
                 return true;
             }
 
-            foreach (var allowedLicense in _allowedLicenses)
+            foreach (string allowedLicense in _allowedLicenses)
             {
                 if (allowedLicense.Equals(licenseId))
                 {

@@ -42,7 +42,7 @@ namespace NuGetUtility.Serialization
             //Step 2 - Convert the dictionary to one that uses the actual key type we want
             var dictionary = new Dictionary<Uri, TValue>();
 
-            foreach (var kvp in dictionaryWithStringKey)
+            foreach (KeyValuePair<string, TValue> kvp in dictionaryWithStringKey)
             {
                 dictionary.Add(new Uri(kvp.Key), kvp.Value);
             }
@@ -55,7 +55,7 @@ namespace NuGetUtility.Serialization
             //Step 1 - Convert dictionary to a dictionary with string key
             var dictionary = new Dictionary<string, TValue>(value.Count);
 
-            foreach (var kvp in value)
+            foreach (KeyValuePair<Uri, TValue> kvp in value)
             {
                 dictionary.Add(kvp.Key.ToString(), kvp.Value);
             }

@@ -24,7 +24,7 @@ namespace NuGetUtility.Test.Extensions
         {
             _projectMock!.Setup(m => m.GetPackageReferenceCount()).Returns(referenceCount);
 
-            var result = _uut!.HasNugetPackagesReferenced();
+            bool result = _uut!.HasNugetPackagesReferenced();
 
             Assert.That(result, Is.True);
         }
@@ -35,7 +35,7 @@ namespace NuGetUtility.Test.Extensions
             _projectMock!.Setup(m => m.GetPackageReferenceCount()).Returns(0);
             _projectMock.Setup(m => m.GetEvaluatedIncludes()).Returns(new List<string> { "packages.config" });
 
-            var result = _uut!.HasNugetPackagesReferenced();
+            bool result = _uut!.HasNugetPackagesReferenced();
 
             Assert.That(result, Is.True);
         }
@@ -48,7 +48,7 @@ namespace NuGetUtility.Test.Extensions
             _projectMock!.Setup(m => m.GetPackageReferenceCount()).Returns(referenceCount);
             _projectMock.Setup(m => m.GetEvaluatedIncludes()).Returns(Enumerable.Empty<string>());
 
-            var result = _uut!.HasNugetPackagesReferenced();
+            bool result = _uut!.HasNugetPackagesReferenced();
 
             Assert.That(result, Is.False);
         }
@@ -68,7 +68,7 @@ namespace NuGetUtility.Test.Extensions
             _projectMock.Setup(m => m.GetRestoreStyleTag()).Returns(restoreStyleTag);
             _projectMock.Setup(m => m.GetEvaluatedIncludes()).Returns(new List<string> { "not-packages.config" });
 
-            var result = _uut!.IsPackageReferenceProject();
+            bool result = _uut!.IsPackageReferenceProject();
 
             Assert.That(result, Is.True);
         }
@@ -89,7 +89,7 @@ namespace NuGetUtility.Test.Extensions
             _projectMock.Setup(m => m.GetRestoreStyleTag()).Returns(restoreStyleTag);
             _projectMock.Setup(m => m.GetEvaluatedIncludes()).Returns(new List<string> { evaluatedInclude });
 
-            var result = _uut!.IsPackageReferenceProject();
+            bool result = _uut!.IsPackageReferenceProject();
 
             Assert.That(result, Is.False);
         }

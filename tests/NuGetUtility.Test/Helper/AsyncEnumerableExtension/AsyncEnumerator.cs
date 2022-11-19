@@ -17,7 +17,7 @@
 
         public ValueTask<bool> MoveNextAsync()
         {
-            var result = _sync.MoveNext();
+            bool result = _sync.MoveNext();
             return ValueTask.FromResult(result);
         }
 

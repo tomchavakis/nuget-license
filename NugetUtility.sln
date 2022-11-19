@@ -7,7 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGetUtility", "src\NuGetUt
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{B72B75A4-ADBC-4F0B-82DA-0C8594437F5D}"
 	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -27,7 +26,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PackagesConfigProject", "te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectWithTransitiveReferences", "tests\targets\ProjectWithTransitiveReferences\ProjectWithTransitiveReferences.csproj", "{3DDEC6CB-4FDA-49D1-A358-06BE9200C174}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectWithTransitiveNuget", "tests\targets\ProjectWithTransitiveNuget\ProjectWithTransitiveNuget.csproj", "{3150479E-4370-408D-8A93-7C0CDC281CC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectWithTransitiveNuget", "tests\targets\ProjectWithTransitiveNuget\ProjectWithTransitiveNuget.csproj", "{3150479E-4370-408D-8A93-7C0CDC281CC3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5771A2C3-38B3-41CA-B76B-9C002D3C2873}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.globalconfig = .globalconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

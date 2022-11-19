@@ -13,8 +13,8 @@
 
         public async Task DownloadFile(Uri url, string fileName)
         {
-            await using var file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
-            await using var downloadStream = await _client.GetStreamAsync(url);
+            await using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
+            await using Stream downloadStream = await _client.GetStreamAsync(url);
 
             await downloadStream.CopyToAsync(file);
         }

@@ -26,7 +26,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
                 { "TargetFramework", framework }
             };
             var newProject = new ProjectInstance(project.FullPath, globalProperties, null);
-            newProject.Build(new[] { CollectPackageReferences }, new List<ILogger>(), out var targetOutputs);
+            newProject.Build(new[] { CollectPackageReferences }, new List<ILogger>(), out IDictionary<string, TargetResult>? targetOutputs);
 
             return targetOutputs.First(e => e.Key.Equals(CollectPackageReferences))
                 .Value.Items.Select(p =>
@@ -38,7 +38,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
         public IProject GetProject(string projectPath)
         {
-            var rootElement = TryGetProjectRootElement(projectPath);
+            ProjectRootElement rootElement = TryGetProjectRootElement(projectPath);
 
             var project = new Project(rootElement);
             var projectWrapper = new ProjectWrapper(project);
