@@ -1,4 +1,4 @@
-using McMaster.Extensions.CommandLineUtils;
+﻿using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 using NuGetUtility.Extension;
@@ -75,11 +75,11 @@ namespace NuGetUtility
             Description = "If this option is set and there are license validation errors, only the errors are returned as result. Otherwise all validation results are always returned.")]
         public bool ReturnErrorsOnly { get; } = false;
 
-        [Option(LongName = "skip_ignored",
-            ShortName = "skip",
-            Description = "If this option is set, the packages matching the ignore regexes are not printed to the output.")]
-        public bool SkipIgnoredPackages { get; } = false;
-
+        [Option(LongName = "include-ignored",
+            ShortName = "ii",
+            Description = "If this option is set, the packages matching the ignore regexes are also printed to the output by specifying that they were explicetly ignored.")]
+        public bool IncludeIgnoredPackages { get; } = false;
+        
         public static async Task Main(string[] args)
         {
             var lifetime = new AppLifetime();
@@ -155,9 +155,9 @@ namespace NuGetUtility
         {
             return OutputType switch
             {
-                OutputType.Json => new JsonOutputFormatter(false, ReturnErrorsOnly, SkipIgnoredPackages),
-                OutputType.JsonPretty => new JsonOutputFormatter(true, ReturnErrorsOnly, SkipIgnoredPackages),
-                OutputType.Table => new TableOutputFormatter(ReturnErrorsOnly, SkipIgnoredPackages),
+                OutputType.Json => new JsonOutputFormatter(false, ReturnErrorsOnly, !IncludeIgnoredPackages),
+                OutputType.JsonPretty => new JsonOutputFormatter(true, ReturnErrorsOnly, !IncludeIgnoredPackages),
+                OutputType.Table => new TableOutputFormatter(ReturnErrorsOnly, !IncludeIgnoredPackages),
                 _ => throw new ArgumentOutOfRangeException($"{OutputType} not supported")
             };
         }
