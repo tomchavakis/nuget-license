@@ -20,6 +20,12 @@ jobs:
           dotnet-version: "6.0.x" # SDK Version to use (x uses the latest version).
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Setup dotnet 7.0.x
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: "7.0.x" # SDK Version to use (x uses the latest version).
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       # dotnet restore
       - name: restore
         run: dotnet restore
@@ -34,10 +40,7 @@ jobs:
         run: dotnet pack --configuration Release
       # publish the package
       - name: Publish the artifact
-        run: dotnet publish -f net6.0 -c Release -o ./artifacts
-      # publish the package to package folder
-      - name: Publish the artifact
-        run: dotnet publish -f net6.0 -c Release -o ./package
+        run: dotnet publish -c Release -o ./artifacts
       # Add nuget package
       - name: Nuget package
         run: dotnet pack -c Release -o ./artifacts

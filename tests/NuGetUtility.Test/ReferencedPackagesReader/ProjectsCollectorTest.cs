@@ -103,6 +103,22 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
         }
 
+        [Test]
+        public void GetProjectsFromSolution_Should_ReturnProjectsInActualSolutionFileRelativePath()
+        {
+            var msbuild = new MsBuildAbstraction();
+            var result = msbuild.GetProjectsFromSolution("../../../../targets/Projects.sln");
+            Assert.AreEqual(5, result.Count());
+        }
+
+        [Test]
+        public void GetProjectsFromSolution_Should_ReturnProjectsInActualSolutionFileAbsolutePath()
+        {
+            var msbuild = new MsBuildAbstraction();
+            var result = msbuild.GetProjectsFromSolution(Path.GetFullPath("../../../../targets/Projects.sln"));
+            Assert.AreEqual(5, result.Count());
+        }
+
         private void CreateFiles(IEnumerable<string> files)
         {
             foreach (var file in files)

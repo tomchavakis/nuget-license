@@ -2,6 +2,7 @@ using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
+using System.Text.RegularExpressions;
 
 namespace NuGetUtility.ReferencedPackagesReader
 {
@@ -73,7 +74,12 @@ namespace NuGetUtility.ReferencedPackagesReader
 
         private bool IsNotIgnoredPackage(ILockFileLibrary packageInfo)
         {
-            return !_ignoredPackages.Any(p => p.Equals(packageInfo.Name));
+            return !_ignoredPackages.Any(p => Regex.IsMatch(packageInfo.Name, WildCardToRegular(p)));
+        }
+
+        private static string WildCardToRegular(string value)
+        {
+            return "^" + Regex.Escape(value).Replace("\\*", ".*") + "$";
         }
 
         private bool IsDirectlyReferenced(ILockFileLibrary library,

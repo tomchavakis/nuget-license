@@ -3,11 +3,12 @@ name: Main workflow
 on: [push, pull_request]
 
 jobs:
-  test:
+  - test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        dotnetVersion: ["6.0.x", 7.0.x]
 
         include:
           - os: ubuntu-latest
@@ -21,11 +22,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Setup dotnet 6.0.x
+      - name: Setup dotnet ${{ matrix.dotnetVersion }}
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: "6.0.x"
-
+          dotnet-version: ${{ matrix.dotnetVersion }}
       - name: restore
         run: dotnet restore
 
@@ -35,15 +35,18 @@ jobs:
       - name: test
         run: dotnet test --configuration ${{ matrix.buildConfiguration }}
 
-  check_licenses:
+  - check_licenses:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnetVersion: ["6.0.x", 7.0.x]
 
     steps:
       - uses: actions/checkout@v3
-      - name: Setup dotnet 6.0.x
+      - name: Setup dotnet ${{ matrix.dotnetVersion }}
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: "6.0.x"
+          dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
         run: dotnet restore
@@ -52,4 +55,4 @@ jobs:
         run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj --configuration Release -o ./release
 
       - name: check
-        run: dotnet ./release/NuGetUtility.dll -ji ./.github/workflows/assets/projectsToCheck.json -t -a ./.github/workflows/assets/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/overwritePackageInformation.json -ignore ./.github/workflows/assets/ignorePackages.json -mapping ./.github/workflows/assets/urlToLicenseMapping.json
+        run: dotnet ./release NuGetUtility.dll -i ./NuGetUtility.sln -t -a ./.github/workflows/assets/allowedLicenses.json
