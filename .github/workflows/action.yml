@@ -26,14 +26,12 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: ${{ matrix.dotnetVersion }}
-      - name: restore
-        run: dotnet restore
 
       - name: build
-        run: dotnet build --configuration ${{ matrix.buildConfiguration }}
+        run: dotnet build --configuration ${{ matrix.buildConfiguration }} -f ${{ matrix.dotnetVersion }}
 
       - name: test
-        run: dotnet test --configuration ${{ matrix.buildConfiguration }}
+        run: dotnet test --configuration ${{ matrix.buildConfiguration }} -f ${{ matrix.dotnetVersion }}
 
   check_licenses:
     runs-on: ubuntu-latest
@@ -48,11 +46,8 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
-      - name: restore
-        run: dotnet restore
-
       - name: build
-        run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj --configuration Release -o ./release
+        run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj --configuration Release -o ./release -f ${{ matrix.dotnetVersion }}
 
       - name: check
         run: dotnet ./release NuGetUtility.dll -i ./NuGetUtility.sln -t -a ./.github/workflows/assets/allowedLicenses.json
