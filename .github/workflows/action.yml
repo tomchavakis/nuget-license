@@ -8,7 +8,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        dotnetVersion: ["6.0.x", 7.0.x]
 
         include:
           - os: ubuntu-latest
@@ -22,22 +21,35 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Setup dotnet ${{ matrix.dotnetVersion }}
+      - name: Setup dotnet 6.0.x
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: ${{ matrix.dotnetVersion }}
+          dotnet-version: "6.0.x"
+      - name: Setup dotnet 7.0.x
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: "7.0.x"
+      - name: restore
+        run: dotnet restore
 
       - name: build
-        run: dotnet build --configuration ${{ matrix.buildConfiguration }} -f ${{ matrix.dotnetVersion }}
+        run: dotnet build --configuration ${{ matrix.buildConfiguration }} --no-restore
 
       - name: test
-        run: dotnet test --configuration ${{ matrix.buildConfiguration }} -f ${{ matrix.dotnetVersion }}
+        run: dotnet test --configuration ${{ matrix.buildConfiguration }} --no-restore
 
   check_licenses:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnetVersion: ["6.0.x", 7.0.x]
+        targetFramework: [net6.0, net7.0]
+
+        include:
+          - targetFramework: net6.0
+            dotnetVersion: "6.0.x"
+            
+          - targetFramework: net7.0
+            dotnetVersion: "7.0.x"
 
     steps:
       - uses: actions/checkout@v3
@@ -46,8 +58,11 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
+      - name: restore
+        run: dotnet restore -p:TargetFramework=${{ matrix.targetFramework }}
+
       - name: build
-        run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj --configuration Release -o ./release -f ${{ matrix.dotnetVersion }}
+        run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj --configuration Release -o ./release -f ${{ matrix.targetFramework }} --no-restore
 
       - name: check
-        run: dotnet ./release NuGetUtility.dll -i ./NuGetUtility.sln -t -a ./.github/workflows/assets/allowedLicenses.json
+        run: dotnet ./release/NuGetUtility.dll -ji ./.github/workflows/assets/projectsToCheck.json -t -a ./.github/workflows/assets/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/overwritePackageInformation.json -ignore ./.github/workflows/assets/ignorePackages.json -mapping ./.github/workflows/assets/urlToLicenseMapping.json
