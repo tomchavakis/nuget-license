@@ -103,7 +103,7 @@ namespace NuGetUtility
                 urlLicenseFileDownloader);
             var projectReaderExceptions = new List<Exception>();
 
-            IEnumerable<string> projects = inputFiles.SelectMany(file => projectCollector.GetProjects(file));
+            IEnumerable<string> projects = inputFiles.SelectMany(projectCollector.GetProjects);
             IEnumerable<ProjectWithReferencedPackages> packagesForProject = projects.Select(p =>
             {
                 IEnumerable<PackageIdentity>? installedPackages = null;
@@ -119,7 +119,7 @@ namespace NuGetUtility
             });
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
                 packagesForProject.SelectMany(p => GetPackageInfos(p, overridePackageInformation, cancellationToken));
-            IEnumerable<LicenseValidationResult> results = await validator.Validate(downloadedLicenseInformation);
+            var results = (await validator.Validate(downloadedLicenseInformation)).ToList();
 
             if (projectReaderExceptions.Any())
             {
@@ -128,9 +128,9 @@ namespace NuGetUtility
                 return -1;
             }
 
-            await using var outputStream = Console.OpenStandardOutput();
+            await using Stream outputStream = Console.OpenStandardOutput();
             await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
-            return 0;
+            return results.Count(r => r.ValidationErrors.Any());
         }
         private static IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfos(
             ProjectWithReferencedPackages projectWithReferences,
@@ -214,8 +214,15 @@ namespace NuGetUtility
 
             var serializerOptions = new JsonSerializerOptions();
             serializerOptions.Converters.Add(new UriDictionaryJsonConverter<string>());
-            return JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping),
+            Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping),
                 serializerOptions)!;
+
+            UrlToLicenseMapping.Default.ToList().ForEach(x => {
+                if(!userDictionary.ContainsKey(x.Key)){
+                    userDictionary.Add(x.Key, x.Value);
+                }
+            });
+            return userDictionary;
         }
 
         private IEnumerable<string> GetIgnoredPackages()
