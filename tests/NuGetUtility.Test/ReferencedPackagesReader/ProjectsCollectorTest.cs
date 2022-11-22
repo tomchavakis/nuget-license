@@ -27,7 +27,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [TestCase("D.dbproj")]
         public void GetProjects_Should_ReturnProjectsAsListDirectly(string projectFile)
         {
-            var result = _uut.GetProjects(projectFile);
+            IEnumerable<string> result = _uut.GetProjects(projectFile);
             CollectionAssert.AreEqual(new[] { projectFile }, result);
             _msBuild.Verify(m => m.GetProjectsFromSolution(It.IsAny<string>()), Times.Never);
         }
@@ -49,7 +49,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             _msBuild.Setup(m => m.GetProjectsFromSolution(It.IsAny<string>())).Returns(Enumerable.Empty<string>());
 
-            var result = _uut.GetProjects(solutionFile);
+            IEnumerable<string> result = _uut.GetProjects(solutionFile);
             CollectionAssert.AreEqual(new string[] { }, result);
 
             _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
@@ -60,10 +60,10 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [TestCase("C.sln")]
         public void GetProjects_Should_ReturnEmptyArray_If_SolutionContainsProjectsThatDontExist(string solutionFile)
         {
-            var projects = _fixture.CreateMany<string>();
+            IEnumerable<string> projects = _fixture.CreateMany<string>();
             _msBuild.Setup(m => m.GetProjectsFromSolution(It.IsAny<string>())).Returns(projects);
 
-            var result = _uut.GetProjects(solutionFile);
+            IEnumerable<string> result = _uut.GetProjects(solutionFile);
             CollectionAssert.AreEqual(new string[] { }, result);
 
             _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
@@ -74,11 +74,11 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [TestCase("C.sln")]
         public void GetProjects_Should_ReturnArrayOfProjects_If_SolutionContainsProjectsThatDoExist(string solutionFile)
         {
-            var projects = _fixture.CreateMany<string>().ToArray();
+            string[] projects = _fixture.CreateMany<string>().ToArray();
             CreateFiles(projects);
             _msBuild.Setup(m => m.GetProjectsFromSolution(It.IsAny<string>())).Returns(projects);
 
-            var result = _uut.GetProjects(solutionFile);
+            IEnumerable<string> result = _uut.GetProjects(solutionFile);
             CollectionAssert.AreEqual(projects, result);
 
             _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
@@ -89,15 +89,15 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [TestCase("C.sln")]
         public void GetProjects_Should_ReturnOnlyExistingProjectsInSolutionFile(string solutionFile)
         {
-            var existingProjects = _fixture.CreateMany<string>().ToArray();
-            var missingProjects = _fixture.CreateMany<string>();
+            string[] existingProjects = _fixture.CreateMany<string>().ToArray();
+            IEnumerable<string> missingProjects = _fixture.CreateMany<string>();
 
             CreateFiles(existingProjects);
 
             _msBuild.Setup(m => m.GetProjectsFromSolution(It.IsAny<string>()))
                 .Returns(existingProjects.Concat(missingProjects).Shuffle(54321));
 
-            var result = _uut.GetProjects(solutionFile);
+            IEnumerable<string> result = _uut.GetProjects(solutionFile);
             CollectionAssert.AreEquivalent(existingProjects, result);
 
             _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
@@ -107,7 +107,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public void GetProjectsFromSolution_Should_ReturnProjectsInActualSolutionFileRelativePath()
         {
             var msbuild = new MsBuildAbstraction();
-            var result = msbuild.GetProjectsFromSolution("../../../../targets/Projects.sln");
+            IEnumerable<string> result = msbuild.GetProjectsFromSolution("../../../../targets/Projects.sln");
             Assert.AreEqual(5, result.Count());
         }
 
@@ -115,13 +115,13 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public void GetProjectsFromSolution_Should_ReturnProjectsInActualSolutionFileAbsolutePath()
         {
             var msbuild = new MsBuildAbstraction();
-            var result = msbuild.GetProjectsFromSolution(Path.GetFullPath("../../../../targets/Projects.sln"));
+            IEnumerable<string> result = msbuild.GetProjectsFromSolution(Path.GetFullPath("../../../../targets/Projects.sln"));
             Assert.AreEqual(5, result.Count());
         }
 
         private void CreateFiles(IEnumerable<string> files)
         {
-            foreach (var file in files)
+            foreach (string file in files)
             {
                 File.WriteAllBytes(file, Array.Empty<byte>());
             }

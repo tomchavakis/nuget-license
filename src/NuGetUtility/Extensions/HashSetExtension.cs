@@ -11,8 +11,8 @@
         /// <returns></returns>
         public static bool AddRange<T>(this HashSet<T> source, IEnumerable<T> items)
         {
-            var allAdded = true;
-            foreach (var item in items)
+            bool allAdded = true;
+            foreach (T? item in items)
             {
                 source.Add(item);
             }

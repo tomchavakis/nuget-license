@@ -26,7 +26,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
                 { "TargetFramework", framework }
             };
             var newProject = new ProjectInstance(project.FullPath, globalProperties, null);
-            newProject.Build(new[] { CollectPackageReferences }, new List<ILogger>(), out var targetOutputs);
+            newProject.Build(new[] { CollectPackageReferences }, new List<ILogger>(), out IDictionary<string, TargetResult>? targetOutputs);
 
             return targetOutputs.First(e => e.Key.Equals(CollectPackageReferences))
                 .Value.Items.Select(p =>
@@ -38,7 +38,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
         public IProject GetProject(string projectPath)
         {
-            var rootElement = TryGetProjectRootElement(projectPath);
+            ProjectRootElement rootElement = TryGetProjectRootElement(projectPath);
 
             var project = new Project(rootElement);
             var projectWrapper = new ProjectWrapper(project);
@@ -54,7 +54,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
         public IEnumerable<string> GetProjectsFromSolution(string inputPath)
         {
-            var absolutePath = Path.GetFullPath(inputPath, Environment.CurrentDirectory); 
+            string absolutePath = Path.GetFullPath(inputPath, Environment.CurrentDirectory); 
             var sln = SolutionFile.Parse(absolutePath);
             return sln.ProjectsInOrder.Select(p => p.AbsolutePath);
         }

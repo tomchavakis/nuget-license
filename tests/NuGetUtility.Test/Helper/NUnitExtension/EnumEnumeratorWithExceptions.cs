@@ -35,7 +35,7 @@ namespace NuGetUtility.Test.Helper.NUnitExtension
 
         private bool IsException(object current)
         {
-            foreach (var exception in _exceptions)
+            foreach (object exception in _exceptions)
             {
                 if (exception.Equals(current))
                 {

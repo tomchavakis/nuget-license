@@ -9,7 +9,7 @@ namespace NuGetUtility.Test.Architecture.Rules
         [Test]
         public void TestOnlyNugetWrapperHasDependencyToNuget()
         {
-            this.Types.That()
+            Types.That()
                 .DoNotResideInNamespace($"{AssemblyNames.NuGetUtility}.{nameof(Wrapper)}.{nameof(Wrapper.NuGetWrapper)}")
                 .And().DoNotResideInNamespace($"{AssemblyNames.NuGetUtility}.{nameof(Program)}")
                 .ShouldNot().HaveDependencyOn(nameof(NuGet))

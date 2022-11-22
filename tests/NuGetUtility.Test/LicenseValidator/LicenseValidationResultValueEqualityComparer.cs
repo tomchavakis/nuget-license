@@ -26,7 +26,7 @@ namespace NuGetUtility.Test.LicenseValidator
         private HashCode GetHashCode(List<ValidationError> validationErrors)
         {
             var code = new HashCode();
-            foreach (var error in validationErrors)
+            foreach (ValidationError error in validationErrors)
             {
                 code.Add(error);
             }

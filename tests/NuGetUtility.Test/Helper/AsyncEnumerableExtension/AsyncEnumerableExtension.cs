@@ -10,7 +10,7 @@
         public static async Task<IEnumerable<T>> Synchronize<T>(this IAsyncEnumerable<T> async)
         {
             var list = new List<T>();
-            await foreach (var item in async)
+            await foreach (T? item in async)
             {
                 lock (list)
                 {

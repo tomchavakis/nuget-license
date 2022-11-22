@@ -25,10 +25,10 @@ namespace NuGetUtility.Output.Table
                     $"Added row length [{row.Length}] is not equal to title row length [{_titles.Length}]");
             }
 
-            var rowElements = row.Select(GetLines).ToArray();
-            for (var i = 0; i < _titles.Length; i++)
+            string[][] rowElements = row.Select(GetLines).ToArray();
+            for (int i = 0; i < _titles.Length; i++)
             {
-                var maxLineLength = rowElements[i].Any() ? rowElements[i].Max(line => line.Length) : 0;
+                int maxLineLength = rowElements[i].Any() ? rowElements[i].Max(line => line.Length) : 0;
                 if (maxLineLength > _lengths[i])
                 {
                     _lengths[i] = maxLineLength;
@@ -54,7 +54,7 @@ namespace NuGetUtility.Output.Table
             await WriteRow(_titles, writer);
             await WriteSeparator(writer);
 
-            foreach (var row in _rows)
+            foreach (string[][] row in _rows)
             {
                 await WriteRow(row, writer);
             }
@@ -64,8 +64,8 @@ namespace NuGetUtility.Output.Table
 
         private async Task WriteRow(string[][] values, TextWriter writer)
         {
-            var maximumLines = values.Max(lines => lines.Length);
-            for (var line = 0; line < maximumLines; line++)
+            int maximumLines = values.Max(lines => lines.Length);
+            for (int line = 0; line < maximumLines; line++)
             {
                 await WriteRow(values.Select(v => v.Length > line ? v[line] : string.Empty).ToArray(), writer);
             }
@@ -73,7 +73,7 @@ namespace NuGetUtility.Output.Table
 
         private async Task WriteRow(string[] values, TextWriter writer)
         {
-            for (var i = 0; i < values.Length; i++)
+            for (int i = 0; i < values.Length; i++)
             {
                 await writer.WriteAsync("| ");
                 await writer.WriteAsync(values[i].PadRight(_lengths[i]));
@@ -84,7 +84,7 @@ namespace NuGetUtility.Output.Table
 
         private async Task WriteSeparator(TextWriter writer)
         {
-            foreach (var l in _lengths)
+            foreach (int l in _lengths)
             {
                 await writer.WriteAsync("+-" + new string('-', l) + '-');
             }
