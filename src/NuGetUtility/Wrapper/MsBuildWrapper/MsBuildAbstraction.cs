@@ -54,7 +54,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
         public IEnumerable<string> GetProjectsFromSolution(string inputPath)
         {
-            var absolutePath = Path.GetFullPath(inputPath, Environment.CurrentDirectory); 
+            string absolutePath = Path.GetFullPath(inputPath, Environment.CurrentDirectory); 
             var sln = SolutionFile.Parse(absolutePath);
             return sln.ProjectsInOrder.Select(p => p.AbsolutePath);
         }

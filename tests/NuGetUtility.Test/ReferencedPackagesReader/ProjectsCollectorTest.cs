@@ -50,7 +50,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _msBuild.Setup(m => m.GetProjectsFromSolution(It.IsAny<string>())).Returns(Enumerable.Empty<string>());
 
             IEnumerable<string> result = _uut.GetProjects(solutionFile);
-            CollectionAssert.AreEqual(new string[] { }, result);
+            CollectionAssert.AreEqual(Array.Empty<string>(), result);
 
             _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
         }
@@ -64,7 +64,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _msBuild.Setup(m => m.GetProjectsFromSolution(It.IsAny<string>())).Returns(projects);
 
             IEnumerable<string> result = _uut.GetProjects(solutionFile);
-            CollectionAssert.AreEqual(new string[] { }, result);
+            CollectionAssert.AreEqual(Array.Empty<string>(), result);
 
             _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
         }
@@ -107,7 +107,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public void GetProjectsFromSolution_Should_ReturnProjectsInActualSolutionFileRelativePath()
         {
             var msbuild = new MsBuildAbstraction();
-            var result = msbuild.GetProjectsFromSolution("../../../../targets/Projects.sln");
+            IEnumerable<string> result = msbuild.GetProjectsFromSolution("../../../../targets/Projects.sln");
             Assert.AreEqual(5, result.Count());
         }
 
@@ -115,7 +115,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public void GetProjectsFromSolution_Should_ReturnProjectsInActualSolutionFileAbsolutePath()
         {
             var msbuild = new MsBuildAbstraction();
-            var result = msbuild.GetProjectsFromSolution(Path.GetFullPath("../../../../targets/Projects.sln"));
+            IEnumerable<string> result = msbuild.GetProjectsFromSolution(Path.GetFullPath("../../../../targets/Projects.sln"));
             Assert.AreEqual(5, result.Count());
         }
 

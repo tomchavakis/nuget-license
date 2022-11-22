@@ -5,7 +5,6 @@ using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 using System.Collections.Concurrent;
-using System.Text.RegularExpressions;
 
 namespace NuGetUtility.LicenseValidator
 {

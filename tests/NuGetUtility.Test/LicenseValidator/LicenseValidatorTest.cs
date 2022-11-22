@@ -75,7 +75,7 @@ namespace NuGetUtility.Test.LicenseValidator
             return SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, LicenseType.Expression);
         }
 
-        private IAsyncEnumerable<ReferencedPackageWithContext> CreateInput(Mock<IPackageMetadata> metadata,
+        private static IAsyncEnumerable<ReferencedPackageWithContext> CreateInput(Mock<IPackageMetadata> metadata,
             string context)
         {
             return new[] { new ReferencedPackageWithContext(context, metadata.Object) }.AsAsyncEnumerable();
@@ -88,13 +88,13 @@ namespace NuGetUtility.Test.LicenseValidator
             INuGetVersion packageVersion)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
-                new string[] { },
+                Array.Empty<string>(),
                 _fileDownloader.Object,
                 _ignoredLicenses.Append(packageId).ToArray());
 
             Mock<IPackageMetadata> package = SetupPackage(packageId, packageVersion);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -116,13 +116,13 @@ namespace NuGetUtility.Test.LicenseValidator
             string license)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
-                new string[] { },
+                Array.Empty<string>(),
                 _fileDownloader.Object,
                 _ignoredLicenses.Append(packageId.Substring(1)).ToArray());
 
             Mock<IPackageMetadata> package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, license);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -146,13 +146,13 @@ namespace NuGetUtility.Test.LicenseValidator
             INuGetVersion packageVersion)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
-                new string[] { },
+                Array.Empty<string>(),
                 _fileDownloader.Object,
                 _ignoredLicenses.Append($"*{packageId.Substring(Math.Min(matchedCharacters, packageId.Length))}").ToArray());
 
             Mock<IPackageMetadata> package = SetupPackage(packageId, packageVersion);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -176,13 +176,13 @@ namespace NuGetUtility.Test.LicenseValidator
             INuGetVersion packageVersion)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
-                new string[] { },
+                Array.Empty<string>(),
                 _fileDownloader.Object,
                 _ignoredLicenses.Append($"{packageId.Substring(0, remainingCharacters)}*").ToArray());
 
             Mock<IPackageMetadata> package = SetupPackage(packageId, packageVersion);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -207,13 +207,13 @@ namespace NuGetUtility.Test.LicenseValidator
             INuGetVersion packageVersion)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
-                new string[] { },
+                Array.Empty<string>(),
                 _fileDownloader.Object,
                 _ignoredLicenses.Append($"{packageId.Substring(0, wildcardMatchStartIndex)}*{packageId.Substring(wildcardMatchEndIndex)}").ToArray());
 
             Mock<IPackageMetadata> package = SetupPackage(packageId, packageVersion);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -234,13 +234,13 @@ namespace NuGetUtility.Test.LicenseValidator
             INuGetVersion packageVersion)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
-                new string[] { },
+                Array.Empty<string>(),
                 _fileDownloader.Object,
                 _ignoredLicenses.Append($"*{packageId.Substring(2, 5)}*{packageId.Substring(10, 2)}*").ToArray());
 
             Mock<IPackageMetadata> package = SetupPackage(packageId, packageVersion);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -262,13 +262,13 @@ namespace NuGetUtility.Test.LicenseValidator
             string license)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
-                new string[] { },
+                Array.Empty<string>(),
                 _fileDownloader.Object,
                 _ignoredLicenses);
 
             Mock<IPackageMetadata> package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, license);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -298,14 +298,14 @@ namespace NuGetUtility.Test.LicenseValidator
             INuGetVersion packageVersion)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
-                new string[] { },
+                Array.Empty<string>(),
                 _fileDownloader.Object,
                 _ignoredLicenses);
 
             KeyValuePair<Uri, string> mappingLicense = _licenseMapping.Shuffle(34561).First();
             Mock<IPackageMetadata> package = SetupPackageWithLicenseUrl(packageId, packageVersion, mappingLicense.Key);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -327,13 +327,13 @@ namespace NuGetUtility.Test.LicenseValidator
             Uri licenseUrl)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
-                new string[] { },
+                Array.Empty<string>(),
                 _fileDownloader.Object,
                 _ignoredLicenses);
 
             Mock<IPackageMetadata> package = SetupPackageWithLicenseUrl(packageId, packageVersion, licenseUrl);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -358,13 +358,13 @@ namespace NuGetUtility.Test.LicenseValidator
             string license = fixture.Create<string>();
 
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
-                new string[] { },
+                Array.Empty<string>(),
                 _fileDownloader.Object,
                 _ignoredLicenses);
 
             Mock<IPackageMetadata> package = SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, licenseType);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -390,13 +390,13 @@ namespace NuGetUtility.Test.LicenseValidator
             INuGetVersion packageVersion)
         {
             _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
-                new string[] { },
+                Array.Empty<string>(),
                 _fileDownloader.Object,
                 _ignoredLicenses);
 
             Mock<IPackageMetadata> package = SetupPackage(packageId, packageVersion);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -424,7 +424,7 @@ namespace NuGetUtility.Test.LicenseValidator
         {
             Mock<IPackageMetadata> package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, license);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -452,7 +452,7 @@ namespace NuGetUtility.Test.LicenseValidator
             string validLicense = _allowedLicenses.Shuffle(135643).First();
             Mock<IPackageMetadata> package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, validLicense);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -475,7 +475,7 @@ namespace NuGetUtility.Test.LicenseValidator
             KeyValuePair<Uri, string> urlMatch = _licenseMapping.Shuffle(765).First();
             Mock<IPackageMetadata> package = SetupPackageWithLicenseUrl(packageId, packageVersion, urlMatch.Key);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -503,7 +503,7 @@ namespace NuGetUtility.Test.LicenseValidator
             KeyValuePair<Uri, string> urlMatch = _licenseMapping.Shuffle(4567).First();
             Mock<IPackageMetadata> package = SetupPackageWithLicenseUrl(packageId, packageVersion, urlMatch.Key);
 
-            _ = await _uut.Validate(CreateInput(package, _context));
+            _ = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             _fileDownloader.Verify(m => m.DownloadFile(package.Object.LicenseUrl!,
                     $"{package.Object.Identity.Id}__{package.Object.Identity.Version}.html"),
@@ -522,7 +522,7 @@ namespace NuGetUtility.Test.LicenseValidator
                 .ThrowsAsync(new Exception());
 
             LicenseDownloadException? exception =
-                Assert.ThrowsAsync<LicenseDownloadException>(() => _uut.Validate(CreateInput(package, _context)));
+                Assert.ThrowsAsync<LicenseDownloadException>(() => _uut.Validate(LicenseValidatorTest.CreateInput(package, _context)));
             Assert.IsInstanceOf<Exception>(exception!.InnerException);
             Assert.AreEqual(
                 $"Failed to download license for package {packageId} ({packageVersion}).\nContext: {_context}",
@@ -542,7 +542,7 @@ namespace NuGetUtility.Test.LicenseValidator
                 _ignoredLicenses);
             Mock<IPackageMetadata> package = SetupPackageWithLicenseUrl(packageId, packageVersion, urlMatch.Key);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
@@ -565,7 +565,7 @@ namespace NuGetUtility.Test.LicenseValidator
         {
             Mock<IPackageMetadata> package = SetupPackageWithLicenseUrl(packageId, packageVersion, licenseUrl);
 
-            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context));
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
             Assert.That(result,
                 Is.EquivalentTo(new[]
