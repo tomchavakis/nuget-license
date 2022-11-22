@@ -40,10 +40,7 @@ jobs:
         run: dotnet pack --configuration Release
       # publish the package
       - name: Publish the artifact
-        run: dotnet publish -f net7.0 -c Release -o ./artifacts
-      # publish the package to package folder
-      - name: Publish the artifact
-        run: dotnet publish -f net7.0 -c Release -o ./package
+        run: dotnet publish -c Release -o ./artifacts
       # Add nuget package
       - name: Nuget package
         run: dotnet pack -c Release -o ./artifacts
