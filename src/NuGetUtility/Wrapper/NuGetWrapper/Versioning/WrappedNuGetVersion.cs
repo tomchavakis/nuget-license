@@ -51,11 +51,11 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Versioning
             return _version.ToString();
         }
 
-        public int CompareTo(object? obj)
+        public int CompareTo(object? other)
         {
-            if (obj is not WrappedNuGetVersion wrappedNuGetVersion)
+            if (other is not WrappedNuGetVersion wrappedNuGetVersion)
             {
-                throw new ArgumentException("obj is not the same type as this instance.");
+                throw new ArgumentException($"{nameof(other)} must be of type {nameof(WrappedNuGetVersion)} to be comparable.");
             }
             return _version.CompareTo(wrappedNuGetVersion._version);
         }

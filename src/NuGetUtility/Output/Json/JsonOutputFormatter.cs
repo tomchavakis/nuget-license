@@ -7,10 +7,12 @@ namespace NuGetUtility.Output.Json
     public class JsonOutputFormatter : IOutputFormatter
     {
         private readonly bool _printErrorsOnly;
+        private readonly bool _skipIgnoredPackages;
         private readonly JsonSerializerOptions _options;
-        public JsonOutputFormatter(bool prettyPrint = false, bool printErrorsOnly = false)
+        public JsonOutputFormatter(bool prettyPrint, bool printErrorsOnly, bool skipIgnoredPackages)
         {
             _printErrorsOnly = printErrorsOnly;
+            _skipIgnoredPackages = skipIgnoredPackages;
             _options = new JsonSerializerOptions
             {
                 Converters = { new NuGetVersionJsonConverter(), new ValidatedLicenseJsonConverterWithOmittingEmptyErrorList() },
@@ -22,12 +24,17 @@ namespace NuGetUtility.Output.Json
         {
             if (_printErrorsOnly)
             {
-                var resultsWithErrors = results.Where(r => r.ValidationErrors.Any()).ToList();
+                IEnumerable<LicenseValidationResult> resultsWithErrors = results.Where(r => r.ValidationErrors.Any());
                 if (resultsWithErrors.Any())
                 {
                     await JsonSerializer.SerializeAsync(stream, resultsWithErrors, _options);
                     return;
                 }
+            }
+
+            if (_skipIgnoredPackages)
+            {
+                results.Where(r => r.LicenseInformationOrigin != LicenseInformationOrigin.Ignored);
             }
 
             await JsonSerializer.SerializeAsync(stream, results, _options);

@@ -50,7 +50,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _msBuild.Setup(m => m.GetProjectsFromSolution(It.IsAny<string>())).Returns(Enumerable.Empty<string>());
 
             IEnumerable<string> result = _uut.GetProjects(solutionFile);
-            CollectionAssert.AreEqual(new string[] { }, result);
+            CollectionAssert.AreEqual(Array.Empty<string>(), result);
 
             _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
         }
@@ -64,7 +64,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _msBuild.Setup(m => m.GetProjectsFromSolution(It.IsAny<string>())).Returns(projects);
 
             IEnumerable<string> result = _uut.GetProjects(solutionFile);
-            CollectionAssert.AreEqual(new string[] { }, result);
+            CollectionAssert.AreEqual(Array.Empty<string>(), result);
 
             _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
         }

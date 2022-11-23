@@ -5,9 +5,12 @@ namespace NuGetUtility.Output.Table
     public class TableOutputFormatter : IOutputFormatter
     {
         private readonly bool _printErrorsOnly;
-        public TableOutputFormatter(bool printErrorsOnly = false)
+        private readonly bool _skipIgnoredPackages;
+
+        public TableOutputFormatter(bool printErrorsOnly, bool skipIgnoredPackages)
         {
             _printErrorsOnly = printErrorsOnly;
+            _skipIgnoredPackages = skipIgnoredPackages;
         }
 
         public async Task Write(Stream stream, IList<LicenseValidationResult> results)
@@ -35,6 +38,11 @@ namespace NuGetUtility.Output.Table
             if (_printErrorsOnly && errorColumnDefinition.Enabled)
             {
                 results = results.Where(r => r.ValidationErrors.Any()).ToList();
+            }
+
+            if (_skipIgnoredPackages)
+            {
+                results = results.Where(r => r.LicenseInformationOrigin != LicenseInformationOrigin.Ignored).ToList();
             }
 
             ColumnDefinition[] relevantColumns = columnDefinitions.Where(c => c.Enabled).ToArray();
