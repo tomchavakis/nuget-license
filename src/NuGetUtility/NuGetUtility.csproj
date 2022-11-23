@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -25,11 +25,19 @@
 
     <ItemGroup>
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
-        <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.4.0" />
         <PackageReference Include="Microsoft.Build.Locator" Version="1.4.1" />
         <PackageReference Include="NuGet.Commands" Version="6.4.0" />
         <PackageReference Include="NuGet.Packaging" Version="6.4.0" />
     </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+        <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.3.2" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+        <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.4.0" />
+    </ItemGroup>
+
     <ItemGroup>
         <Content Include="..\..\README.md">
             <Pack>true</Pack>
