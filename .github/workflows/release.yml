@@ -35,8 +35,10 @@ jobs:
       - name: Test
         run: dotnet test
 
-      - name: Publish the application binaries
-        run: dotnet publish -c Release -o ./artifacts -p:Version=${{ steps.version.outputs.full_without_prefix }}
+      - name: Publish the application binaries (.net6)
+        run: dotnet publish -c Release -o ./artifacts/net6 -f net6.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
+      - name: Publish the application binaries (.net7)
+        run: dotnet publish -c Release -o ./artifacts/net7 -f net7.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
       - name: Create nuget package
         run: dotnet pack -c Release -o ./artifacts -p:Version=${{ steps.version.outputs.full_without_prefix }}
 
