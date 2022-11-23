@@ -75,9 +75,9 @@ namespace NuGetUtility
             Description = "If this option is set and there are license validation errors, only the errors are returned as result. Otherwise all validation results are always returned.")]
         public bool ReturnErrorsOnly { get; } = false;
 
-        [Option(LongName = "include-ignored",
-            ShortName = "ii",
-            Description = "If this option is set, the packages matching the ignore regexes are also printed to the output by specifying that they were explicetly ignored.")]
+        [Option(LongName = "include-ignored-packages",
+            ShortName = "include-ignored",
+            Description = "If this option is set, the packages matching the ignore regexes are also printed to the output by specifying that they were explicitly ignored.")]
         public bool IncludeIgnoredPackages { get; } = false;
         
         public static async Task Main(string[] args)
