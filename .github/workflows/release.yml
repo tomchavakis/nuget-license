@@ -36,12 +36,12 @@ jobs:
         run: dotnet test
 
       - name: Publish the application binaries (.net6)
-        run: dotnet publish -c Release -o ./artifacts/net6 -f net6.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
+        run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj -c Release --no-restore -o ./artifacts/net6 -f net6.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
       - name: Publish the application binaries (.net7)
-        run: dotnet publish -c Release -o ./artifacts/net7 -f net7.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
+        run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj -c Release --no-restore -o ./artifacts/net7 -f net7.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
       - name: Create nuget package
-        run: dotnet pack -c Release -o ./artifacts -p:Version=${{ steps.version.outputs.full_without_prefix }}
-
+        run: dotnet pack ./src/NuGetUtility/NuGetUtility.csproj -c Release --no-build -o ./artifacts -p:Version=${{ steps.version.outputs.full_without_prefix }}
+      
       - name: Zip artifacts
         uses: tomchavakis/action-zip@v0.1.1
         with:
@@ -70,4 +70,5 @@ jobs:
           asset_content_type: application/zip
 
       - name: publish nuget package to nuget.org
-        run: dotnet nuget push ./artifact/**/*.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_KEY}}
+        id: publish_nuget
+        run: dotnet nuget push ./artifacts/*.nupkg -s 'https://api.nuget.org/v3/index.json' -k ${{secrets.NUGET_KEY}} --skip-duplicate

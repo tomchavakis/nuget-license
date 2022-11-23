@@ -30,5 +30,8 @@
         <PackageReference Include="NuGet.Commands" Version="6.4.0" />
         <PackageReference Include="NuGet.Packaging" Version="6.4.0" />
     </ItemGroup>
+    <ItemGroup>
+        <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 
 </Project>
