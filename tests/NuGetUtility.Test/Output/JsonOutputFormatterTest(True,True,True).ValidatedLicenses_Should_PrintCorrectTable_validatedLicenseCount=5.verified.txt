@@ -1,24 +1,10 @@
 ﻿[
   {
-    "PackageId": "Legacy Metrics Planner",
-    "PackageVersion": "9.5.0",
-    "PackageProjectUrl": "http://madisyn.name",
-    "License": "I\u0027ll override the haptic AGP feed, that should feed the AGP feed!",
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "International Mobility Technician",
     "PackageVersion": "3.7.5",
     "PackageProjectUrl": "https://jayne.name",
     "License": "I\u0027ll override the digital SMTP interface, that should interface the SMTP interface!",
     "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "Principal Markets Executive",
-    "PackageVersion": "4.2.2",
-    "PackageProjectUrl": "https://bettie.com",
-    "License": "Try to generate the EXE array, maybe it will generate the mobile array!",
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Future Identity Specialist",

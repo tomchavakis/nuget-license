@@ -1,12 +1,5 @@
 ﻿[
   {
-    "PackageId": "National Tactics Architect",
-    "PackageVersion": "6.7.8",
-    "PackageProjectUrl": "https://valentina.net",
-    "License": "The PNG protocol is down, index the digital protocol so we can index the PNG protocol!",
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "Principal Functionality Agent",
     "PackageVersion": "1.5.3",
     "ValidationErrors": [
@@ -38,13 +31,6 @@
     "LicenseInformationOrigin": 1
   },
   {
-    "PackageId": "Dynamic Program Administrator",
-    "PackageVersion": "9.8.6",
-    "PackageProjectUrl": "https://malcolm.net",
-    "License": "I\u0027ll quantify the bluetooth SQL circuit, that should circuit the SQL circuit!",
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "Customer Infrastructure Planner",
     "PackageVersion": "6.6.0",
     "PackageProjectUrl": "https://laurie.biz",
@@ -57,13 +43,6 @@
     "PackageProjectUrl": "http://everett.name",
     "License": "We need to reboot the virtual RSS alarm!",
     "LicenseInformationOrigin": 2
-  },
-  {
-    "PackageId": "Legacy Metrics Planner",
-    "PackageVersion": "9.5.0",
-    "PackageProjectUrl": "http://madisyn.name",
-    "License": "I\u0027ll override the haptic AGP feed, that should feed the AGP feed!",
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "National Solutions Coordinator",
@@ -159,13 +138,6 @@
     "PackageProjectUrl": "http://grayce.info",
     "License": "You can\u0027t index the protocol without indexing the open-source XML protocol!",
     "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "Internal Operations Executive",
-    "PackageVersion": "1.8.1",
-    "PackageProjectUrl": "http://angel.info",
-    "License": "We need to back up the solid state XML application!",
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Chief Integration Architect",
@@ -283,20 +255,6 @@
     "PackageProjectUrl": "http://antonette.org",
     "License": "I\u0027ll calculate the 1080p HDD system, that should system the HDD system!",
     "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "Customer Infrastructure Liaison",
-    "PackageVersion": "0.8.0",
-    "PackageProjectUrl": "https://otho.biz",
-    "License": "Use the haptic RSS hard drive, then you can back up the haptic hard drive!",
-    "LicenseInformationOrigin": 3
-  },
-  {
-    "PackageId": "Principal Markets Executive",
-    "PackageVersion": "4.2.2",
-    "PackageProjectUrl": "https://bettie.com",
-    "License": "Try to generate the EXE array, maybe it will generate the mobile array!",
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Future Identity Specialist",

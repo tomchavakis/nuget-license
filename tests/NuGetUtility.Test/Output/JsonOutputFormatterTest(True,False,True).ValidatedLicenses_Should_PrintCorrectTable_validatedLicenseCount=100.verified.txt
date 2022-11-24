@@ -1,24 +1,10 @@
 ﻿[
   {
-    "PackageId": "Legacy Metrics Planner",
-    "PackageVersion": "9.5.0",
-    "PackageProjectUrl": "http://madisyn.name",
-    "License": "I\u0027ll override the haptic AGP feed, that should feed the AGP feed!",
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "International Mobility Technician",
     "PackageVersion": "3.7.5",
     "PackageProjectUrl": "https://jayne.name",
     "License": "I\u0027ll override the digital SMTP interface, that should interface the SMTP interface!",
     "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "Principal Markets Executive",
-    "PackageVersion": "4.2.2",
-    "PackageProjectUrl": "https://bettie.com",
-    "License": "Try to generate the EXE array, maybe it will generate the mobile array!",
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Future Identity Specialist",
@@ -70,20 +56,6 @@
     "LicenseInformationOrigin": 1
   },
   {
-    "PackageId": "Dynamic Program Administrator",
-    "PackageVersion": "9.8.6",
-    "PackageProjectUrl": "https://malcolm.net",
-    "License": "I\u0027ll quantify the bluetooth SQL circuit, that should circuit the SQL circuit!",
-    "LicenseInformationOrigin": 3
-  },
-  {
-    "PackageId": "Customer Infrastructure Liaison",
-    "PackageVersion": "0.8.0",
-    "PackageProjectUrl": "https://otho.biz",
-    "License": "Use the haptic RSS hard drive, then you can back up the haptic hard drive!",
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "Customer Research Associate",
     "PackageVersion": "4.6.5",
     "PackageProjectUrl": "http://wilmer.name",
@@ -96,13 +68,6 @@
     "PackageProjectUrl": "https://carleton.info",
     "License": "Use the cross-platform THX system, then you can generate the cross-platform system!",
     "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "Internal Operations Executive",
-    "PackageVersion": "1.8.1",
-    "PackageProjectUrl": "http://angel.info",
-    "License": "We need to back up the solid state XML application!",
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Corporate Marketing Associate",
@@ -126,13 +91,6 @@
     "LicenseInformationOrigin": 1
   },
   {
-    "PackageId": "National Tactics Architect",
-    "PackageVersion": "6.7.8",
-    "PackageProjectUrl": "https://valentina.net",
-    "License": "The PNG protocol is down, index the digital protocol so we can index the PNG protocol!",
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "Chief Integration Architect",
     "PackageVersion": "1.6.8",
     "PackageProjectUrl": "https://davion.net",
@@ -154,13 +112,6 @@
     "LicenseInformationOrigin": 0
   },
   {
-    "PackageId": "Customer Group Manager",
-    "PackageVersion": "8.0.4",
-    "PackageProjectUrl": "https://luisa.biz",
-    "License": "The RAM panel is down, transmit the online panel so we can transmit the RAM panel!",
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "Customer Accountability Strategist",
     "PackageVersion": "0.5.2",
     "PackageProjectUrl": "https://stuart.com",
@@ -173,27 +124,6 @@
     "PackageProjectUrl": "http://jedediah.net",
     "License": "Try to back up the THX interface, maybe it will back up the auxiliary interface!",
     "LicenseInformationOrigin": 1
-  },
-  {
-    "PackageId": "District Factors Assistant",
-    "PackageVersion": "9.8.2",
-    "PackageProjectUrl": "https://ernestine.net",
-    "License": "Try to compress the SMS bus, maybe it will compress the bluetooth bus!",
-    "LicenseInformationOrigin": 3
-  },
-  {
-    "PackageId": "Legacy Interactions Analyst",
-    "PackageVersion": "3.0.8",
-    "PackageProjectUrl": "http://logan.net",
-    "License": "You can\u0027t parse the hard drive without generating the digital AGP hard drive!",
-    "LicenseInformationOrigin": 3
-  },
-  {
-    "PackageId": "District Metrics Analyst",
-    "PackageVersion": "4.6.0",
-    "PackageProjectUrl": "http://nathaniel.name",
-    "License": "overriding the interface won\u0027t do anything, we need to connect the digital GB interface!",
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Senior Accountability Specialist",
@@ -264,13 +194,6 @@
     "PackageProjectUrl": "https://sedrick.biz",
     "License": "I\u0027ll transmit the optical USB program, that should program the USB program!",
     "LicenseInformationOrigin": 2
-  },
-  {
-    "PackageId": "Regional Accountability Assistant",
-    "PackageVersion": "2.7.5",
-    "PackageProjectUrl": "http://barney.com",
-    "License": "You can\u0027t program the alarm without overriding the cross-platform RSS alarm!",
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Product Integration Officer",
@@ -357,25 +280,11 @@
     "LicenseInformationOrigin": 2
   },
   {
-    "PackageId": "Product Infrastructure Orchestrator",
-    "PackageVersion": "5.0.6",
-    "PackageProjectUrl": "http://forrest.com",
-    "License": "If we reboot the circuit, we can get to the PCI circuit through the virtual PCI circuit!",
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "Forward Infrastructure Specialist",
     "PackageVersion": "6.1.6",
     "PackageProjectUrl": "http://melisa.com",
     "License": "quantifying the driver won\u0027t do anything, we need to synthesize the neural PNG driver!",
     "LicenseInformationOrigin": 2
-  },
-  {
-    "PackageId": "District Directives Analyst",
-    "PackageVersion": "9.3.0",
-    "PackageProjectUrl": "http://bridie.biz",
-    "License": "Try to navigate the SCSI firewall, maybe it will navigate the digital firewall!",
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Future Group Director",
@@ -392,13 +301,6 @@
     "LicenseInformationOrigin": 2
   },
   {
-    "PackageId": "Global Configuration Planner",
-    "PackageVersion": "2.6.3",
-    "PackageProjectUrl": "http://willis.name",
-    "License": "connecting the circuit won\u0027t do anything, we need to copy the online EXE circuit!",
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "Customer Assurance Consultant",
     "PackageVersion": "5.6.2",
     "PackageProjectUrl": "https://eryn.org",
@@ -413,20 +315,6 @@
     "LicenseInformationOrigin": 2
   },
   {
-    "PackageId": "Human Optimization Director",
-    "PackageVersion": "0.1.8",
-    "PackageProjectUrl": "https://crystal.info",
-    "License": "We need to transmit the back-end PCI panel!",
-    "LicenseInformationOrigin": 3
-  },
-  {
-    "PackageId": "Principal Solutions Supervisor",
-    "PackageVersion": "6.1.2",
-    "PackageProjectUrl": "https://ari.biz",
-    "License": "programming the driver won\u0027t do anything, we need to parse the 1080p AGP driver!",
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "Product Paradigm Director",
     "PackageVersion": "6.3.8",
     "PackageProjectUrl": "http://kiera.org",
@@ -439,20 +327,6 @@
     "PackageProjectUrl": "http://keyshawn.net",
     "License": "We need to copy the cross-platform SAS panel!",
     "LicenseInformationOrigin": 1
-  },
-  {
-    "PackageId": "Product Intranet Assistant",
-    "PackageVersion": "2.8.1",
-    "PackageProjectUrl": "https://chance.name",
-    "License": "You can\u0027t parse the bandwidth without quantifying the wireless THX bandwidth!",
-    "LicenseInformationOrigin": 3
-  },
-  {
-    "PackageId": "Product Security Developer",
-    "PackageVersion": "4.4.5",
-    "PackageProjectUrl": "https://maida.org",
-    "License": "parsing the driver won\u0027t do anything, we need to parse the primary TCP driver!",
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Corporate Paradigm Administrator",
@@ -483,13 +357,6 @@
     "LicenseInformationOrigin": 1
   },
   {
-    "PackageId": "Dynamic Brand Officer",
-    "PackageVersion": "1.1.5",
-    "PackageProjectUrl": "https://shayne.name",
-    "License": "If we transmit the application, we can get to the SAS application through the wireless SAS application!",
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "Global Usability Manager",
     "PackageVersion": "6.7.0",
     "PackageProjectUrl": "https://alexandra.info",
@@ -509,13 +376,6 @@
     "PackageProjectUrl": "https://aurelia.info",
     "License": "We need to hack the mobile SMS circuit!",
     "LicenseInformationOrigin": 1
-  },
-  {
-    "PackageId": "Direct Group Consultant",
-    "PackageVersion": "8.8.0",
-    "PackageProjectUrl": "https://alana.org",
-    "License": "I\u0027ll index the neural SDD bus, that should bus the SDD bus!",
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Senior Implementation Associate",
@@ -553,13 +413,6 @@
     "LicenseInformationOrigin": 2
   },
   {
-    "PackageId": "Customer Applications Developer",
-    "PackageVersion": "5.6.1",
-    "PackageProjectUrl": "http://kiley.org",
-    "License": "We need to connect the bluetooth RAM application!",
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "Direct Data Consultant",
     "PackageVersion": "6.3.3",
     "PackageProjectUrl": "https://heath.name",
@@ -572,13 +425,6 @@
     "PackageProjectUrl": "http://armani.name",
     "License": "Try to compress the TCP microchip, maybe it will compress the auxiliary microchip!",
     "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "Direct Research Assistant",
-    "PackageVersion": "5.9.7",
-    "PackageProjectUrl": "http://danial.org",
-    "License": "Try to connect the TCP circuit, maybe it will connect the back-end circuit!",
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Legacy Optimization Assistant",
@@ -677,13 +523,6 @@
     "PackageProjectUrl": "http://alvena.net",
     "License": "If we transmit the firewall, we can get to the SQL firewall through the wireless SQL firewall!",
     "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "Legacy Implementation Assistant",
-    "PackageVersion": "2.1.6",
-    "PackageProjectUrl": "https://liana.net",
-    "License": "Use the auxiliary RSS sensor, then you can program the auxiliary sensor!",
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Customer Functionality Manager",
