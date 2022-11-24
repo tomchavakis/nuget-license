@@ -1,12 +1,5 @@
 ﻿[
   {
-    "PackageId": "Legacy Metrics Planner",
-    "PackageVersion": "9.5.0",
-    "PackageProjectUrl": "http://madisyn.name",
-    "License": "I\u0027ll override the haptic AGP feed, that should feed the AGP feed!",
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "Principal Functionality Agent",
     "PackageVersion": "1.5.3",
     "ValidationErrors": [
@@ -29,45 +22,6 @@
     ],
     "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
     "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "Legacy Creative Liaison",
-    "PackageVersion": "0.4.6",
-    "ValidationErrors": [
-      {
-        "Error": "Mervin",
-        "Context": "http://celestine.info"
-      },
-      {
-        "Error": "Amalia",
-        "Context": "https://shanelle.info"
-      },
-      {
-        "Error": "Sheila",
-        "Context": "http://darrell.info"
-      },
-      {
-        "Error": "Alec",
-        "Context": "https://candice.biz"
-      },
-      {
-        "Error": "Linnea",
-        "Context": "http://everardo.info"
-      },
-      {
-        "Error": "Daryl",
-        "Context": "https://jerrod.com"
-      },
-      {
-        "Error": "Laila",
-        "Context": "http://caleigh.net"
-      },
-      {
-        "Error": "Adolfo",
-        "Context": "http://daisha.biz"
-      }
-    ],
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Lead Markets Designer",
@@ -368,50 +322,6 @@
     "LicenseInformationOrigin": 0
   },
   {
-    "PackageId": "Direct Accounts Associate",
-    "PackageVersion": "3.2.6",
-    "PackageProjectUrl": "https://vesta.com",
-    "ValidationErrors": [
-      {
-        "Error": "Buck",
-        "Context": "http://taryn.com"
-      },
-      {
-        "Error": "Hilton",
-        "Context": "http://isabel.com"
-      },
-      {
-        "Error": "Rogers",
-        "Context": "https://bertrand.biz"
-      },
-      {
-        "Error": "Annetta",
-        "Context": "https://remington.org"
-      },
-      {
-        "Error": "Efrain",
-        "Context": "http://davion.org"
-      },
-      {
-        "Error": "Merle",
-        "Context": "https://abigayle.org"
-      },
-      {
-        "Error": "Jerod",
-        "Context": "https://vicenta.info"
-      },
-      {
-        "Error": "Kayli",
-        "Context": "https://shaun.net"
-      },
-      {
-        "Error": "Antwan",
-        "Context": "https://hazel.net"
-      }
-    ],
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "Senior Brand Developer",
     "PackageVersion": "4.4.1",
     "PackageProjectUrl": "http://adelbert.net",
@@ -449,25 +359,6 @@
     "LicenseInformationOrigin": 2
   },
   {
-    "PackageId": "National Accounts Liaison",
-    "PackageVersion": "7.2.6",
-    "ValidationErrors": [
-      {
-        "Error": "Cedrick",
-        "Context": "https://zachariah.net"
-      },
-      {
-        "Error": "Marcelle",
-        "Context": "https://adah.org"
-      },
-      {
-        "Error": "Barney",
-        "Context": "http://erica.org"
-      }
-    ],
-    "LicenseInformationOrigin": 3
-  },
-  {
     "PackageId": "Regional Accounts Technician",
     "PackageVersion": "2.8.7",
     "ValidationErrors": [
@@ -493,65 +384,6 @@
       }
     ],
     "LicenseInformationOrigin": 0
-  },
-  {
-    "PackageId": "Global Response Associate",
-    "PackageVersion": "1.9.8",
-    "ValidationErrors": [
-      {
-        "Error": "Sandra",
-        "Context": "http://antonina.com"
-      },
-      {
-        "Error": "Willow",
-        "Context": "https://jason.org"
-      },
-      {
-        "Error": "Orland",
-        "Context": "http://rigoberto.com"
-      },
-      {
-        "Error": "Laney",
-        "Context": "http://eryn.org"
-      },
-      {
-        "Error": "Amari",
-        "Context": "http://viviane.net"
-      },
-      {
-        "Error": "Kelley",
-        "Context": "http://doris.net"
-      },
-      {
-        "Error": "Kennedy",
-        "Context": "https://milo.net"
-      }
-    ],
-    "License": "The RSS bandwidth is down, compress the wireless bandwidth so we can compress the RSS bandwidth!",
-    "LicenseInformationOrigin": 3
-  },
-  {
-    "PackageId": "Dynamic Marketing Consultant",
-    "PackageVersion": "2.4.9",
-    "ValidationErrors": [
-      {
-        "Error": "Angie",
-        "Context": "https://ardella.info"
-      },
-      {
-        "Error": "Melissa",
-        "Context": "https://sandra.biz"
-      },
-      {
-        "Error": "Pearline",
-        "Context": "https://noble.net"
-      },
-      {
-        "Error": "Dusty",
-        "Context": "https://verlie.com"
-      }
-    ],
-    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Global Optimization Representative",
