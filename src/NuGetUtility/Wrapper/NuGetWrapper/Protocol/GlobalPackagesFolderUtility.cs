@@ -29,7 +29,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
             using PackageReaderBase pkgStream = cachedPackage.PackageReader;
             var manifest = Manifest.ReadFrom(pkgStream.GetNuspec(), true);
 
-            if (manifest.Metadata.Version.ToString() != identity.Version.ToString())
+            if (manifest.Metadata.Version.Equals(identity.Version))
             {
                 return null;
             }
