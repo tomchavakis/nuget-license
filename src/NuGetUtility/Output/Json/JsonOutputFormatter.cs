@@ -34,7 +34,7 @@ namespace NuGetUtility.Output.Json
 
             if (_skipIgnoredPackages)
             {
-                results.Where(r => r.LicenseInformationOrigin != LicenseInformationOrigin.Ignored);
+                results = results.Where(r => r.LicenseInformationOrigin != LicenseInformationOrigin.Ignored).ToList();
             }
 
             await JsonSerializer.SerializeAsync(stream, results, _options);
