@@ -25,7 +25,7 @@ jobs:
 
       - name: restore
         run: dotnet restore
-      - uses: nowsprinting/check-version-format-action@v3.2.3
+      - uses: nowsprinting/check-version-format-action@v3.2.4
         id: version
         with:
           prefix: 'v'
