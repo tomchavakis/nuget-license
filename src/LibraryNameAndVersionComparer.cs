@@ -9,7 +9,7 @@ namespace NugetUtility
 
         public bool Equals([AllowNull] LibraryInfo x, [AllowNull] LibraryInfo y)
         {
-            return x?.PackageName == y?.PackageName 
+            return x?.PackageName == y?.PackageName
                 && x?.PackageVersion == y?.PackageVersion;
         }
 
