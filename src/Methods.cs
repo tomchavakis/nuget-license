@@ -1,14 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
@@ -36,7 +29,7 @@ namespace NugetUtility
         private readonly PackageOptions _packageOptions;
         private readonly XmlSerializer _serializer;
 
-        internal static bool IgnoreSslCertificateErrorCallback(HttpRequestMessage message, System.Security.Cryptography.X509Certificates.X509Certificate2 cert, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
+        public static bool IgnoreSslCertificateErrorCallback(HttpRequestMessage message, System.Security.Cryptography.X509Certificates.X509Certificate2 cert, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors)
             => true;
 
         // Search nuspec in local cache (Fix for linux distro)
@@ -61,7 +54,7 @@ namespace NugetUtility
                     }
                     httpClientHandler.Proxy = myProxy;
                 }
-                
+
                 if (packageOptions.IgnoreSslCertificateErrors)
                 {
                     httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => IgnoreSslCertificateErrorCallback(message, cert, chain, sslPolicyErrors);
@@ -92,9 +85,10 @@ namespace NugetUtility
             {
                 try
                 {
-                    if (_packageOptions.PackageFilter.Any (p => string.Compare (p, packageWithVersion.Name, StringComparison.OrdinalIgnoreCase) == 0) ||
-                        _packageOptions.PackageRegex?.IsMatch (packageWithVersion.Name) == true) {
-                        WriteOutput (packageWithVersion.Name + " skipped by filter.", logLevel : LogLevel.Verbose);
+                    if (_packageOptions.PackageFilter.Any(p => string.Compare(p, packageWithVersion.Name, StringComparison.OrdinalIgnoreCase) == 0) ||
+                        _packageOptions.PackageRegex?.IsMatch(packageWithVersion.Name) == true)
+                    {
+                        WriteOutput(packageWithVersion.Name + " skipped by filter.", logLevel: LogLevel.Verbose);
                         continue;
                     }
 
@@ -108,7 +102,7 @@ namespace NugetUtility
 
                     if (!string.IsNullOrEmpty(version))
                     {
-                    WriteOutput($"Package '{packageWithVersion.Name}', version requirement {packageWithVersion.Version} resolved to version {version} from local cache", logLevel: LogLevel.Verbose);
+                        WriteOutput($"Package '{packageWithVersion.Name}', version requirement {packageWithVersion.Version} resolved to version {version} from local cache", logLevel: LogLevel.Verbose);
                         var lookupKey = Tuple.Create(packageWithVersion.Name, version);
 
                         if (_requestCache.TryGetValue(lookupKey, out var package))
@@ -129,7 +123,7 @@ namespace NugetUtility
                                 await ReadNuspecFile(project, licenses, packageWithVersion.Name, version, lookupKey, textReader);
                                 continue;
                             }
-                            catch(Exception exc)
+                            catch (Exception exc)
                             {
                                 // Ignore errors in local cache, try online call
                                 WriteOutput($"ReadNuspecFile error, package '{packageWithVersion.Name}', version {version}", exc, LogLevel.Verbose);
@@ -195,7 +189,7 @@ namespace NugetUtility
                                 throw;
                             }
                         }
-                    } 
+                    }
                     else
                     {
                         WriteOutput($"Package '{packageWithVersion.Name}', version {packageWithVersion.Version} not found in NuGet", logLevel: LogLevel.Error);
@@ -240,7 +234,7 @@ namespace NugetUtility
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        private async Task <IEnumerable<string>> GetVersionsFromLocalCacheAsync(string packageName)
+        private async Task<IEnumerable<string>> GetVersionsFromLocalCacheAsync(string packageName)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             // Nuget saves packages in lowercase format, and we should look for lowercase folders only to allow Linux case-sensitive folder enumeration to succeed
@@ -253,7 +247,7 @@ namespace NugetUtility
             {
                 return Enumerable.Empty<string>();
             }
-            
+
         }
 
         private async Task<IEnumerable<string>> GetVersionsFromNugetServerAsync(string packageName)
@@ -387,7 +381,7 @@ namespace NugetUtility
             }
 
             IEnumerable<string> references = Array.Empty<string>();
-         
+
             // First use project.assets.json, if this option is enabled.
             if (_packageOptions.UseProjectAssetsJson)
             {
@@ -669,29 +663,36 @@ namespace NugetUtility
             _licenseFileCache[key] = await GetNuGetPackageFileResult<string>(package.Metadata.Id, package.Metadata.Version, package.Metadata.License.Text);
         }
 
-        private string GetOutputFilename (string defaultName) {
-            string outputDir = GetExportDirectory ();
+        private string GetOutputFilename(string defaultName)
+        {
+            string outputDir = GetExportDirectory();
 
-            return string.IsNullOrWhiteSpace (_packageOptions.OutputFileName) ?
-                Path.Combine (outputDir, defaultName) :
-                Path.Combine (outputDir, _packageOptions.OutputFileName);
+            return string.IsNullOrWhiteSpace(_packageOptions.OutputFileName) ?
+                Path.Combine(outputDir, defaultName) :
+                Path.Combine(outputDir, _packageOptions.OutputFileName);
         }
 
-        public string GetExportDirectory () {
+        public string GetExportDirectory()
+        {
             string outputDirectory = string.Empty;
-            if (!string.IsNullOrWhiteSpace (_packageOptions.OutputDirectory)) {
-                if (_packageOptions.OutputDirectory.EndsWith ('/')) {
-                    outputDirectory = Path.GetDirectoryName (_packageOptions.OutputDirectory);
-                } else {
-                    outputDirectory = Path.GetDirectoryName (_packageOptions.OutputDirectory + "/");
+            if (!string.IsNullOrWhiteSpace(_packageOptions.OutputDirectory))
+            {
+                if (_packageOptions.OutputDirectory.EndsWith('/'))
+                {
+                    outputDirectory = Path.GetDirectoryName(_packageOptions.OutputDirectory);
+                }
+                else
+                {
+                    outputDirectory = Path.GetDirectoryName(_packageOptions.OutputDirectory + "/");
 
                 }
-                if (!Directory.Exists (outputDirectory)) {
-                    Directory.CreateDirectory (outputDirectory);
+                if (!Directory.Exists(outputDirectory))
+                {
+                    Directory.CreateDirectory(outputDirectory);
                 }
             }
 
-            outputDirectory = string.IsNullOrWhiteSpace (outputDirectory) ? Environment.CurrentDirectory : outputDirectory;
+            outputDirectory = string.IsNullOrWhiteSpace(outputDirectory) ? Environment.CurrentDirectory : outputDirectory;
 
             return outputDirectory;
         }
@@ -935,9 +936,11 @@ namespace NugetUtility
             return result;
         }
 
-        public async Task ExportLicenseTexts (List<LibraryInfo> infos) {
-            var directory = GetExportDirectory ();
-            foreach (var info in infos.Where (i => !string.IsNullOrEmpty (i.LicenseUrl))) {
+        public async Task ExportLicenseTexts(List<LibraryInfo> infos)
+        {
+            var directory = GetExportDirectory();
+            foreach (var info in infos.Where(i => !string.IsNullOrEmpty(i.LicenseUrl)))
+            {
                 var source = info.LicenseUrl;
                 var outpath = Path.Combine(directory, $"{info.PackageName}_{info.PackageVersion}.txt");
                 var outpathhtml = Path.Combine(directory, $"{info.PackageName}_{info.PackageVersion}.html");
@@ -1054,10 +1057,10 @@ namespace NugetUtility
                 uri = uri.Replace("/blob/", "/raw/", StringComparison.Ordinal);
             }
 
-          /*  if (uri.Contains("/dotnet/corefx/", StringComparison.Ordinal))
-            {
-                uri = uri.Replace("/dotnet/corefx/", "/dotnet/runtime/", StringComparison.Ordinal);
-            }*/
+            /*  if (uri.Contains("/dotnet/corefx/", StringComparison.Ordinal))
+              {
+                  uri = uri.Replace("/dotnet/corefx/", "/dotnet/runtime/", StringComparison.Ordinal);
+              }*/
 
             return uri;
         }

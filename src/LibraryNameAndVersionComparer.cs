@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace NugetUtility
 {
@@ -9,7 +8,7 @@ namespace NugetUtility
 
         public bool Equals([AllowNull] LibraryInfo x, [AllowNull] LibraryInfo y)
         {
-            return x?.PackageName == y?.PackageName 
+            return x?.PackageName == y?.PackageName
                 && x?.PackageVersion == y?.PackageVersion;
         }
 

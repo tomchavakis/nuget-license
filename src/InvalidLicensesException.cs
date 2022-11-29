@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace NugetUtility
+﻿namespace NugetUtility
 {
     public class InvalidLicensesException<T> : Exception
     {
