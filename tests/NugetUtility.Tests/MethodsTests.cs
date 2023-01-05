@@ -244,6 +244,24 @@ namespace NugetUtility.Tests
         }
 
         [Test]
+        public async Task GetPackages_ExcludedLicenses_Should_Throw_On_MIT()
+        {
+            var methods = new Methods(new PackageOptions
+            {
+                ProjectsFilterOption = @"../../../SampleProjectFilters.json",
+                ExcludedLicenseTypesOption = @"../../../SampleExcludedLicenses.json",
+                ProjectDirectory = TestSetup.ThisProjectSolutionPath
+            });
+
+            var result = await methods.GetPackages();
+            var validationResult = methods.ValidateLicenses(result);
+
+            result.Should().HaveCount(1);
+            validationResult.IsValid.Should().BeFalse();
+            validationResult.InvalidPackages.Count.Should().Be(1);
+        }
+
+        [Test]
         public async Task GetPackages_InputJson_Should_OnlyParseGivenProjects()
         {
             var methods = new Methods(new PackageOptions
