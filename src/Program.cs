@@ -60,7 +60,7 @@ namespace NugetUtility
 
             try
             {
-                Methods methods = new Methods(options);
+                var methods = new Methods(options);
                 var projectsWithPackages = await methods.GetPackages();
                 var mappedLibraryInfo = methods.MapPackagesToLibraryInfo(projectsWithPackages);
                 
@@ -104,7 +104,7 @@ namespace NugetUtility
 
         private static void HandleInvalidLicenses(Methods methods, List<LibraryInfo> libraries, PackageOptions options)
         {
-            var invalidPackages = methods.ValidateLicenses(libraries);
+            var invalidPackages = methods.ValidateAllowedLicenses(libraries);
 
             if (!invalidPackages.IsValid)
             {

@@ -510,7 +510,7 @@ namespace NugetUtility
                 }
             };
         }
-
+        
         public IValidationResult<KeyValuePair<string, Package>> ValidateLicenses(Dictionary<string, PackageList> projectPackages)
         {
             if (_packageOptions.AllowedLicenseType.Count == 0)
@@ -558,14 +558,14 @@ namespace NugetUtility
             return new ValidationResult<KeyValuePair<string, Package>> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
         }
 
-        public ValidationResult<LibraryInfo> ValidateLicenses(List<LibraryInfo> projectPackages)
+        public ValidationResult<LibraryInfo> ValidateAllowedLicenses(List<LibraryInfo> projectPackages)
         {
             if (_packageOptions.AllowedLicenseType.Count == 0)
             {
                 return new ValidationResult<LibraryInfo> { IsValid = true };
             }
 
-            WriteOutput(() => $"Starting {nameof(ValidateLicenses)}...", logLevel: LogLevel.Verbose);
+            WriteOutput(() => $"Starting {nameof(ValidateAllowedLicenses)}...", logLevel: LogLevel.Verbose);
             
             var invalidPackages = projectPackages
                 .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
@@ -588,6 +588,27 @@ namespace NugetUtility
                 .ToList();
 
             return new ValidationResult<LibraryInfo> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
+        }
+
+        public ValidationResult<LibraryInfo> ValidateExcludedLicenses(List<LibraryInfo> projectPackages)
+        {
+            if (_packageOptions.ExcludedLicenseType.Count == 0)
+            {
+                return new ValidationResult<LibraryInfo> { IsValid = true };
+            }
+
+            WriteOutput(() => $"Starting {nameof(ValidateAllowedLicenses)}...", logLevel: LogLevel.Verbose);
+
+            var invalidPackages = projectPackages
+                .Where(LicenseIsExcluded)
+                .ToList();
+            
+            return new ValidationResult<LibraryInfo> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
+
+            bool LicenseIsExcluded(LibraryInfo l)
+            {
+                return _packageOptions.ExcludedLicenseType.Contains(l.LicenseType);
+            }
         }
 
         private async Task<T> GetNuGetPackageFileResult<T>(string packageName, string versionNumber, string fileInPackage)

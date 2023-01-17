@@ -244,24 +244,6 @@ namespace NugetUtility.Tests
         }
 
         [Test]
-        public async Task GetPackages_ExcludedLicenses_Should_Throw_On_MIT()
-        {
-            var methods = new Methods(new PackageOptions
-            {
-                ProjectsFilterOption = @"../../../SampleProjectFilters.json",
-                ExcludedLicenseTypesOption = @"../../../SampleExcludedLicenses.json",
-                ProjectDirectory = TestSetup.ThisProjectSolutionPath
-            });
-
-            var result = await methods.GetPackages();
-            var validationResult = methods.ValidateLicenses(result);
-
-            result.Should().HaveCount(1);
-            validationResult.IsValid.Should().BeFalse();
-            validationResult.InvalidPackages.Count.Should().Be(1);
-        }
-
-        [Test]
         public async Task GetPackages_InputJson_Should_OnlyParseGivenProjects()
         {
             var methods = new Methods(new PackageOptions
@@ -277,6 +259,30 @@ namespace NugetUtility.Tests
             result.Should().HaveCount(1);
             validationResult.IsValid.Should().BeFalse();
             validationResult.InvalidPackages.Count.Should().Be(5);
+        }
+
+        [Test]
+        public async Task GetPackages_ExcludedLicenses_Should_Throw_On_MIT()
+        {
+            var methods = new Methods(new PackageOptions
+            {
+                ProjectsFilterOption = @"../../../SampleProjectFilters.json",
+                ExcludedLicenseTypesOption = @"../../../SampleExcludedLicenses.json",
+                ProjectDirectory = TestSetup.ThisProjectSolutionPath,
+                Timeout = 10
+            });
+
+            var result = await methods.GetPackages();
+            var mapped = methods.MapPackagesToLibraryInfo(result);
+            var validationResult = methods.ValidateExcludedLicenses(mapped);
+
+            result.Should().HaveCount(1);
+            validationResult.IsValid.Should().BeFalse();
+            validationResult.InvalidPackages.Should().HaveCount(2);
+            validationResult.InvalidPackages.ElementAt(0).LicenseType.Should().Be("MIT");
+            validationResult.InvalidPackages.ElementAt(0).PackageName.Should().Be("HtmlAgilityPack");
+            validationResult.InvalidPackages.ElementAt(1).LicenseType.Should().Be("MIT");
+            validationResult.InvalidPackages.ElementAt(1).PackageName.Should().Be("Newtonsoft.Json");
         }
 
         [Test]
