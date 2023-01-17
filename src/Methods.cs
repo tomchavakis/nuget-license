@@ -558,7 +558,14 @@ namespace NugetUtility
             return new ValidationResult<KeyValuePair<string, Package>> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
         }
 
-        public ValidationResult<LibraryInfo> ValidateAllowedLicenses(List<LibraryInfo> projectPackages)
+        public ValidationResult<LibraryInfo> ValidateLicenses(List<LibraryInfo> projectPackages)
+        {
+            return _packageOptions.AllowedLicenseType.Any()
+                ? ValidateAllowedLicenses(projectPackages)
+                : ValidateForbiddenLicenses(projectPackages);
+        }
+
+        private ValidationResult<LibraryInfo> ValidateAllowedLicenses(List<LibraryInfo> projectPackages)
         {
             if (_packageOptions.AllowedLicenseType.Count == 0)
             {
@@ -590,7 +597,7 @@ namespace NugetUtility
             return new ValidationResult<LibraryInfo> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
         }
 
-        public ValidationResult<LibraryInfo> ValidateForbiddenLicenses(List<LibraryInfo> projectPackages)
+        private ValidationResult<LibraryInfo> ValidateForbiddenLicenses(List<LibraryInfo> projectPackages)
         {
             if (_packageOptions.ForbiddenLicenseType.Count == 0)
             {
@@ -605,9 +612,9 @@ namespace NugetUtility
             
             return new ValidationResult<LibraryInfo> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
 
-            bool LicenseIsForbidden(LibraryInfo l)
+            bool LicenseIsForbidden(LibraryInfo info)
             {
-                return _packageOptions.ForbiddenLicenseType.Contains(l.LicenseType);
+                return _packageOptions.ForbiddenLicenseType.Contains(info.LicenseType);
             }
         }
 

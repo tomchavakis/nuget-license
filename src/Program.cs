@@ -104,7 +104,7 @@ namespace NugetUtility
 
         private static void HandleInvalidLicenses(Methods methods, List<LibraryInfo> libraries, PackageOptions options)
         {
-            var invalidPackages = methods.ValidateAllowedLicenses(libraries);
+            var invalidPackages = methods.ValidateLicenses(libraries);
 
             if (!invalidPackages.IsValid)
             {
