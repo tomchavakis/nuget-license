@@ -81,11 +81,11 @@ namespace NugetUtility.Tests {
         }
 
         [Test]
-        public async Task Main_Should_ReturnOne_When_AllowedLicenses_Is_Passed_With_ExcludedLicenses() {
-            var args = "--allowed-license-types ../../../SampleAllowedLicenses.json --excluded-license-types ../../../SampleExcludedLicenses.json";
+        public async Task Main_Should_ReturnOne_When_AllowedLicenses_Is_Passed_With_ForbiddenLicenses() {
+            var args = "--allowed-license-types ../../../SampleAllowedLicenses.json --forbidden-license-types ../../../SampleForbiddenLicenses.json";
             var status = await Program.Main (args.Split (' '));
 
-            status.Should ().Be (1);
+            status.Should ().Be(1);
         }
 
 #if WINDOWS

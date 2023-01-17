@@ -262,19 +262,19 @@ namespace NugetUtility.Tests
         }
 
         [Test]
-        public async Task GetPackages_ExcludedLicenses_Should_Throw_On_MIT()
+        public async Task GetPackages_ForbiddenLicenses_Should_Throw_On_MIT()
         {
             var methods = new Methods(new PackageOptions
             {
                 ProjectsFilterOption = @"../../../SampleProjectFilters.json",
-                ExcludedLicenseTypesOption = @"../../../SampleExcludedLicenses.json",
+                ForbiddenLicenseTypesOption = @"../../../SampleForbiddenLicenses.json",
                 ProjectDirectory = TestSetup.ThisProjectSolutionPath,
                 Timeout = 10
             });
 
             var result = await methods.GetPackages();
             var mapped = methods.MapPackagesToLibraryInfo(result);
-            var validationResult = methods.ValidateExcludedLicenses(mapped);
+            var validationResult = methods.ValidateForbiddenLicenses(mapped);
 
             result.Should().HaveCount(1);
             validationResult.IsValid.Should().BeFalse();

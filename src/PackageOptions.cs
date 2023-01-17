@@ -14,17 +14,17 @@ namespace NugetUtility
         private readonly Regex UserRegexRegex = new Regex("^([/#])(.+)\\1$");
 
         private ICollection<string> _allowedLicenseTypes = new Collection<string>();
-        private ICollection<string> _excludedLicenseTypes = new Collection<string>();
+        private ICollection<string> _forbiddenLicenseTypes = new Collection<string>();
         private ICollection<LibraryInfo> _manualInformation = new Collection<LibraryInfo>();
         private ICollection<string> _projectFilter = new Collection<string>();
         private ICollection<string> _packagesFilter = new Collection<string>();
         private Dictionary<string, string> _customLicenseToUrlMappings = new();
 
-        [Option("allowed-license-types", Default = null, HelpText = "Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed. Cannot be used alongside 'excluded-license-types'.")]
+        [Option("allowed-license-types", Default = null, HelpText = "Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed. Cannot be used alongside 'forbidden-license-types'.")]
         public string AllowedLicenseTypesOption { get; set; }
         
-        [Option("excluded-license-types", Default = null, HelpText = "Simple json file of a text array of excluded licenses, if no file is given, none are assumed excluded. Cannot be used alongside 'allowed-license-types'.")]
-        public string ExcludedLicenseTypesOption { get; set; }
+        [Option("forbidden-license-types", Default = null, HelpText = "Simple json file of a text array of forbidden licenses, if no file is given, none are assumed forbidden. Cannot be used alongside 'allowed-license-types'.")]
+        public string ForbiddenLicenseTypesOption { get; set; }
 
         [Option("include-project-file", Default = false, HelpText = "Adds project file path to information when enabled.")]
         public bool IncludeProjectFile { get; set; }
@@ -126,13 +126,13 @@ namespace NugetUtility
             }
         }
 
-        public ICollection<string> ExcludedLicenseType
+        public ICollection<string> ForbiddenLicenseType
         {
             get
             {
-                if (_excludedLicenseTypes.Any()) { return _excludedLicenseTypes; }
+                if (_forbiddenLicenseTypes.Any()) { return _forbiddenLicenseTypes; }
 
-                return _excludedLicenseTypes = ReadListFromFile<string>(ExcludedLicenseTypesOption);
+                return _forbiddenLicenseTypes = ReadListFromFile<string>(ForbiddenLicenseTypesOption);
             }
         }
 

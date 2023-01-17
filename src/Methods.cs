@@ -590,24 +590,24 @@ namespace NugetUtility
             return new ValidationResult<LibraryInfo> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
         }
 
-        public ValidationResult<LibraryInfo> ValidateExcludedLicenses(List<LibraryInfo> projectPackages)
+        public ValidationResult<LibraryInfo> ValidateForbiddenLicenses(List<LibraryInfo> projectPackages)
         {
-            if (_packageOptions.ExcludedLicenseType.Count == 0)
+            if (_packageOptions.ForbiddenLicenseType.Count == 0)
             {
                 return new ValidationResult<LibraryInfo> { IsValid = true };
             }
 
-            WriteOutput(() => $"Starting {nameof(ValidateAllowedLicenses)}...", logLevel: LogLevel.Verbose);
+            WriteOutput(() => $"Starting {nameof(ValidateForbiddenLicenses)}...", logLevel: LogLevel.Verbose);
 
             var invalidPackages = projectPackages
-                .Where(LicenseIsExcluded)
+                .Where(LicenseIsForbidden)
                 .ToList();
             
             return new ValidationResult<LibraryInfo> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
 
-            bool LicenseIsExcluded(LibraryInfo l)
+            bool LicenseIsForbidden(LibraryInfo l)
             {
-                return _packageOptions.ExcludedLicenseType.Contains(l.LicenseType);
+                return _packageOptions.ForbiddenLicenseType.Contains(l.LicenseType);
             }
         }
 
