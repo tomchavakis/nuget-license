@@ -18,14 +18,14 @@ namespace NugetUtility.Tests
             var defaultKey2 = LicenseToUrlMappings.Default.Keys.ElementAt(1);
             var testMappings = new Dictionary<string, string>
             {
-                {"url1","license1" },
-                {"url2","license1" },
-                {defaultKey2, "license2" }
+                {"url1", "license1"},
+                {"url2", "license1"},
+                {defaultKey2, "license2"}
             };
             var testFile = "test-mappings.json";
             File.WriteAllText(testFile, JsonConvert.SerializeObject(testMappings));
 
-            var options = new PackageOptions { LicenseToUrlMappingsOption = testFile };
+            var options = new PackageOptions {LicenseToUrlMappingsOption = testFile};
 
             options.LicenseToUrlMappingsDictionary.Should().HaveCount(LicenseToUrlMappings.Default.Count + 2)
                 .And.ContainKey("url1").And.ContainKey(defaultKey1).And.Contain(defaultKey2, "license2");
@@ -35,22 +35,22 @@ namespace NugetUtility.Tests
         [Test]
         public void UniqueMappingsOption_When_Set_Should_Replace_Default_Mappings()
         {
-            var options = new PackageOptions { UniqueOnly = true };
-            
+            var options = new PackageOptions {UniqueOnly = true};
+
             options.UniqueOnly.Should().BeTrue();
         }
 
         [Test]
         public void ProxyOption_ProxyURL_Included()
         {
-            var options = new PackageOptions{ ProxyURL = "http://proxy:8080"};
+            var options = new PackageOptions {ProxyURL = "http://proxy:8080"};
             options.ProxyURL.Should().Be("http://proxy:8080");
         }
 
         [Test]
         public void ProxyOption_ProxySystemAuth_Should_Be_True()
         {
-            var options = new PackageOptions { ProxySystemAuth = true};
+            var options = new PackageOptions {ProxySystemAuth = true};
             options.ProxySystemAuth.Should().Be(true);
         }
 
@@ -76,21 +76,27 @@ namespace NugetUtility.Tests
                 PackagesFilterOption = "/(?/",
             };
 
-            Assert.Throws(typeof(ArgumentException), () => { var regex = options.PackageRegex; });
+            Assert.Throws(typeof(ArgumentException), () =>
+            {
+                var regex = options.PackageRegex;
+            });
         }
 
         [Test]
         [TestCase(@"../../../DoesNotExist.json")]
         [TestCase("/.*validregexinvalidpath#")]
         [TestCase("#invalidpath/")]
-        public void PackagesFilterOption_IncorrectPackagesFilterPath_Should_Throw_FileNotFoundException (string option) {
-            
+        public void PackagesFilterOption_IncorrectPackagesFilterPath_Should_Throw_FileNotFoundException(string option)
+        {
             var options = new PackageOptions
             {
                 PackagesFilterOption = option,
             };
 
-            Assert.Throws(typeof(FileNotFoundException), () => { var regex = options.PackageFilter; });
+            Assert.Throws(typeof(FileNotFoundException), () =>
+            {
+                var regex = options.PackageFilter;
+            });
         }
     }
 }

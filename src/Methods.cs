@@ -519,6 +519,7 @@ namespace NugetUtility
             }
 
             WriteOutput(() => $"Starting {nameof(ValidateLicenses)}...", logLevel: LogLevel.Verbose);
+            
             var invalidPackages = projectPackages
                 .SelectMany(kvp => kvp.Value.Select(p => new KeyValuePair<string, Package>(kvp.Key, p.Value)))
                 .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
@@ -565,6 +566,7 @@ namespace NugetUtility
             }
 
             WriteOutput(() => $"Starting {nameof(ValidateLicenses)}...", logLevel: LogLevel.Verbose);
+            
             var invalidPackages = projectPackages
                 .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
                 {

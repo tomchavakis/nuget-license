@@ -20,10 +20,10 @@ namespace NugetUtility
         private ICollection<string> _packagesFilter = new Collection<string>();
         private Dictionary<string, string> _customLicenseToUrlMappings = new();
 
-        [Option("allowed-license-types", Default = null, HelpText = "Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed")]
+        [Option("allowed-license-types", Default = null, HelpText = "Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed. Cannot be used alongside 'excluded-license-types'.")]
         public string AllowedLicenseTypesOption { get; set; }
         
-        [Option("excluded-license-types", Default = null, HelpText = "Simple json file of a text array of excluded licenses, if no file is given, none are assumed excluded")]
+        [Option("excluded-license-types", Default = null, HelpText = "Simple json file of a text array of excluded licenses, if no file is given, none are assumed excluded. Cannot be used alongside 'allowed-license-types'.")]
         public string ExcludedLicenseTypesOption { get; set; }
 
         [Option("include-project-file", Default = false, HelpText = "Adds project file path to information when enabled.")]

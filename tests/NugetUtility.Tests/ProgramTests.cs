@@ -80,6 +80,14 @@ namespace NugetUtility.Tests {
                 .Should ().Contain (l => l.PackageName == "ASamplePackage");
         }
 
+        [Test]
+        public async Task Main_Should_ReturnOne_When_AllowedLicenses_Is_Passed_With_ExcludedLicenses() {
+            var args = "--allowed-license-types ../../../SampleAllowedLicenses.json --excluded-license-types ../../../SampleExcludedLicenses.json";
+            var status = await Program.Main (args.Split (' '));
+
+            status.Should ().Be (1);
+        }
+
 #if WINDOWS
         [Test]
         public async Task Main_Should_Run_For_This_Solution_With_Custom_Outfile_FullPath () {
