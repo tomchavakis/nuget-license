@@ -5,15 +5,21 @@ namespace NugetUtility
 {
     public class InvalidLicensesException<T> : Exception
     {
-        public InvalidLicensesException(IValidationResult<T> validationResult, ICollection<string> allowedLicenses)
-            : base(GetMessage(validationResult, allowedLicenses))
+        public InvalidLicensesException(ValidationResult<T> validationResult, PackageOptions options)
+            : base(GetMessage(validationResult, options))
         {
         }
 
-        private static string GetMessage(IValidationResult<T> validationResult, ICollection<string> allowedLicenses)
+        private static string GetMessage(
+            IValidationResult<T> validationResult,
+            PackageOptions options)
         {
-            allowedLicenses ??= Array.Empty<string>();
-            var message = $"Only the following licenses are allowed: {string.Join(", ", allowedLicenses.ToArray())}{Environment.NewLine}";
+            var allowedLicenses = options?.AllowedLicenseType ?? Array.Empty<string>();
+            var forbiddenLicenses = options?.ForbiddenLicenseType ?? Array.Empty<string>();
+            
+            var message = allowedLicenses.Any()
+                ? $"Only the following licenses are allowed: {string.Join(", ", allowedLicenses.ToArray())}{Environment.NewLine}"
+                : $"The following licenses are forbidden: {string.Join(", ", forbiddenLicenses.ToArray())}{Environment.NewLine}";
 
             if (validationResult is IValidationResult<KeyValuePair<string, Package>> packageValidation)
             {

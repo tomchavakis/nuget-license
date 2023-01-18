@@ -108,7 +108,7 @@ namespace NugetUtility
 
             if (!invalidPackages.IsValid)
             {
-                throw new InvalidLicensesException<LibraryInfo>(invalidPackages, options.AllowedLicenseType);
+                throw new InvalidLicensesException<LibraryInfo>(invalidPackages, options);
             }
         }
     }
