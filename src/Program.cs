@@ -34,10 +34,10 @@ namespace NugetUtility
                 return 1;
             }
 
-            if (options.ForbiddenLicenseType.Any() && !options.AllowedLicenseType.Any())
+            if (options.ForbiddenLicenseType.Any() && options.AllowedLicenseType.Any())
             {
                 Console.WriteLine("ERROR(S):");
-                Console.WriteLine("--convert-html-to-text\tThis option requires the --export-license-texts option.");
+                Console.WriteLine("--allowed-license-types\tCannot be used with the --forbidden-license-types option.");
 
                 return 1;
             }
