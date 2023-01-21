@@ -510,7 +510,7 @@ namespace NugetUtility
                 }
             };
         }
-
+        
         public IValidationResult<KeyValuePair<string, Package>> ValidateLicenses(Dictionary<string, PackageList> projectPackages)
         {
             if (_packageOptions.AllowedLicenseType.Count == 0)
@@ -519,6 +519,7 @@ namespace NugetUtility
             }
 
             WriteOutput(() => $"Starting {nameof(ValidateLicenses)}...", logLevel: LogLevel.Verbose);
+            
             var invalidPackages = projectPackages
                 .SelectMany(kvp => kvp.Value.Select(p => new KeyValuePair<string, Package>(kvp.Key, p.Value)))
                 .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
@@ -559,12 +560,20 @@ namespace NugetUtility
 
         public ValidationResult<LibraryInfo> ValidateLicenses(List<LibraryInfo> projectPackages)
         {
+            return _packageOptions.AllowedLicenseType.Any()
+                ? ValidateAllowedLicenses(projectPackages)
+                : ValidateForbiddenLicenses(projectPackages);
+        }
+
+        private ValidationResult<LibraryInfo> ValidateAllowedLicenses(List<LibraryInfo> projectPackages)
+        {
             if (_packageOptions.AllowedLicenseType.Count == 0)
             {
                 return new ValidationResult<LibraryInfo> { IsValid = true };
             }
 
-            WriteOutput(() => $"Starting {nameof(ValidateLicenses)}...", logLevel: LogLevel.Verbose);
+            WriteOutput(() => $"Starting {nameof(ValidateAllowedLicenses)}...", logLevel: LogLevel.Verbose);
+            
             var invalidPackages = projectPackages
                 .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
                 {
@@ -586,6 +595,27 @@ namespace NugetUtility
                 .ToList();
 
             return new ValidationResult<LibraryInfo> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
+        }
+
+        private ValidationResult<LibraryInfo> ValidateForbiddenLicenses(List<LibraryInfo> projectPackages)
+        {
+            if (_packageOptions.ForbiddenLicenseType.Count == 0)
+            {
+                return new ValidationResult<LibraryInfo> { IsValid = true };
+            }
+
+            WriteOutput(() => $"Starting {nameof(ValidateForbiddenLicenses)}...", logLevel: LogLevel.Verbose);
+
+            var invalidPackages = projectPackages
+                .Where(LicenseIsForbidden)
+                .ToList();
+            
+            return new ValidationResult<LibraryInfo> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
+
+            bool LicenseIsForbidden(LibraryInfo info)
+            {
+                return _packageOptions.ForbiddenLicenseType.Contains(info.LicenseType);
+            }
         }
 
         private async Task<T> GetNuGetPackageFileResult<T>(string packageName, string versionNumber, string fileInPackage)

@@ -15,17 +15,23 @@ namespace NugetUtility.Tests
         [Test]
         public void Should_Format_Exceptions_On_NewLines_With_Allowed_Header(bool hasAllowed)
         {
-            var result = new ValidationResult<KeyValuePair<string,Package>>
+            var result = new ValidationResult<KeyValuePair<string, Package>>
             {
                 IsValid = false,
                 InvalidPackages = new List<KeyValuePair<string, Package>>
                 {
-                    new KeyValuePair<string, Package>(@"c:\some\project.csproj",new Package{ Metadata = new Metadata {  Id = "BadLicense", Version = "0.1.0"} }),
-                    new KeyValuePair<string, Package>(@"c:\some\project.csproj",new Package{ Metadata = new Metadata {  Id = "BadLicense2", Version = "0.1.0"} }),
-                    new KeyValuePair<string, Package>(@"c:\some\project.csproj",new Package{ Metadata = new Metadata {  Id = "BadLicense3", Version = "0.1.0"} }),
+                    new(@"c:\some\project.csproj", new Package {Metadata = new Metadata {Id = "BadLicense", Version = "0.1.0"}}),
+                    new(@"c:\some\project.csproj", new Package {Metadata = new Metadata {Id = "BadLicense2", Version = "0.1.0"}}),
+                    new(@"c:\some\project.csproj", new Package {Metadata = new Metadata {Id = "BadLicense3", Version = "0.1.0"}}),
                 }
             };
-            var exception = new InvalidLicensesException<KeyValuePair<string,Package>>(result, !hasAllowed ? null : new List<string> { "MIT" });
+
+            var options = new PackageOptions
+            {
+                AllowedLicenseTypesOption = @"../../../SampleAllowedLicenses.json"
+            };
+            
+            var exception = new InvalidLicensesException<KeyValuePair<string, Package>>(result, !hasAllowed ? null : options);
 
             exception.Should().NotBeNull();
             exception.Message.Split(Environment.NewLine)

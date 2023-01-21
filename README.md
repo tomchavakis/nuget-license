@@ -33,7 +33,8 @@ Usage: dotnet-project-licenses [options]
   <tr><td> -m, --md </td><td>(Default: false) Save licenses list in a markdown file (licenses.md)</td></tr>
   <tr><td> --include-project-file </td><td>(Default: false) Add project file path to information when enabled</td></tr>
   <tr><td> -l, --log-level </td><td>(Default: Error) Set log level for output display. Options: Error,Warning,Information,Verbose</td></tr>
-  <tr><td> --allowed-license-types </td><td>Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed</td></tr>
+  <tr><td> --allowed-license-types </td><td>Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed. Cannot be used alongside 'forbidden-license-types'.</td></tr>
+  <tr><td> --forbidden-license-types </td><td>Simple json file of a text array of forbidden licenses, if no file is given, none are assumed forbidden. Cannot be used alongside 'allowed-license-types'.</td></tr>
   <tr><td> --manual-package-information</td><td>Simple json file of an array of LibraryInfo objects for manually determined packages</td></tr>
   <tr><td> --licenseurl-to-license-mappings</td><td>Simple json file of Dictionary<string,string> to override default mappings</td></tr>
   <tr><td> -t, --include-transitive </td><td>Include distinct transitive package licenses per project file</td></tr>

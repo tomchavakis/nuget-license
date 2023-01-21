@@ -14,13 +14,17 @@ namespace NugetUtility
         private readonly Regex UserRegexRegex = new Regex("^([/#])(.+)\\1$");
 
         private ICollection<string> _allowedLicenseTypes = new Collection<string>();
+        private ICollection<string> _forbiddenLicenseTypes = new Collection<string>();
         private ICollection<LibraryInfo> _manualInformation = new Collection<LibraryInfo>();
         private ICollection<string> _projectFilter = new Collection<string>();
         private ICollection<string> _packagesFilter = new Collection<string>();
-        private Dictionary<string, string> _customLicenseToUrlMappings = new Dictionary<string, string>();
+        private Dictionary<string, string> _customLicenseToUrlMappings = new();
 
-        [Option("allowed-license-types", Default = null, HelpText = "Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed")]
+        [Option("allowed-license-types", Default = null, HelpText = "Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed. Cannot be used alongside 'forbidden-license-types'.")]
         public string AllowedLicenseTypesOption { get; set; }
+        
+        [Option("forbidden-license-types", Default = null, HelpText = "Simple json file of a text array of forbidden licenses, if no file is given, none are assumed forbidden. Cannot be used alongside 'allowed-license-types'.")]
+        public string ForbiddenLicenseTypesOption { get; set; }
 
         [Option("include-project-file", Default = false, HelpText = "Adds project file path to information when enabled.")]
         public bool IncludeProjectFile { get; set; }
@@ -94,20 +98,20 @@ namespace NugetUtility
             get
             {
                 return new List<Example>() {
-            new Example ("Simple", new PackageOptions { ProjectDirectory = "~/Projects/test-project" }),
-            new Example ("VS Solution", new PackageOptions { ProjectDirectory = "~/Projects/test-project/project.sln" }),
-            new Example ("Unique VS Solution to Custom JSON File", new PackageOptions {
+                    new Example ("Simple", new PackageOptions { ProjectDirectory = "~/Projects/test-project" }),
+                    new Example ("VS Solution", new PackageOptions { ProjectDirectory = "~/Projects/test-project/project.sln" }),
+                    new Example ("Unique VS Solution to Custom JSON File", new PackageOptions {
                         ProjectDirectory = "~/Projects/test-project/project.sln",
                         UniqueOnly = true,
                         JsonOutput = true,
                         OutputFileName = @"~/Projects/another-folder/licenses.json"
-                        }),
-            new Example("Export all license texts in a specific directory with verbose log", new PackageOptions
-            {
-                LogLevelThreshold = LogLevel.Verbose,
-                OutputDirectory = "~/Projects/exports",
-                ExportLicenseTexts = true,
-            }),
+                    }),
+                    new Example("Export all license texts in a specific directory with verbose log", new PackageOptions
+                    {
+                        LogLevelThreshold = LogLevel.Verbose,
+                        OutputDirectory = "~/Projects/exports",
+                        ExportLicenseTexts = true,
+                    }),
                 };
             }
         }
@@ -119,6 +123,16 @@ namespace NugetUtility
                 if (_allowedLicenseTypes.Any()) { return _allowedLicenseTypes; }
 
                 return _allowedLicenseTypes = ReadListFromFile<string>(AllowedLicenseTypesOption);
+            }
+        }
+
+        public ICollection<string> ForbiddenLicenseType
+        {
+            get
+            {
+                if (_forbiddenLicenseTypes.Any()) { return _forbiddenLicenseTypes; }
+
+                return _forbiddenLicenseTypes = ReadListFromFile<string>(ForbiddenLicenseTypesOption);
             }
         }
 

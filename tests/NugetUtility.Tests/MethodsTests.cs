@@ -262,6 +262,53 @@ namespace NugetUtility.Tests
         }
 
         [Test]
+        public async Task ValidateLicenses_ForbiddenLicenses_Should_Be_Invalid()
+        {
+            var methods = new Methods(new PackageOptions
+            {
+                ProjectsFilterOption = @"../../../SampleProjectFilters.json",
+                ForbiddenLicenseTypesOption = @"../../../SampleForbiddenLicenses.json",
+                ProjectDirectory = TestSetup.ThisProjectSolutionPath,
+                Timeout = 10
+            });
+
+            var result = await methods.GetPackages();
+            var mapped = methods.MapPackagesToLibraryInfo(result);
+            var validationResult = methods.ValidateLicenses(mapped);
+
+            validationResult.IsValid.Should().BeFalse();
+            validationResult.InvalidPackages.Should().HaveCount(2);
+            validationResult.InvalidPackages.ElementAt(0).LicenseType.Should().Be("MIT");
+            validationResult.InvalidPackages.ElementAt(0).PackageName.Should().Be("HtmlAgilityPack");
+            validationResult.InvalidPackages.ElementAt(1).LicenseType.Should().Be("MIT");
+            validationResult.InvalidPackages.ElementAt(1).PackageName.Should().Be("Newtonsoft.Json");
+        }
+
+        [Test]
+        public async Task ValidateLicenses_AllowedLicenses_Should_Be_Invalid()
+        {
+            var methods = new Methods(new PackageOptions
+            {
+                ProjectsFilterOption = @"../../../SampleProjectFilters.json",
+                AllowedLicenseTypesOption = @"../../../SampleAllowedLicenses.json",
+                ProjectDirectory = TestSetup.ThisProjectSolutionPath,
+                Timeout = 10
+            });
+
+            var result = await methods.GetPackages();
+            var mapped = methods.MapPackagesToLibraryInfo(result);
+            var validationResult = methods.ValidateLicenses(mapped);
+
+            validationResult.IsValid.Should().BeFalse();
+            validationResult.InvalidPackages.Should().HaveCount(5);
+            validationResult.InvalidPackages.ElementAt(0).LicenseType.Should().Be("License.md");
+            validationResult.InvalidPackages.ElementAt(1).LicenseType.Should().Be("MIT");
+            validationResult.InvalidPackages.ElementAt(2).LicenseType.Should().Be("MIT");
+            validationResult.InvalidPackages.ElementAt(3).LicenseType.Should().Be("Apache-2.0");
+            validationResult.InvalidPackages.ElementAt(4).LicenseType.Should().Be("MS-EULA");
+        }
+
+        [Test]
         public async Task GetProjectReferencesFromAssetsFile_Should_Resolve_Transitive_Assets()
         {
             var methods = new Methods(new PackageOptions
