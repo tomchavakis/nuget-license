@@ -292,7 +292,7 @@ namespace NugetUtility
             try
             {
                 VersionRange vRange = VersionRange.Parse(versionRange);
-                return vRange.FindBestMatch(versionList).ToString();
+                return vRange.FindBestMatch(versionList)?.ToString() ?? "";
             }
             catch (NullReferenceException)
             {
@@ -348,7 +348,7 @@ namespace NugetUtility
                 var references = this.GetProjectReferences(projectFile);
                 var referencedPackages = references.Select((package) =>
                 {
-                    var split = package.Split(',');
+                    var split = package.Split(',', 2);
                     return new PackageNameAndVersion { Name = split[0], Version = split[1] };
                 });
                 WriteOutput(Environment.NewLine + "Project:" + projectFile + Environment.NewLine, logLevel: LogLevel.Information);

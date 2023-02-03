@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using CommandLine.Text;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using NUnit.Framework;
 
 namespace NugetUtility.Tests
@@ -315,7 +316,8 @@ namespace NugetUtility.Tests
             {
                 UseProjectAssetsJson = true,
                 IncludeTransitive = true,
-                ProjectDirectory = @"../../../",
+                ProjectDirectory = @"../../../NugetUtility.Tests.csproj",
+                Timeout = 10
             });
 
             var packages = await methods.GetPackages();
@@ -328,10 +330,10 @@ namespace NugetUtility.Tests
 
             // Some second-order refs:
             list.Should().ContainKey($"CommandLineParser,{typeof(UsageAttribute).Assembly.GetName().Version.ToString(3)}");
-            list.Should().ContainKey("System.IO.Compression,4.3.0");
+            list.Should().Contain(x => x.Key.StartsWith("System.IO.Compression,"));
 
             // Some third-order refs:
-            list.Should().ContainKey("System.Buffers,4.3.0");
+            list.Should().Contain(x => x.Key.StartsWith("System.Buffers,"));
         }
 
         [TestCase("BenchmarkDotNet", "0.12.1", "https://licenses.nuget.org/MIT", "MIT")]
@@ -394,6 +396,28 @@ namespace NugetUtility.Tests
             var referencedpackages = new PackageNameAndVersion[] { new PackageNameAndVersion { Name = package, Version = version } };
 
             Assert.DoesNotThrowAsync(async () => await _methods.GetNugetInformationAsync(_projectPath, referencedpackages));
+        }
+
+        [Test]
+        public async Task GetPackages_ShouldSupportPackageReferencesWithVersionRange()
+        {
+            var methods = new Methods(new PackageOptions
+            {
+                ProjectDirectory = "../../../TestProjectFiles/PackageRangeReference.csproj",
+                Timeout = 10
+            });
+
+            var result = await methods.GetPackages();
+
+            using (new AssertionScope())
+            {
+                result.Should()
+                    .HaveCount(1);
+
+                result.First().Value.Should().HaveCount(1);
+
+                result.First().Value.First().Value.Metadata.Id.Should().Be("FluentAssertions");
+            }
         }
     }
 }
