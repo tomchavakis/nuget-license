@@ -64,7 +64,7 @@ namespace NugetUtility.Tests
             var packages = package.Split(';', StringSplitOptions.RemoveEmptyEntries);
             var referencedpackages = packages.Select(p => { var split = p.Split(","); return new PackageNameAndVersion { Name = split[0], Version = split[1] }; });
             var information = await _methods.GetNugetInformationAsync(_projectPath, referencedpackages);
-
+            
             packages.Select(x => x.Split(',')[0])
                 .Should()
                 .BeEquivalentTo(information.Select(x => x.Value.Metadata.Id));
@@ -120,7 +120,7 @@ namespace NugetUtility.Tests
             var packages = new Dictionary<string, PackageList>();
             packages.Add("packages", list);
             var info = _methods.MapPackagesToLibraryInfo(packages);
-            info.Count.Should().Equals(1);
+            info.Count.Should().Be(1);
         }
 
         [Test]
@@ -171,7 +171,7 @@ namespace NugetUtility.Tests
             var packages = new Dictionary<string, PackageList>();
             packages.Add("packages", list);
             var info = methods.MapPackagesToLibraryInfo(packages);
-            info.Count.Should().Equals(2);
+            info.Count.Should().Be(2);
         }
 
 
@@ -389,7 +389,7 @@ namespace NugetUtility.Tests
         [Test]
         public void HttpClient_IgnoreSslError_GetNugetInformationAsync(string package, string version)
         {
-            var methods = new Methods(new PackageOptions { ProjectDirectory = _projectPath, IgnoreSslCertificateErrors = true });
+            var methods = new Methods(new PackageOptions { ProjectDirectory = _projectPath, IgnoreSslCertificateErrors = true, Timeout = 10 });
 
             var referencedpackages = new PackageNameAndVersion[] { new PackageNameAndVersion { Name = package, Version = version } };
 

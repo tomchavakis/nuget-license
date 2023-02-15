@@ -42,7 +42,7 @@ namespace NugetUtility
         // Search nuspec in local cache (Fix for linux distro)
         private readonly string nugetRoot = Environment.GetEnvironmentVariable("NUGET_PACKAGES") ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".nuget", "packages");
 
-        public Methods(PackageOptions packageOptions)
+        public Methods(PackageOptions packageOptions, HttpClient httpClient = null)
         {
             if (_httpClient is null)
             {
@@ -67,11 +67,21 @@ namespace NugetUtility
                     httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => IgnoreSslCertificateErrorCallback(message, cert, chain, sslPolicyErrors);
                 }
 
-                _httpClient = new HttpClient(httpClientHandler)
+
+                if (httpClient != null)
                 {
-                    BaseAddress = new Uri(nugetUrl),
-                    Timeout = TimeSpan.FromSeconds(packageOptions.Timeout)
-                };
+                    _httpClient = httpClient;
+                    httpClient.BaseAddress = new Uri(nugetUrl);
+                    httpClient.Timeout = TimeSpan.FromSeconds(packageOptions.Timeout);
+                }
+                else
+                {
+                    _httpClient = new HttpClient(httpClientHandler)
+                    {
+                        BaseAddress = new Uri(nugetUrl),
+                        Timeout = TimeSpan.FromSeconds(packageOptions.Timeout)
+                    };
+                }
             }
 
             _serializer = new XmlSerializer(typeof(Package));
@@ -510,7 +520,7 @@ namespace NugetUtility
                 }
             };
         }
-        
+
         public IValidationResult<KeyValuePair<string, Package>> ValidateLicenses(Dictionary<string, PackageList> projectPackages)
         {
             if (_packageOptions.AllowedLicenseType.Count == 0)
@@ -519,7 +529,7 @@ namespace NugetUtility
             }
 
             WriteOutput(() => $"Starting {nameof(ValidateLicenses)}...", logLevel: LogLevel.Verbose);
-            
+
             var invalidPackages = projectPackages
                 .SelectMany(kvp => kvp.Value.Select(p => new KeyValuePair<string, Package>(kvp.Key, p.Value)))
                 .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
@@ -573,7 +583,7 @@ namespace NugetUtility
             }
 
             WriteOutput(() => $"Starting {nameof(ValidateAllowedLicenses)}...", logLevel: LogLevel.Verbose);
-            
+
             var invalidPackages = projectPackages
                 .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
                 {
@@ -609,7 +619,7 @@ namespace NugetUtility
             var invalidPackages = projectPackages
                 .Where(LicenseIsForbidden)
                 .ToList();
-            
+
             return new ValidationResult<LibraryInfo> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
 
             bool LicenseIsForbidden(LibraryInfo info)
@@ -1054,6 +1064,11 @@ namespace NugetUtility
                     {
                         // handled in !IsSuccessStatusCode, ignoring to continue export
                         break;
+                    }
+                    catch(TaskCanceledException ex)
+                    {
+                         WriteOutput($"Task Cancelled Exception during download of license url {info.LicenseUrl} exception {ex.Message}", logLevel: LogLevel.Verbose);
+                         break;
                     }
                 } while (true);
             }
