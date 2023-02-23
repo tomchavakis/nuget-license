@@ -33,7 +33,7 @@ jobs:
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: Setup dotnet 7.0.x
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: "7.0.x" # SDK Version to use (x uses the latest version).
           include-prerelease: true
