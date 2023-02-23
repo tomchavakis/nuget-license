@@ -1064,9 +1064,9 @@ namespace NugetUtility
                         // handled in !IsSuccessStatusCode, ignoring to continue export
                         break;
                     }
-                    catch(TaskCanceledException ex)
+                    catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException)
                     {
-                         WriteOutput($"Task Cancelled Exception during download of license url {info.LicenseUrl} exception {ex.Message}", logLevel: LogLevel.Verbose);
+                        WriteOutput($"{ex.GetType().Name} during download of license url {info.LicenseUrl} exception {ex.Message}", logLevel: LogLevel.Verbose);
                          break;
                     }
                 } while (true);
