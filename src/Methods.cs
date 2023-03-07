@@ -1085,22 +1085,16 @@ namespace NugetUtility
             return new MemoryStream(Encoding.UTF8.GetBytes(writer.ToString()));
         }
 
-        public void StripHtml(HtmlDocument htmlDocument, string sourceUrl, out HashSet<string> tagNamesToStrip)
+        private void StripHtml(HtmlDocument htmlDocument, string sourceUrl, out HashSet<string> tagNamesToStrip)
         {
             tagNamesToStrip = new HashSet<string>();
             if (sourceUrl.Contains("://opensource.org/license/", StringComparison.InvariantCultureIgnoreCase))
             {
                 HtmlNode node = htmlDocument.GetElementbyId("masthead");
-                if (node is not null)
-                {
-                    node.Remove();
-                }
+                node?.Remove();
 
                 node = htmlDocument.GetElementbyId("colophon");
-                if (node is not null)
-                {
-                    node.Remove();
-                }
+                node?.Remove();
             }
             else if (sourceUrl.Contains("://www.apache.org/licenses/LICENSE-2.0", StringComparison.InvariantCultureIgnoreCase))
             {
