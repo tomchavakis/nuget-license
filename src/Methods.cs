@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
+using HtmlAgilityPack;
 using Newtonsoft.Json;
 using NuGet.Versioning;
 using static NugetUtility.Utilities;
@@ -1052,7 +1053,7 @@ namespace NugetUtility
                             }
                             else
                             {
-                                outputStream = ConvertHtmlFileToText(outputStream);
+                                outputStream = ConvertHtmlFileToText(outputStream, source);
                             }
                         }
                         using var fileStream = File.OpenWrite(outpath);
@@ -1073,17 +1074,39 @@ namespace NugetUtility
             }
         }
 
-        public Stream ConvertHtmlFileToText(Stream htmlStream)
+        public Stream ConvertHtmlFileToText(Stream htmlStream, string sourceUrl)
         {
-            var htmlDocument = new HtmlAgilityPack.HtmlDocument();
+            var htmlDocument = new HtmlDocument();
 
             htmlDocument.Load(htmlStream);
-            string htmlStrippedText =
-                System.Web.HttpUtility.HtmlDecode(
-                    htmlDocument.DocumentNode.InnerText
-                );
+            StripHtml(htmlDocument, sourceUrl, out HashSet<string> tagNamesToStrip);
+            using StringWriter writer = new StringWriter();
+            new HtmlPrinter(htmlDocument, writer, _packageOptions.PageWidth, tagNamesToStrip).Print();
+            return new MemoryStream(Encoding.UTF8.GetBytes(writer.ToString()));
+        }
 
-            return new MemoryStream(Encoding.UTF8.GetBytes(htmlStrippedText));
+        public void StripHtml(HtmlDocument htmlDocument, string sourceUrl, out HashSet<string> tagNamesToStrip)
+        {
+            tagNamesToStrip = new HashSet<string>();
+            if (sourceUrl.Contains("://opensource.org/license/", StringComparison.InvariantCultureIgnoreCase))
+            {
+                HtmlNode node = htmlDocument.GetElementbyId("masthead");
+                if (node is not null)
+                {
+                    node.Remove();
+                }
+
+                node = htmlDocument.GetElementbyId("colophon");
+                if (node is not null)
+                {
+                    node.Remove();
+                }
+            }
+            else if (sourceUrl.Contains("://www.apache.org/licenses/LICENSE-2.0", StringComparison.InvariantCultureIgnoreCase))
+            {
+                tagNamesToStrip.Add("header");
+                tagNamesToStrip.Add("footer");
+            }
         }
 
         private bool IsGithub(string uri)
