@@ -92,6 +92,9 @@ namespace NugetUtility
         [Option("proxy-system-auth", Default = false, HelpText = "Use the system credentials for proxy authentication.")]
         public bool ProxySystemAuth { get; set; }
 
+        [Option('w', "page-width", Default = 80, HelpText = "The page width, in characters, to use for HTML to text conversion.")]
+        public int PageWidth { get; set; }
+
         [Usage(ApplicationAlias = "dotnet-project-licenses")]
         public static IEnumerable<Example> Examples
         {
