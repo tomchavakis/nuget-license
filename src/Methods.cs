@@ -371,8 +371,8 @@ namespace NugetUtility
 
         public string[] GetProjectExtensions(bool withWildcard = false) =>
             withWildcard ?
-            new[] { "*.csproj", "*.fsproj", "*.vbproj" } :
-            new[] { ".csproj", ".fsproj", ".vbproj" };
+            new[] { "*.csproj", "*.fsproj", "*.vbproj", "Directory.Build.props" } :
+            new[] { ".csproj", ".fsproj", ".vbproj", "Directory.Build.props" };
 
         /// <summary>
         /// Retreive the project references from csproj or fsproj file
@@ -865,11 +865,18 @@ namespace NugetUtility
                         .ToList();
                     break;
                 default:
-                    validProjects =
-                        GetProjectExtensions(withWildcard: true)
-                        .SelectMany(wildcardExtension =>
-                           Directory.EnumerateFiles(projectPath, wildcardExtension, SearchOption.AllDirectories)
-                        );
+                    if (pathInfo.Name == "Directory.Build.props")
+                    {
+                        validProjects = new string[] { projectPath };
+                    }
+                    else
+                    {
+                        validProjects =
+                            GetProjectExtensions(withWildcard: true)
+                                .SelectMany(wildcardExtension =>
+                                    Directory.EnumerateFiles(projectPath, wildcardExtension, SearchOption.AllDirectories)
+                                );
+                    }
                     break;
             }
 
