@@ -15,8 +15,18 @@
         "License": "MIT"
     },
     {
+        "Id": "Microsoft.TestPlatform.TestHost",
+        "Version": "17.5.0",
+        "License": "MIT"
+    },
+    {
         "Id": "Microsoft.TestPlatform.ObjectModel",
         "Version": "17.4.0",
+        "License": "MIT"
+    },
+    {
+        "Id": "Microsoft.TestPlatform.ObjectModel",
+        "Version": "17.5.0",
         "License": "MIT"
     },
     {
@@ -25,8 +35,18 @@
         "License": "MIT"
     },
     {
+        "Id": "Microsoft.NET.Test.Sdk",
+        "Version": "17.5.0",
+        "License": "MIT"
+    },
+    {
         "Id": "Microsoft.CodeCoverage",
         "Version": "17.4.0",
+        "License": "MIT"
+    },
+    {
+        "Id": "Microsoft.CodeCoverage",
+        "Version": "17.5.0",
         "License": "MIT"
     },
     {
