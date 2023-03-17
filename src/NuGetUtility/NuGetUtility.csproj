@@ -1,48 +1,48 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-        <IsPackable>true</IsPackable>
-        <PackAsTool>true</PackAsTool>
-        <PackageType>DotnetTool</PackageType>
-        <RepositoryType>git</RepositoryType>
-        <Version>100.100.100</Version>
-        <PackageId>dotnet-project-licenses</PackageId>
-        <ToolCommandName>dotnet-project-licenses</ToolCommandName>
-        <Authors>Tom Chavakis,Simon Ensslen</Authors>
-        <Company>-</Company>
-        <Title>.NET Core Tool to print and validate the licenses of dotnet project(s)</Title>
-        <PackageProjectUrl>https://github.com/tomchavakis/nuget-license</PackageProjectUrl>
-        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <GeneratePackageOnBuild Condition="'$(GeneratePackageOnBuild)' == ''">false</GeneratePackageOnBuild>
-        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <Configurations>Debug;Release;TestWindows</Configurations>
-        <Platforms>AnyCPU</Platforms>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <PackageType>DotnetTool</PackageType>
+    <RepositoryType>git</RepositoryType>
+    <Version>100.100.100</Version>
+    <PackageId>dotnet-project-licenses</PackageId>
+    <ToolCommandName>dotnet-project-licenses</ToolCommandName>
+    <Authors>Tom Chavakis,Simon Ensslen</Authors>
+    <Company>-</Company>
+    <Title>.NET Core Tool to print and validate the licenses of dotnet project(s)</Title>
+    <PackageProjectUrl>https://github.com/tomchavakis/nuget-license</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <GeneratePackageOnBuild Condition="'$(GeneratePackageOnBuild)' == ''">false</GeneratePackageOnBuild>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Configurations>Debug;Release;TestWindows</Configurations>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
-        <PackageReference Include="Microsoft.Build.Locator" Version="1.4.1" />
-        <PackageReference Include="NuGet.Commands" Version="6.4.0" />
-        <PackageReference Include="NuGet.Packaging" Version="6.4.0" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
+    <PackageReference Include="Microsoft.Build.Locator" Version="1.4.1" />
+    <PackageReference Include="NuGet.Commands" Version="6.5.0" />
+    <PackageReference Include="NuGet.Packaging" Version="6.5.0" />
+  </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-        <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.3.2" />
-    </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.3.2" />
+  </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-        <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.4.0" />
-    </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.5.0" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <Content Include="..\..\README.md">
-            <Pack>true</Pack>
-            <PackagePath>README.md</PackagePath>
-        </Content>
-    </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\README.md">
+      <Pack>true</Pack>
+      <PackagePath>README.md</PackagePath>
+    </Content>
+  </ItemGroup>
 
 </Project>
