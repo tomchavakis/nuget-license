@@ -12,9 +12,13 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
+
 using HtmlAgilityPack;
+
 using Newtonsoft.Json;
+
 using NuGet.Versioning;
+
 using static NugetUtility.Utilities;
 
 namespace NugetUtility
@@ -76,11 +80,11 @@ namespace NugetUtility
                 }
                 else
                 {
-                _httpClient = new HttpClient(httpClientHandler)
-                {
-                    BaseAddress = new Uri(nugetUrl),
-                    Timeout = TimeSpan.FromSeconds(packageOptions.Timeout)
-                };
+                    _httpClient = new HttpClient(httpClientHandler)
+                    {
+                        BaseAddress = new Uri(nugetUrl),
+                        Timeout = TimeSpan.FromSeconds(packageOptions.Timeout)
+                    };
                 }
             }
 
@@ -447,10 +451,13 @@ namespace NugetUtility
             }
 
             // merge in missing manual items where there wasn't a package
-            var missedManualItems = _packageOptions.ManualInformation.Except(libraryInfos, LibraryNameAndVersionComparer.Default);
-            foreach (var missed in missedManualItems)
+            if (!_packageOptions.ExcludeNonReferencedManualPackagesFromOutput)
             {
-                libraryInfos.Add(missed);
+                var missedManualItems = _packageOptions.ManualInformation.Except(libraryInfos, LibraryNameAndVersionComparer.Default);
+                foreach (var missed in missedManualItems)
+                {
+                    libraryInfos.Add(missed);
+                }
             }
 
             if (_packageOptions.UniqueOnly)
@@ -520,7 +527,7 @@ namespace NugetUtility
                 }
             };
         }
-        
+
         public IValidationResult<KeyValuePair<string, Package>> ValidateLicenses(Dictionary<string, PackageList> projectPackages)
         {
             if (_packageOptions.AllowedLicenseType.Count == 0)
@@ -529,7 +536,7 @@ namespace NugetUtility
             }
 
             WriteOutput(() => $"Starting {nameof(ValidateLicenses)}...", logLevel: LogLevel.Verbose);
-            
+
             var invalidPackages = projectPackages
                 .SelectMany(kvp => kvp.Value.Select(p => new KeyValuePair<string, Package>(kvp.Key, p.Value)))
                 .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
@@ -583,7 +590,7 @@ namespace NugetUtility
             }
 
             WriteOutput(() => $"Starting {nameof(ValidateAllowedLicenses)}...", logLevel: LogLevel.Verbose);
-            
+
             var invalidPackages = projectPackages
                 .Where(p => !_packageOptions.AllowedLicenseType.Any(allowed =>
                 {
@@ -619,7 +626,7 @@ namespace NugetUtility
             var invalidPackages = projectPackages
                 .Where(LicenseIsForbidden)
                 .ToList();
-            
+
             return new ValidationResult<LibraryInfo> { IsValid = invalidPackages.Count == 0, InvalidPackages = invalidPackages };
 
             bool LicenseIsForbidden(LibraryInfo info)
@@ -1068,7 +1075,7 @@ namespace NugetUtility
                     catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException)
                     {
                         WriteOutput($"{ex.GetType().Name} during download of license url {info.LicenseUrl} exception {ex.Message}", logLevel: LogLevel.Verbose);
-                         break;
+                        break;
                     }
                 } while (true);
             }
