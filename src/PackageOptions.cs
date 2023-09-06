@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+
 using CommandLine;
 using CommandLine.Text;
+
 using static NugetUtility.Utilities;
 
 namespace NugetUtility
@@ -22,7 +24,7 @@ namespace NugetUtility
 
         [Option("allowed-license-types", Default = null, HelpText = "Simple json file of a text array of allowable licenses, if no file is given, all are assumed allowed. Cannot be used alongside 'forbidden-license-types'.")]
         public string AllowedLicenseTypesOption { get; set; }
-        
+
         [Option("forbidden-license-types", Default = null, HelpText = "Simple json file of a text array of forbidden licenses, if no file is given, none are assumed forbidden. Cannot be used alongside 'allowed-license-types'.")]
         public string ForbiddenLicenseTypesOption { get; set; }
 
@@ -94,6 +96,9 @@ namespace NugetUtility
 
         [Option('w', "page-width", Default = 80, HelpText = "The page width, in characters, to use for HTML to text conversion.")]
         public int PageWidth { get; set; }
+
+        [Option("exclude-non-referenced-manual-packages-from-output", Default = false, HelpText = "Exclude non-referenced manual packages from output.")]
+        public bool ExcludeNonReferencedManualPackagesFromOutput { get; set; }
 
         [Usage(ApplicationAlias = "dotnet-project-licenses")]
         public static IEnumerable<Example> Examples
