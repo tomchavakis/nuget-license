@@ -97,7 +97,7 @@ namespace NugetUtility
         [Option('w', "page-width", Default = 80, HelpText = "The page width, in characters, to use for HTML to text conversion.")]
         public int PageWidth { get; set; }
 
-        [Option("exclude-non-referenced-manual-packages-from-output", Default = false, HelpText = "Exclude non-referenced manual packages from output.")]
+        [Option("exclude-non-referenced-manual-packages", Default = false, HelpText = "Exclude non-referenced manual packages.")]
         public bool ExcludeNonReferencedManualPackagesFromOutput { get; set; }
 
         [Usage(ApplicationAlias = "dotnet-project-licenses")]
