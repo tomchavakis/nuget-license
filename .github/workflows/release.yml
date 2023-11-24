@@ -20,6 +20,10 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: "7.0.x"
+      - name: Setup dotnet 8.0.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.x"
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
@@ -39,6 +43,8 @@ jobs:
         run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj -c Release --no-restore -o ./artifacts/net6 -f net6.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
       - name: Publish the application binaries (.net7)
         run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj -c Release --no-restore -o ./artifacts/net7 -f net7.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
+      - name: Publish the application binaries (.net8)
+        run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj -c Release --no-restore -o ./artifacts/net8 -f net8.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
       - name: Create nuget package
         run: dotnet pack ./src/NuGetUtility/NuGetUtility.csproj -c Release --no-build -o ./artifacts -p:Version=${{ steps.version.outputs.full_without_prefix }}
       

@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using Moq;
+using NSubstitute;
 using NuGetUtility.ReferencedPackagesReader;
 using NuGetUtility.Test.Helper.ShuffelledEnumerable;
 using NuGetUtility.Wrapper.MsBuildWrapper;
@@ -14,10 +14,10 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public void SetUp()
         {
             _fixture = new Fixture();
-            _msBuild = new Mock<IMsBuildAbstraction>();
-            _uut = new ProjectsCollector(_msBuild.Object);
+            _msBuild = Substitute.For<IMsBuildAbstraction>();
+            _uut = new ProjectsCollector(_msBuild);
         }
-        private Mock<IMsBuildAbstraction> _msBuild = null!;
+        private IMsBuildAbstraction _msBuild = null!;
         private ProjectsCollector _uut = null!;
         private Fixture _fixture = null!;
 
@@ -29,7 +29,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             IEnumerable<string> result = _uut.GetProjects(projectFile);
             CollectionAssert.AreEqual(new[] { projectFile }, result);
-            _msBuild.Verify(m => m.GetProjectsFromSolution(It.IsAny<string>()), Times.Never);
+            _msBuild.DidNotReceive().GetProjectsFromSolution(Arg.Any<string>());
         }
 
         [TestCase("A.sln")]
@@ -39,7 +39,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             _ = _uut.GetProjects(solutionFile);
 
-            _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
+            _msBuild.Received(1).GetProjectsFromSolution(solutionFile);
         }
 
         [TestCase("A.sln")]
@@ -47,12 +47,12 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [TestCase("C.sln")]
         public void GetProjects_Should_ReturnEmptyArray_If_SolutionContainsNoProjects(string solutionFile)
         {
-            _msBuild.Setup(m => m.GetProjectsFromSolution(It.IsAny<string>())).Returns(Enumerable.Empty<string>());
+            _msBuild.GetProjectsFromSolution(Arg.Any<string>()).Returns(Enumerable.Empty<string>());
 
             IEnumerable<string> result = _uut.GetProjects(solutionFile);
             CollectionAssert.AreEqual(Array.Empty<string>(), result);
 
-            _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
+            _msBuild.Received(1).GetProjectsFromSolution(solutionFile);
         }
 
         [TestCase("A.sln")]
@@ -61,12 +61,12 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public void GetProjects_Should_ReturnEmptyArray_If_SolutionContainsProjectsThatDontExist(string solutionFile)
         {
             IEnumerable<string> projects = _fixture.CreateMany<string>();
-            _msBuild.Setup(m => m.GetProjectsFromSolution(It.IsAny<string>())).Returns(projects);
+            _msBuild.GetProjectsFromSolution(Arg.Any<string>()).Returns(projects);
 
             IEnumerable<string> result = _uut.GetProjects(solutionFile);
             CollectionAssert.AreEqual(Array.Empty<string>(), result);
 
-            _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
+            _msBuild.Received(1).GetProjectsFromSolution(solutionFile);
         }
 
         [TestCase("A.sln")]
@@ -76,12 +76,12 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             string[] projects = _fixture.CreateMany<string>().ToArray();
             CreateFiles(projects);
-            _msBuild.Setup(m => m.GetProjectsFromSolution(It.IsAny<string>())).Returns(projects);
+            _msBuild.GetProjectsFromSolution(Arg.Any<string>()).Returns(projects);
 
             IEnumerable<string> result = _uut.GetProjects(solutionFile);
             CollectionAssert.AreEqual(projects, result);
 
-            _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
+            _msBuild.Received(1).GetProjectsFromSolution(solutionFile);
         }
 
         [TestCase("A.sln")]
@@ -94,13 +94,13 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             CreateFiles(existingProjects);
 
-            _msBuild.Setup(m => m.GetProjectsFromSolution(It.IsAny<string>()))
+            _msBuild.GetProjectsFromSolution(Arg.Any<string>())
                 .Returns(existingProjects.Concat(missingProjects).Shuffle(54321));
 
             IEnumerable<string> result = _uut.GetProjects(solutionFile);
             CollectionAssert.AreEquivalent(existingProjects, result);
 
-            _msBuild.Verify(m => m.GetProjectsFromSolution(solutionFile), Times.Once);
+            _msBuild.Received(1).GetProjectsFromSolution(solutionFile);
         }
 
         [Test]

@@ -47,7 +47,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
             Assert.That(result.Count, Is.EqualTo(3));
             string[] titles = result.Select(metadata => metadata.Id).ToArray();
-            Assert.That(titles.Contains("Moq"), Is.True);
+            Assert.That(titles.Contains("NSubstitute"), Is.True);
             Assert.That(titles.Contains("Castle.Core"), Is.True);
             Assert.That(titles.Contains("System.Diagnostics.EventLog"), Is.True);
         }

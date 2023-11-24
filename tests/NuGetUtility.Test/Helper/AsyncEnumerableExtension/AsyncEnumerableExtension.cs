@@ -7,10 +7,10 @@
             return new AsyncEnumerable<T>(synchronous);
         }
 
-        public static async Task<IEnumerable<T>> Synchronize<T>(this IAsyncEnumerable<T> async)
+        public static async Task<IEnumerable<T>> Synchronize<T>(this IAsyncEnumerable<T> asyncEnumerable)
         {
             var list = new List<T>();
-            await foreach (T? item in async)
+            await foreach (T? item in asyncEnumerable)
             {
                 lock (list)
                 {

@@ -23,7 +23,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
         {
             try
             {
-                IPackageSearchMetadata result = await _metadataResource.GetMetadataAsync(new NuGet.Packaging.Core.PackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString())),
+                IPackageSearchMetadata result = await _metadataResource.GetMetadataAsync(new NuGet.Packaging.Core.PackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString()!)),
                     _cacheContext,
                     new NullLogger(),
                     cancellationToken);
@@ -35,9 +35,9 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
             }
         }
 
-        private class WrappedPackageSearchMetadata : IPackageMetadata
+        private sealed class WrappedPackageSearchMetadata : IPackageMetadata
         {
-            private IPackageSearchMetadata _searchMetadata;
+            private readonly IPackageSearchMetadata _searchMetadata;
 
             public WrappedPackageSearchMetadata(IPackageSearchMetadata searchMetadata)
             {
