@@ -10,10 +10,10 @@ namespace NuGetUtility.PackageInformationReader
             Identity = identity;
         }
 
-        public PackageMetadata(PackageIdentity identity, string licenseType)
+        public PackageMetadata(PackageIdentity identity, string licenseIdentifier, LicenseType licenseType)
         {
             Identity = identity;
-            LicenseMetadata = new LicenseMetadata(LicenseType.Expression, licenseType);
+            LicenseMetadata = new LicenseMetadata(licenseType, licenseIdentifier);
         }
 
         public PackageIdentity Identity { get; }

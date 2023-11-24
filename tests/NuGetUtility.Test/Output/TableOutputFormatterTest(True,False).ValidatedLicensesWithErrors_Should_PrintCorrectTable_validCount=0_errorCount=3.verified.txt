@@ -1,7 +1,7 @@
 ﻿+-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+---------------------+-----------+-----------------------+
 | Package                       | Version | License Information Origin | License Expression                                                                   | Package Project Url | Error     | Error Context         |
 +-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+---------------------+-----------+-----------------------+
-| Direct Intranet Facilitator   | 7.1.7   | Url                        | synthesizing the feed won't do anything, we need to index the auxiliary SMTP feed!   | https://garnet.net  | Alisha    | http://alyson.name    |
+| Direct Intranet Facilitator   | 7.1.7   | Unknown                    | synthesizing the feed won't do anything, we need to index the auxiliary SMTP feed!   | https://garnet.net  | Alisha    | http://alyson.name    |
 |                               |         |                            |                                                                                      |                     | Carmelo   | http://michele.name   |
 |                               |         |                            |                                                                                      |                     | Miles     | https://freddie.com   |
 |                               |         |                            |                                                                                      |                     | Kade      | https://jaunita.biz   |

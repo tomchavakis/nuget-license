@@ -66,7 +66,7 @@
       }
     ],
     "License": "synthesizing the feed won\u0027t do anything, we need to index the auxiliary SMTP feed!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Senior Brand Developer",
@@ -103,7 +103,7 @@
       }
     ],
     "License": "If we override the system, we can get to the CSS system through the neural CSS system!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "Regional Accounts Technician",

@@ -42,7 +42,7 @@
     "PackageVersion": "4.2.2",
     "PackageProjectUrl": "https://bettie.com",
     "License": "Try to generate the EXE array, maybe it will generate the mobile array!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Direct Intranet Facilitator",
@@ -87,7 +87,7 @@
       }
     ],
     "License": "synthesizing the feed won\u0027t do anything, we need to index the auxiliary SMTP feed!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   },
   {
     "PackageId": "Regional Accounts Technician",

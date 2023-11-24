@@ -171,7 +171,7 @@
         "Context": "https://verlie.com"
       }
     ],
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Human Usability Specialist",
@@ -305,7 +305,7 @@
       }
     ],
     "License": "The RSS bandwidth is down, compress the wireless bandwidth so we can compress the RSS bandwidth!",
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Senior Brand Developer",
@@ -342,7 +342,7 @@
       }
     ],
     "License": "If we override the system, we can get to the CSS system through the neural CSS system!",
-    "LicenseInformationOrigin": 2
+    "LicenseInformationOrigin": 3
   },
   {
     "PackageId": "National Accounts Liaison",
@@ -361,7 +361,7 @@
         "Context": "http://erica.org"
       }
     ],
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Direct Accounts Associate",
@@ -405,7 +405,7 @@
         "Context": "https://hazel.net"
       }
     ],
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Regional Accounts Technician",
@@ -627,7 +627,7 @@
         "Context": "http://daisha.biz"
       }
     ],
-    "LicenseInformationOrigin": 3
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Direct Intranet Facilitator",
@@ -672,6 +672,6 @@
       }
     ],
     "License": "synthesizing the feed won\u0027t do anything, we need to index the auxiliary SMTP feed!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   }
 ]

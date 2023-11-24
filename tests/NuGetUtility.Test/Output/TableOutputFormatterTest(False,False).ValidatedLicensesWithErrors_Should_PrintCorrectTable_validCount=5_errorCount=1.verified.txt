@@ -9,5 +9,5 @@
 | Future Identity Specialist        | 4.7.4   | Expression                 | If we back up the driver, we can get to the AI driver through the bluetooth AI driver! | http://della.biz    |           |                       |
 | International Mobility Technician | 3.7.5   | Expression                 | I'll override the digital SMTP interface, that should interface the SMTP interface!    | https://jayne.name  |           |                       |
 | Legacy Metrics Planner            | 9.5.0   | Ignored                    | I'll override the haptic AGP feed, that should feed the AGP feed!                      | http://madisyn.name |           |                       |
-| Principal Markets Executive       | 4.2.2   | Ignored                    | Try to generate the EXE array, maybe it will generate the mobile array!                | https://bettie.com  |           |                       |
+| Principal Markets Executive       | 4.2.2   | Overwrite                  | Try to generate the EXE array, maybe it will generate the mobile array!                | https://bettie.com  |           |                       |
 +-----------------------------------+---------+----------------------------+----------------------------------------------------------------------------------------+---------------------+-----------+-----------------------+

@@ -7,6 +7,13 @@
     "LicenseInformationOrigin": 0
   },
   {
+    "PackageId": "Principal Markets Executive",
+    "PackageVersion": "4.2.2",
+    "PackageProjectUrl": "https://bettie.com",
+    "License": "Try to generate the EXE array, maybe it will generate the mobile array!",
+    "LicenseInformationOrigin": 4
+  },
+  {
     "PackageId": "Future Identity Specialist",
     "PackageVersion": "4.7.4",
     "PackageProjectUrl": "http://della.biz",
@@ -39,7 +46,7 @@
     "PackageVersion": "6.0.7",
     "PackageProjectUrl": "http://antonette.org",
     "License": "I\u0027ll calculate the 1080p HDD system, that should system the HDD system!",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 1
   },
   {
     "PackageId": "Forward Integration Executive",
@@ -56,6 +63,13 @@
     "LicenseInformationOrigin": 1
   },
   {
+    "PackageId": "Dynamic Program Administrator",
+    "PackageVersion": "9.8.6",
+    "PackageProjectUrl": "https://malcolm.net",
+    "License": "I\u0027ll quantify the bluetooth SQL circuit, that should circuit the SQL circuit!",
+    "LicenseInformationOrigin": 4
+  },
+  {
     "PackageId": "Customer Research Associate",
     "PackageVersion": "4.6.5",
     "PackageProjectUrl": "http://wilmer.name",
@@ -67,7 +81,14 @@
     "PackageVersion": "8.4.8",
     "PackageProjectUrl": "https://carleton.info",
     "License": "Use the cross-platform THX system, then you can generate the cross-platform system!",
-    "LicenseInformationOrigin": 0
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Internal Operations Executive",
+    "PackageVersion": "1.8.1",
+    "PackageProjectUrl": "http://angel.info",
+    "License": "We need to back up the solid state XML application!",
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Corporate Marketing Associate",
@@ -77,18 +98,18 @@
     "LicenseInformationOrigin": 0
   },
   {
-    "PackageId": "District Intranet Strategist",
-    "PackageVersion": "2.2.2",
-    "PackageProjectUrl": "http://everett.name",
-    "License": "We need to reboot the virtual RSS alarm!",
-    "LicenseInformationOrigin": 2
-  },
-  {
     "PackageId": "Customer Assurance Officer",
     "PackageVersion": "0.3.1",
     "PackageProjectUrl": "https://kyla.biz",
     "License": "Try to override the EXE program, maybe it will override the mobile program!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "National Tactics Architect",
+    "PackageVersion": "6.7.8",
+    "PackageProjectUrl": "https://valentina.net",
+    "License": "The PNG protocol is down, index the digital protocol so we can index the PNG protocol!",
+    "LicenseInformationOrigin": 4
   },
   {
     "PackageId": "Chief Integration Architect",

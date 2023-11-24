@@ -71,7 +71,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             IEnumerable<PackageIdentity> searchedPackages = _customPackageInformation.Select(p => new PackageIdentity(p.Id, p.Version));
 
             (string project, ReferencedPackageWithContext[] result) = await PerformSearch(searchedPackages);
-            CheckResult(result, project, _customPackageInformation);
+            CheckResult(result, project, _customPackageInformation, LicenseType.Overwrite);
         }
 
         private async Task<(string Project, ReferencedPackageWithContext[] Result)> PerformSearch(
@@ -86,7 +86,8 @@ namespace NuGetUtility.Test.PackageInformationReader
 
         private static void CheckResult(ReferencedPackageWithContext[] result,
             string project,
-            IEnumerable<CustomPackageInformation> packages)
+            IEnumerable<CustomPackageInformation> packages,
+            LicenseType licenseType)
         {
             CollectionAssert.AreEquivalent(packages,
                 result.Select(s => new CustomPackageInformation(s.PackageInfo.Identity.Id,
@@ -95,6 +96,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             foreach (ReferencedPackageWithContext r in result)
             {
                 Assert.AreEqual(project, r.Context);
+                Assert.AreEqual(licenseType, r.PackageInfo.LicenseMetadata!.Type);
             }
         }
 
@@ -115,7 +117,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             });
 
             (string project, ReferencedPackageWithContext[] result) = await PerformSearch(searchedPackages);
-            CheckResult(result, project, searchedPackagesAsPackageInformation);
+            CheckResult(result, project, searchedPackagesAsPackageInformation, LicenseType.Expression);
 
             foreach (ISourceRepository repo in _repositories)
             {
@@ -167,7 +169,7 @@ namespace NuGetUtility.Test.PackageInformationReader
             IEnumerable<PackageIdentity> searchedPackages = searchedPackagesAsPackageInformation.Select(i => new PackageIdentity(i.Id, i.Version));
 
             (string project, ReferencedPackageWithContext[] result) = await PerformSearch(searchedPackages);
-            CheckResult(result, project, searchedPackagesAsPackageInformation);
+            CheckResult(result, project, searchedPackagesAsPackageInformation, LicenseType.Expression);
         }
 
         [Test]

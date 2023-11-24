@@ -67,11 +67,18 @@ namespace NuGetUtility.Test.LicenseValidator
             return packageInfo;
         }
 
-        private IPackageMetadata SetupPackageWithProperLicenseInformation(string packageId,
+        private IPackageMetadata SetupPackageWithExpressionLicenseInformation(string packageId,
             INuGetVersion packageVersion,
             string license)
         {
             return SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, LicenseType.Expression);
+        }
+
+        private IPackageMetadata SetupPackageWithOverwriteLicenseInformation(string packageId,
+            INuGetVersion packageVersion,
+            string license)
+        {
+            return SetupPackageWithLicenseInformationOfType(packageId, packageVersion, license, LicenseType.Overwrite);
         }
 
         private static IAsyncEnumerable<ReferencedPackageWithContext> CreateInput(IPackageMetadata metadata,
@@ -119,7 +126,7 @@ namespace NuGetUtility.Test.LicenseValidator
                 _fileDownloader,
                 _ignoredLicenses.Append(packageId.Substring(1)).ToArray());
 
-            IPackageMetadata package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, license);
+            IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, license);
 
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
@@ -255,7 +262,7 @@ namespace NuGetUtility.Test.LicenseValidator
 
         [Test]
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
-        public async Task ValidatingLicensesWithProperLicenseInformation_Should_GiveCorrectValidatedLicenseList(
+        public async Task ValidatingLicensesWithExpressionLicenseInformation_Should_GiveCorrectValidatedLicenseList(
             string packageId,
             INuGetVersion packageVersion,
             string license)
@@ -265,7 +272,7 @@ namespace NuGetUtility.Test.LicenseValidator
                 _fileDownloader,
                 _ignoredLicenses);
 
-            IPackageMetadata package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, license);
+            IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, license);
 
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
@@ -277,6 +284,34 @@ namespace NuGetUtility.Test.LicenseValidator
                             _projectUrl.ToString(),
                             license,
                             LicenseInformationOrigin.Expression)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithOverwriteLicenseInformation_Should_GiveCorrectValidatedLicenseList(
+            string packageId,
+            INuGetVersion packageVersion,
+            string license)
+        {
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
+                Array.Empty<string>(),
+                _fileDownloader,
+                _ignoredLicenses);
+
+            IPackageMetadata package = SetupPackageWithOverwriteLicenseInformation(packageId, packageVersion, license);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            license,
+                            LicenseInformationOrigin.Overwrite)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
@@ -348,7 +383,7 @@ namespace NuGetUtility.Test.LicenseValidator
 
         [Test]
         public async Task ValidatingLicensesWithNotSupportedLicenseMetadata_Should_GiveCorrectResult(
-            [EnumValuesExcept(LicenseType.Expression)] LicenseType licenseType)
+            [EnumValuesExcept(LicenseType.Expression, LicenseType.Overwrite)] LicenseType licenseType)
         {
             var fixture = new Fixture();
             fixture.Customizations.Add(new NuGetVersionBuilder());
@@ -416,12 +451,12 @@ namespace NuGetUtility.Test.LicenseValidator
 
         [Test]
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
-        public async Task ValidatingLicensesWithProperLicenseInformation_Should_GiveCorrectResult_If_NotAllowed(
+        public async Task ValidatingLicensesWithExpressionLicenseInformation_Should_GiveCorrectResult_If_NotAllowed(
             string packageId,
             INuGetVersion packageVersion,
             string license)
         {
-            IPackageMetadata package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, license);
+            IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, license);
 
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
@@ -444,12 +479,40 @@ namespace NuGetUtility.Test.LicenseValidator
 
         [Test]
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
-        public async Task ValidatingLicensesWithProperLicenseInformation_Should_GiveCorrectResult_If_Allowed(
+        public async Task ValidatingLicensesWithOverwriteLicenseInformation_Should_GiveCorrectResult_If_NotAllowed(
+            string packageId,
+            INuGetVersion packageVersion,
+            string license)
+        {
+            IPackageMetadata package = SetupPackageWithOverwriteLicenseInformation(packageId, packageVersion, license);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            license,
+                            LicenseInformationOrigin.Overwrite,
+                            new List<ValidationError>
+                            {
+                                new ValidationError($"License {license} not found in list of supported licenses",
+                                    _context)
+                            })
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithExpressionLicenseInformation_Should_GiveCorrectResult_If_Allowed(
             string packageId,
             INuGetVersion packageVersion)
         {
             string validLicense = _allowedLicenses.Shuffle(135643).First();
-            IPackageMetadata package = SetupPackageWithProperLicenseInformation(packageId, packageVersion, validLicense);
+            IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, validLicense);
 
             IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
 
@@ -461,6 +524,29 @@ namespace NuGetUtility.Test.LicenseValidator
                             _projectUrl.ToString(),
                             validLicense,
                             LicenseInformationOrigin.Expression)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithOverwriteLicenseInformation_Should_GiveCorrectResult_If_Allowed(
+            string packageId,
+            INuGetVersion packageVersion)
+        {
+            string validLicense = _allowedLicenses.Shuffle(135643).First();
+            IPackageMetadata package = SetupPackageWithOverwriteLicenseInformation(packageId, packageVersion, validLicense);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(LicenseValidatorTest.CreateInput(package, _context));
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            validLicense,
+                            LicenseInformationOrigin.Overwrite)
                     })
                     .Using(new LicenseValidationResultValueEqualityComparer()));
         }
