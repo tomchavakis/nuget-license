@@ -93,6 +93,6 @@
       }
     ],
     "License": "synthesizing the feed won\u0027t do anything, we need to index the auxiliary SMTP feed!",
-    "LicenseInformationOrigin": 1
+    "LicenseInformationOrigin": 2
   }
 ]

@@ -7,8 +7,8 @@ namespace NuGetUtility.Test.LicenseValidator
         public bool Equals(LicenseValidationResult? x, LicenseValidationResult? y)
         {
             if (ReferenceEquals(x, y)) return true;
-            if (ReferenceEquals(x, null)) return false;
-            if (ReferenceEquals(y, null)) return false;
+            if (x is null) return false;
+            if (y is null) return false;
             if (x.GetType() != y.GetType()) return false;
             return x.ValidationErrors.SequenceEqual(y.ValidationErrors) && (x.License == y.License) &&
                    (x.LicenseInformationOrigin == y.LicenseInformationOrigin) && (x.PackageId == y.PackageId) &&

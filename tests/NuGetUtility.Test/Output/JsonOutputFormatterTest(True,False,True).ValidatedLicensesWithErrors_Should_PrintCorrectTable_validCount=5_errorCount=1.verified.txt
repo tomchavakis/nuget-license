@@ -43,5 +43,12 @@
     "PackageProjectUrl": "https://jayne.name",
     "License": "I\u0027ll override the digital SMTP interface, that should interface the SMTP interface!",
     "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Principal Markets Executive",
+    "PackageVersion": "4.2.2",
+    "PackageProjectUrl": "https://bettie.com",
+    "License": "Try to generate the EXE array, maybe it will generate the mobile array!",
+    "LicenseInformationOrigin": 4
   }
 ]

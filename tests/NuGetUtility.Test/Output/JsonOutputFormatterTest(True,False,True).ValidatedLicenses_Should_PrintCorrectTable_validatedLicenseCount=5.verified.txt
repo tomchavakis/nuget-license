@@ -7,6 +7,13 @@
     "LicenseInformationOrigin": 0
   },
   {
+    "PackageId": "Principal Markets Executive",
+    "PackageVersion": "4.2.2",
+    "PackageProjectUrl": "https://bettie.com",
+    "License": "Try to generate the EXE array, maybe it will generate the mobile array!",
+    "LicenseInformationOrigin": 4
+  },
+  {
     "PackageId": "Future Identity Specialist",
     "PackageVersion": "4.7.4",
     "PackageProjectUrl": "http://della.biz",

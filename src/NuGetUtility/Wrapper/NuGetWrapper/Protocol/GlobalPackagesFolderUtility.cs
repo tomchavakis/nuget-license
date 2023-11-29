@@ -20,7 +20,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 
         public IWrappedPackageMetadata? GetPackage(PackageIdentity identity)
         {
-            DownloadResourceResult cachedPackage = OriginalGlobalPackagesFolderUtility.GetPackage(new OriginalPackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString())), _globalPackagesFolder);
+            DownloadResourceResult cachedPackage = OriginalGlobalPackagesFolderUtility.GetPackage(new OriginalPackageIdentity(identity.Id, new NuGetVersion(identity.Version.ToString()!)), _globalPackagesFolder);
             if (cachedPackage == null)
             {
                 return null;

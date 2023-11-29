@@ -59,7 +59,7 @@ namespace NuGetUtility.LicenseValidator
 
         private bool IsIgnoredPackage(PackageIdentity identity)
         {
-            return _ignoredPackages.Any(ignored => identity.Id.Like(ignored));
+            return Array.Exists(_ignoredPackages, ignored => identity.Id.Like(ignored));
         }
 
         private void AddOrUpdateLicense(
@@ -123,19 +123,20 @@ namespace NuGetUtility.LicenseValidator
             switch (info.LicenseMetadata!.Type)
             {
                 case LicenseType.Expression:
+                case LicenseType.Overwrite:
                     string licenseId = info.LicenseMetadata!.License;
                     if (IsLicenseValid(licenseId))
                     {
                         AddOrUpdateLicense(result,
                             info,
-                            LicenseInformationOrigin.Expression,
+                            ToLicenseOrigin(info.LicenseMetadata.Type),
                             info.LicenseMetadata.License);
                     }
                     else
                     {
                         AddOrUpdateLicense(result,
                             info,
-                            LicenseInformationOrigin.Expression,
+                            ToLicenseOrigin(info.LicenseMetadata.Type),
                             new ValidationError(GetLicenseNotAllowedMessage(info.LicenseMetadata.License), context),
                             info.LicenseMetadata.License);
                     }
@@ -227,6 +228,13 @@ namespace NuGetUtility.LicenseValidator
             return $"License {license} not found in list of supported licenses";
         }
 
-        private record LicenseNameAndVersion(string LicenseName, INuGetVersion Version);
+        private LicenseInformationOrigin ToLicenseOrigin(LicenseType type) => type switch
+        {
+            LicenseType.Overwrite => LicenseInformationOrigin.Overwrite,
+            LicenseType.Expression => LicenseInformationOrigin.Expression,
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, $"This conversion method only supports the {nameof(LicenseType.Overwrite)} and {nameof(LicenseType.Expression)} types for conversion")
+        };
+
+        private sealed record LicenseNameAndVersion(string LicenseName, INuGetVersion Version);
     }
 }
