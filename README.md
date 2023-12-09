@@ -1,4 +1,4 @@
-# Nuget License Utility 
+# Nuget License Utility [![release](https://github.com/sensslen/nuget-license/actions/workflows/release.yml/badge.svg)](https://github.com/sensslen/nuget-license/actions/workflows/release.yml) [![Tests](https://github.com/sensslen/nuget-license/actions/workflows/action.yml/badge.svg)](https://github.com/sensslen/nuget-license/actions/workflows/action.yml)
 
 A .net core tool to print and validate the licenses of a project. This tool supports .NET (Core), .NET Standard and .NET Framework Projects.
 
