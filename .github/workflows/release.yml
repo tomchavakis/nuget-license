@@ -49,7 +49,7 @@ jobs:
         run: dotnet pack ./src/NuGetUtility/NuGetUtility.csproj -c Release --no-build -o ./artifacts -p:Version=${{ steps.version.outputs.full_without_prefix }}
       
       - name: Zip artifacts
-        uses: thedoctor0/zip-release@0.7.5
+        uses: thedoctor0/zip-release@0.7.6
         with:
           type: 'zip'
           filename: 'release.zip'
