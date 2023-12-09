@@ -20,7 +20,7 @@ jobs:
             buildConfiguration: "Release"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup dotnet 6.0.x
         uses: actions/setup-dotnet@v3
         with:
@@ -59,7 +59,7 @@ jobs:
             dotnetVersion: "8.0.x"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup dotnet ${{ matrix.dotnetVersion }}
         uses: actions/setup-dotnet@v3
         with:
