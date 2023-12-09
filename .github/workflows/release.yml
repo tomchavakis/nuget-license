@@ -49,9 +49,11 @@ jobs:
         run: dotnet pack ./src/NuGetUtility/NuGetUtility.csproj -c Release --no-build -o ./artifacts -p:Version=${{ steps.version.outputs.full_without_prefix }}
       
       - name: Zip artifacts
-        uses: tomchavakis/action-zip@v0.1.1
+        uses: thedoctor0/zip-release@0.7.5
         with:
-          args: zip -qq -r ./release.zip ./artifacts
+          type: 'zip'
+          filename: 'release.zip'
+          path: ./artifacts
 
       - name: Release
         uses: softprops/action-gh-release@v1

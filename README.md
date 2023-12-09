@@ -1,26 +1,25 @@
-# Nuget License Utility [![Build Status](https://travis-ci.com/tomchavakis/nuget-license.svg?branch=develop)](https://travis-ci.com/tomchavakis/nuget-license.svg?branch=develop) [![NuGet](https://img.shields.io/nuget/v/dotnet-project-licenses.svg)](https://www.nuget.org/packages/dotnet-project-licenses)
+# Nuget License Utility 
 
-A .net core tool to print the licenses of a project. This tool supports .NET Core and .NET Standard and .NET Framework
-Projects.
+A .net core tool to print and validate the licenses of a project. This tool supports .NET (Core), .NET Standard and .NET Framework Projects.
 
-## dotnet-project-licenses tool
+## nuget-license tool
 
 ### Install tool
 
 ```ps
-dotnet tool install --global dotnet-project-licenses
+dotnet tool install --global nuget-license
 
 ```
 
 ### Uninstall tool
 
 ```ps
-dotnet tool uninstall --global dotnet-project-licenses
+dotnet tool uninstall --global nuget-license
 ```
 
 ## Usage
 
-Usage: dotnet-project-licenses [options]
+Usage: nuget-license [options]
 
 **Options:**
 
@@ -43,35 +42,17 @@ Usage: dotnet-project-licenses [options]
 ### Show help
 
 ```ps
-dotnet-project-licenses --help
+nuget-license --help
 ```
 
 ### Validate licenses for .csproj file
 
 ```ps
-dotnet-project-licenses -i project.csproj
+nuget-license -i project.csproj
 ```
 
 ### Generate machine readable output
 
 ```ps
-dotnet-project-licenses -i project.csproj -o jsonPretty
-```
-
-## Docker
-
-### Build the image
-
-```
-docker build . -t nuget-license
-```
-
-### Run the same example commands as above in docker
-
-```ps
-docker run -it -v projectPath:/tmp nuget-license --help
-```
-
-```ps
-docker run -it -v projectPath:/tmp nuget-license -i /tmp/project.csproj
+nuget-license -i project.csproj -o jsonPretty
 ```

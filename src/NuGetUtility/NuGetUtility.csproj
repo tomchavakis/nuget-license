@@ -8,12 +8,12 @@
     <PackageType>DotnetTool</PackageType>
     <RepositoryType>git</RepositoryType>
     <Version>100.100.100</Version>
-    <PackageId>dotnet-project-licenses</PackageId>
-    <ToolCommandName>dotnet-project-licenses</ToolCommandName>
+    <PackageId>nuget-license</PackageId>
+    <ToolCommandName>nuget-license</ToolCommandName>
     <Authors>Tom Chavakis,Simon Ensslen</Authors>
     <Company>-</Company>
     <Title>.NET Core Tool to print and validate the licenses of dotnet project(s)</Title>
-    <PackageProjectUrl>https://github.com/tomchavakis/nuget-license</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/sensslen/nuget-license</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <GeneratePackageOnBuild Condition="'$(GeneratePackageOnBuild)' == ''">false</GeneratePackageOnBuild>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
