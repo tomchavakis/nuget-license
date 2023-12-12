@@ -20,7 +20,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;TestWindows</Configurations>
-    <Platforms>AnyCPU</Platforms>
+    <Platforms>AnyCPU</Platforms>        
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
