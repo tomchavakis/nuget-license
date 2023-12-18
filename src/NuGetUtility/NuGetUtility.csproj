@@ -22,6 +22,7 @@
     <Configurations>Debug;Release;TestWindows</Configurations>
     <Platforms>AnyCPU</Platforms>        
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Description>A .net core tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework Projects.</Description>
   </PropertyGroup>
 
   <ItemGroup>
