@@ -28,6 +28,6 @@ namespace NuGetUtility.PackageInformationReader
 
         public string Summary => string.Empty;
 
-        public LicenseMetadata? LicenseMetadata { get;   } = null;
+        public LicenseMetadata? LicenseMetadata { get; } = null;
     }
 }
