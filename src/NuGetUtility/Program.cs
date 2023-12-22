@@ -1,4 +1,5 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+﻿using System.Text.Json;
+using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 using NuGetUtility.Extension;
@@ -15,7 +16,6 @@ using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
-using System.Text.Json;
 
 namespace NuGetUtility
 {
@@ -79,7 +79,7 @@ namespace NuGetUtility
             ShortName = "include-ignored",
             Description = "If this option is set, the packages matching the ignore regexes are also printed to the output by specifying that they were explicitly ignored.")]
         public bool IncludeIgnoredPackages { get; } = false;
-        
+
         public static async Task Main(string[] args)
         {
             var lifetime = new AppLifetime();
@@ -194,7 +194,7 @@ namespace NuGetUtility
 
             var serializerOptions = new JsonSerializerOptions();
             serializerOptions.Converters.Add(new NuGetVersionJsonConverter());
-            return JsonSerializer.Deserialize<CustomPackageInformation[]>(File.ReadAllText(OverridePackageInformation),serializerOptions)!;
+            return JsonSerializer.Deserialize<CustomPackageInformation[]>(File.ReadAllText(OverridePackageInformation), serializerOptions)!;
         }
 
         private string[] GetAllowedLicenses()
@@ -219,8 +219,10 @@ namespace NuGetUtility
             Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping),
                 serializerOptions)!;
 
-            UrlToLicenseMapping.Default.ToList().ForEach(x => {
-                if(!userDictionary.ContainsKey(x.Key)){
+            UrlToLicenseMapping.Default.ToList().ForEach(x =>
+            {
+                if (!userDictionary.ContainsKey(x.Key))
+                {
                     userDictionary.Add(x.Key, x.Value);
                 }
             });

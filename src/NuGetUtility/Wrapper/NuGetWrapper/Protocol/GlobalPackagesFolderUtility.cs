@@ -1,10 +1,10 @@
 using NuGet.Configuration;
 using NuGet.Packaging;
-using NuGet.Versioning;
 using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 using IWrappedPackageMetadata = NuGetUtility.Wrapper.NuGetWrapper.Packaging.IPackageMetadata;
-using OriginalPackageIdentity = NuGet.Packaging.Core.PackageIdentity;
 using OriginalGlobalPackagesFolderUtility = NuGet.Protocol.GlobalPackagesFolderUtility;
+using OriginalPackageIdentity = NuGet.Packaging.Core.PackageIdentity;
 using PackageIdentity = NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core.PackageIdentity;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol

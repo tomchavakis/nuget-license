@@ -1,10 +1,10 @@
+using System.Collections.Concurrent;
 using NuGetUtility.Extensions;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
-using System.Collections.Concurrent;
 
 namespace NuGetUtility.LicenseValidator
 {

@@ -1,8 +1,8 @@
+using System.Runtime.CompilerServices;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol;
 using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
-using System.Runtime.CompilerServices;
 
 namespace NuGetUtility.PackageInformationReader
 {

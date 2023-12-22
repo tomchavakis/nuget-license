@@ -4,7 +4,7 @@ namespace NuGetUtility.Test.Architecture.Rules
 {
     public class NugetAbstractionTest : ArchitectureTest
     {
-        public NugetAbstractionTest() : base() {}
+        public NugetAbstractionTest() : base() { }
 
         [Test]
         public void TestOnlyNugetWrapperHasDependencyToNuget()

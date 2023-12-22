@@ -1,5 +1,5 @@
-﻿using NUnit.Framework.Interfaces;
-using System.Collections;
+﻿using System.Collections;
+using NUnit.Framework.Interfaces;
 
 namespace NuGetUtility.Test.Helper.NUnitExtension
 {

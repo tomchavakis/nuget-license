@@ -1,6 +1,6 @@
+using System.Text.Json;
 using NuGetUtility.LicenseValidator;
 using NuGetUtility.Serialization;
-using System.Text.Json;
 
 namespace NuGetUtility.Output.Json
 {
