@@ -70,9 +70,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             string path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");
 
             MsBuildAbstractionException? exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, false));
-            Assert.AreEqual(
-                $"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {path})",
-                exception?.Message);
+            Assert.That(exception?.Message, Is.EqualTo($"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {path})"));
         }
     }
 }
