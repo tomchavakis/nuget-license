@@ -65,12 +65,13 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
         [Test]
         [Platform(Include = "Win")]
-        public void GetInstalledPackagesShould_ThrowMsBuildAbstractionException_If_ProjectUsesPackagesConfig()
+        public void GetInstalledPackagesShould_ReturnPackagesForPackagesConfigProject()
         {
             string path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");
 
-            MsBuildAbstractionException? exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, false));
-            Assert.That(exception?.Message, Is.EqualTo($"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {path})"));
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false);
+
+            Assert.That(result.Count, Is.EqualTo(1));
         }
     }
 }

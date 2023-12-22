@@ -19,6 +19,11 @@ namespace NuGetUtility.Extensions
                    !project.HasPackagesConfigFile();
         }
 
+        public static string GetPackagesConfigPath(this IProject project)
+        {
+            return Path.Join(Path.GetDirectoryName(project.FullPath), PackagesConfigFileName);
+        }
+
         private static bool HasPackagesConfigFile(this IProject project)
         {
             return project.GetEvaluatedIncludes().Any(include => include?.Equals(PackagesConfigFileName) ?? false);

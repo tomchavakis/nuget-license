@@ -1,7 +1,9 @@
+using System.Xml.Linq;
 using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
+using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.ReferencedPackagesReader
 {
@@ -27,9 +29,26 @@ namespace NuGetUtility.ReferencedPackagesReader
                 return Enumerable.Empty<PackageIdentity>();
             }
 
-            return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
+            if (project.IsPackageReferenceProject())
+                return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
+
+            return GetInstalledPackagesFromPackagesConfig(project);
         }
 
+        private IEnumerable<PackageIdentity> GetInstalledPackagesFromPackagesConfig(IProject project)
+        {
+            var xml = XElement.Load(project.GetPackagesConfigPath());
+
+            return xml.Descendants("package").Select(p => ToPackageIdentity(p));
+        }
+        private PackageIdentity ToPackageIdentity(XElement xlm)
+        {
+            var packageid = (string) xlm.Attribute("id");
+
+            var version = (string) xlm.Attribute("version");
+
+            return new PackageIdentity(packageid, new WrappedNuGetVersion(version));
+        }
         private IEnumerable<PackageIdentity> GetInstalledPackagesFromAssetsFile(bool includeTransitive,
             IProject project)
         {
