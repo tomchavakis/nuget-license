@@ -63,7 +63,7 @@ jobs:
       - name: Run dotnet format
         uses: xt0rted/dotnet-format@v1
         with:
-          only-changed-files: "true"   
+          only-changed-files: ${{ github.event_name == 'pull_request' }}
 
   check_licenses:
     runs-on: ubuntu-latest
