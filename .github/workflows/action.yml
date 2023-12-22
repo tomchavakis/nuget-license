@@ -54,7 +54,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: run dotnet format
+      - name: restore
+        run: dotnet restore
+
+      - name: check format
         run: dotnet format --verify-no-changes
 
   check_licenses:

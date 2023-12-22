@@ -7,7 +7,7 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 {
     internal class WrappedPackageMetadata : IWrappedPackageMetadata
     {
-        private ManifestMetadata _metadata;
+        private readonly ManifestMetadata _metadata;
 
         public WrappedPackageMetadata(ManifestMetadata metadata)
         {
