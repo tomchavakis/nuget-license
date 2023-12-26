@@ -98,6 +98,6 @@ jobs:
         run: |
           foreach($file in Get-ChildItem -Path ./licenses/${{ matrix.project }}/${{ matrix.targetFramework }})
           {
-            $file.FullName
+            Write-Host $file.FullName -ForegroundColor Yellow 
             Get-Content $file.FullName
           }
