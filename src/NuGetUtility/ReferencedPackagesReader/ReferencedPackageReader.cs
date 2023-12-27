@@ -37,18 +37,13 @@ namespace NuGetUtility.ReferencedPackagesReader
 
         private IEnumerable<PackageIdentity> GetInstalledPackagesFromPackagesConfig(IProject project)
         {
-            var xml = XElement.Load(project.GetPackagesConfigPath());
+            var document = XDocument.Load(project.GetPackagesConfigPath());
 
-            return xml.Descendants("package").Select(p => ToPackageIdentity(p));
+            var reader = new NuGet.Packaging.PackagesConfigReader(document);
+
+            return reader.GetPackages().Select(p => new PackageIdentity(p.PackageIdentity.Id, new WrappedNuGetVersion(p.PackageIdentity.Version)));
         }
-        private PackageIdentity ToPackageIdentity(XElement xlm)
-        {
-            var packageid = (string) xlm.Attribute("id");
 
-            var version = (string) xlm.Attribute("version");
-
-            return new PackageIdentity(packageid, new WrappedNuGetVersion(version));
-        }
         private IEnumerable<PackageIdentity> GetInstalledPackagesFromAssetsFile(bool includeTransitive,
             IProject project)
         {
