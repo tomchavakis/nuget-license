@@ -13,7 +13,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
     public class MsBuildAbstraction : IMsBuildAbstraction
     {
         private const string CollectPackageReferences = "CollectPackageReferences";
-        private readonly Dictionary<string, string> _project_props = new ();
+        private readonly Dictionary<string, string> _project_props = new();
 
         public MsBuildAbstraction()
         {
@@ -77,11 +77,14 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
             var result = new List<string>();
 
-            var mmc = new ManagementClass("root/cimv2/vs:MSFT_VSInstance");
+            if (OperatingSystem.IsWindows())
+            {
+                var mmc = new ManagementClass("root/cimv2/vs:MSFT_VSInstance");
 
-            foreach (var vs_instance in mmc.GetInstances())
-                if (vs_instance["InstallLocation"] is string install_path)
-                    result.Add(install_path);
+                foreach (ManagementBaseObject? vs_instance in mmc.GetInstances())
+                    if (vs_instance["InstallLocation"] is string install_path)
+                        result.Add(install_path);
+            }
 
             return result;
         }
