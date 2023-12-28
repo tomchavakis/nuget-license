@@ -16,9 +16,9 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
             _downloadDirectory = downloadDirectory;
         }
 
-        public async Task DownloadFile(Uri url, string fileName)
+        public async Task DownloadFile(Uri url, string fileName, CancellationToken token)
         {
-            await _parallelDownloadLimiter.WaitAsync();
+            await _parallelDownloadLimiter.WaitAsync(token);
             try
             {
                 for (int i = 0; i < MAX_RETRIES; i++)
@@ -26,16 +26,16 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
                     await using FileStream file = File.OpenWrite(Path.Combine(_downloadDirectory, fileName));
                     var request = new HttpRequestMessage(HttpMethod.Get, url);
 
-                    HttpResponseMessage response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                    HttpResponseMessage response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
                     response.EnsureSuccessStatusCode();
                     if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
                     {
-                        await Task.Delay((int)Math.Pow(EXPONENTIAL_BACKOFF_WAIT_TIME_MILLISECONDS, i + 1));
+                        await Task.Delay((int)Math.Pow(EXPONENTIAL_BACKOFF_WAIT_TIME_MILLISECONDS, i + 1), token);
                         continue;
                     }
-                    using Stream downloadStream = await response.Content.ReadAsStreamAsync();
+                    using Stream downloadStream = await response.Content.ReadAsStreamAsync(token);
 
-                    await downloadStream.CopyToAsync(file);
+                    await downloadStream.CopyToAsync(file, token);
                     return;
                 }
             }

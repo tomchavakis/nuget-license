@@ -124,7 +124,7 @@ namespace NuGetUtility
             });
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
                 packagesForProject.SelectMany(p => GetPackageInfos(p, overridePackageInformation, cancellationToken));
-            var results = (await validator.Validate(downloadedLicenseInformation)).ToList();
+            var results = (await validator.Validate(downloadedLicenseInformation, cancellationToken)).ToList();
 
             if (projectReaderExceptions.Any())
             {

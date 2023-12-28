@@ -28,7 +28,8 @@ namespace NuGetUtility.LicenseValidator
         }
 
         public async Task<IEnumerable<LicenseValidationResult>> Validate(
-            IAsyncEnumerable<ReferencedPackageWithContext> packages)
+            IAsyncEnumerable<ReferencedPackageWithContext> packages,
+            CancellationToken token)
         {
             var result = new ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult>();
             await foreach (ReferencedPackageWithContext info in packages)
@@ -45,7 +46,7 @@ namespace NuGetUtility.LicenseValidator
                 }
                 else if (info.PackageInfo.LicenseUrl != null)
                 {
-                    await ValidateLicenseByUrl(info.PackageInfo, info.Context, result);
+                    await ValidateLicenseByUrl(info.PackageInfo, info.Context, result, token);
                 }
                 else
                 {
@@ -150,14 +151,20 @@ namespace NuGetUtility.LicenseValidator
 
         private async Task ValidateLicenseByUrl(IPackageMetadata info,
             string context,
-            ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result)
+            ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result,
+            CancellationToken token)
         {
             if (info.LicenseUrl!.IsAbsoluteUri)
             {
                 try
                 {
                     await _fileDownloader.DownloadFile(info.LicenseUrl,
-                        $"{info.Identity.Id}__{info.Identity.Version}.html");
+                        $"{info.Identity.Id}__{info.Identity.Version}.html",
+                        token);
+                }
+                catch (OperationCanceledException)
+                {
+                    // swallow cancellation
                 }
                 catch (Exception e)
                 {
@@ -207,7 +214,7 @@ namespace NuGetUtility.LicenseValidator
                 return true;
             }
 
-            return _allowedLicenses.Any(l => l.Equals(licenseId));
+            return _allowedLicenses.Any(allowedLicense => allowedLicense.Equals(licenseId));
         }
 
         private string GetLicenseNotAllowedMessage(string license)
