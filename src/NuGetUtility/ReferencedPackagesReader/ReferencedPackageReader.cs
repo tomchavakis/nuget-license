@@ -1,9 +1,7 @@
-using System.Xml.Linq;
 using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
-using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.ReferencedPackagesReader
 {
@@ -32,16 +30,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             if (project.IsPackageReferenceProject())
                 return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
 
-            return GetInstalledPackagesFromPackagesConfig(project);
-        }
-
-        private IEnumerable<PackageIdentity> GetInstalledPackagesFromPackagesConfig(IProject project)
-        {
-            var document = XDocument.Load(project.GetPackagesConfigPath());
-
-            var reader = new NuGet.Packaging.PackagesConfigReader(document);
-
-            return reader.GetPackages().Select(p => new PackageIdentity(p.PackageIdentity.Id, new WrappedNuGetVersion(p.PackageIdentity.Version)));
+            return PackagesConfigReader.GetPackages(project.GetPackagesConfigPath());
         }
 
         private IEnumerable<PackageIdentity> GetInstalledPackagesFromAssetsFile(bool includeTransitive,
