@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Immutable;
+using System.Text.Json;
 using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
@@ -92,7 +93,7 @@ namespace NuGetUtility
             using var httpClient = new HttpClient();
             string[] inputFiles = GetInputFiles();
             string[] ignoredPackages = GetIgnoredPackages();
-            Dictionary<Uri, string> licenseMappings = GetLicenseMappings();
+            IImmutableDictionary<Uri, string> licenseMappings = GetLicenseMappings();
             string[] allowedLicenses = GetAllowedLicenses();
             CustomPackageInformation[] overridePackageInformation = GetOverridePackageInformation();
             IFileDownloader urlLicenseFileDownloader = GetFileDownloader(httpClient);
@@ -207,7 +208,7 @@ namespace NuGetUtility
             return JsonSerializer.Deserialize<string[]>(File.ReadAllText(AllowedLicenses))!;
         }
 
-        private Dictionary<Uri, string> GetLicenseMappings()
+        private IImmutableDictionary<Uri, string> GetLicenseMappings()
         {
             if (LicenseMapping == null)
             {
@@ -219,14 +220,7 @@ namespace NuGetUtility
             Dictionary<Uri, string> userDictionary = JsonSerializer.Deserialize<Dictionary<Uri, string>>(File.ReadAllText(LicenseMapping),
                 serializerOptions)!;
 
-            UrlToLicenseMapping.Default.ToList().ForEach(x =>
-            {
-                if (!userDictionary.ContainsKey(x.Key))
-                {
-                    userDictionary.Add(x.Key, x.Value);
-                }
-            });
-            return userDictionary;
+            return UrlToLicenseMapping.Default.SetItems(userDictionary);
         }
 
         private string[] GetIgnoredPackages()

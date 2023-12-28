@@ -107,7 +107,7 @@ namespace NuGetUtility.PackageInformationReader
             }
         }
 
-        private record PackageSearchResult
+        private sealed record PackageSearchResult
         {
             public bool Success { get; }
             public IPackageMetadata? Metadata { get; }
