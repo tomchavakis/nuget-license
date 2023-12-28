@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace NuGetUtility.Wrapper.HttpClientWrapper
 {
@@ -36,6 +36,7 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
                     using Stream downloadStream = await response.Content.ReadAsStreamAsync();
 
                     await downloadStream.CopyToAsync(file);
+                    return;
                 }
             }
             finally
