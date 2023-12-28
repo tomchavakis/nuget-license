@@ -14,7 +14,8 @@ namespace NuGetUtility.Extensions
         {
             return new Regex(
                 "^" + Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$",
-                RegexOptions.IgnoreCase | RegexOptions.Singleline
+                RegexOptions.IgnoreCase | RegexOptions.Singleline,
+                TimeSpan.FromMilliseconds(100)
             ).IsMatch(str);
         }
     }

@@ -17,12 +17,9 @@ namespace NuGetUtility.Serialization
             writer.WriteStartObject();
             foreach (System.Reflection.PropertyInfo propertyInfo in value.GetType().GetProperties())
             {
-                if (propertyInfo.Name == nameof(value.ValidationErrors))
+                if (propertyInfo.Name == nameof(value.ValidationErrors) && !value.ValidationErrors.Any())
                 {
-                    if (!value.ValidationErrors.Any())
-                    {
-                        continue;
-                    }
+                    continue;
                 }
                 object? writeValue = propertyInfo.GetValue(value);
                 if (writeValue != null)

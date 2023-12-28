@@ -54,7 +54,7 @@ namespace NuGetUtility.Output.Table
                 .Print();
         }
 
-        private record ColumnDefinition(string Title, Func<LicenseValidationResult, object?> PropertyAccessor, Func<LicenseValidationResult, bool> IsRelevant, bool Enabled = false)
+        private sealed record ColumnDefinition(string Title, Func<LicenseValidationResult, object?> PropertyAccessor, Func<LicenseValidationResult, bool> IsRelevant, bool Enabled = false)
         {
             public bool Enabled { get; set; } = Enabled;
         }

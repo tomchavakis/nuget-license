@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using AutoFixture;
 using NSubstitute;
 using NuGetUtility.LicenseValidator;
@@ -21,7 +22,7 @@ namespace NuGetUtility.Test.LicenseValidator
         {
             var fixture = new Fixture();
             _fileDownloader = Substitute.For<IFileDownloader>();
-            _licenseMapping = fixture.Create<Dictionary<Uri, string>>();
+            _licenseMapping = ImmutableDictionary.CreateRange(fixture.Create<Dictionary<Uri, string>>());
             _allowedLicenses = fixture.CreateMany<string>();
             _context = fixture.Create<string>();
             _projectUrl = fixture.Create<Uri>();
@@ -34,7 +35,7 @@ namespace NuGetUtility.Test.LicenseValidator
         }
 
         private NuGetUtility.LicenseValidator.LicenseValidator _uut = null!;
-        private Dictionary<Uri, string> _licenseMapping = null!;
+        private IImmutableDictionary<Uri, string> _licenseMapping = null!;
         private IEnumerable<string> _allowedLicenses = null!;
         private string _context = null!;
         private IFileDownloader _fileDownloader = null!;

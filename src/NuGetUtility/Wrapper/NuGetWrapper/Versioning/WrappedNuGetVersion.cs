@@ -2,7 +2,7 @@ using NuGet.Versioning;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Versioning
 {
-    internal class WrappedNuGetVersion : INuGetVersion, IComparable
+    internal class WrappedNuGetVersion : INuGetVersion
     {
         private readonly NuGetVersion _version;
 
@@ -16,24 +16,14 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Versioning
             _version = new NuGetVersion(version);
         }
 
-        public override bool Equals(object? other)
+        public override bool Equals(object? obj)
         {
-            if (other == null)
+            if (obj is WrappedNuGetVersion other)
             {
-                return false;
+                return Equals(other);
             }
 
-            if (other.GetType() != GetType())
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return Equals((other as WrappedNuGetVersion)!);
+            return false;
         }
 
         private bool Equals(WrappedNuGetVersion other)
@@ -51,14 +41,16 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Versioning
             return _version.ToString();
         }
 
-        public int CompareTo(object? other)
+        public int CompareTo(object? obj)
         {
-            if (other is not WrappedNuGetVersion wrappedNuGetVersion)
+            if (obj is not WrappedNuGetVersion wrappedNuGetVersion)
             {
-                throw new ArgumentException($"{nameof(other)} must be of type {nameof(WrappedNuGetVersion)} to be comparable.");
+                throw new ArgumentException($"{nameof(obj)} must be of type {nameof(WrappedNuGetVersion)} to be comparable.");
             }
             return _version.CompareTo(wrappedNuGetVersion._version);
         }
+
+        public int CompareTo(INuGetVersion? other) => _version.CompareTo((other as WrappedNuGetVersion)?._version);
 
         public NuGetVersion Unwrap()
         {
@@ -74,6 +66,35 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Versioning
             }
             version = default!;
             return false;
+        }
+
+        public static bool operator ==(WrappedNuGetVersion left, WrappedNuGetVersion right)
+        {
+            if (left is null)
+            {
+                return right is null;
+            }
+            return left.Equals(right);
+        }
+        public static bool operator !=(WrappedNuGetVersion left, WrappedNuGetVersion right)
+        {
+            return !(left == right);
+        }
+        public static bool operator >(WrappedNuGetVersion left, WrappedNuGetVersion right)
+        {
+            return left.CompareTo(right) > 0;
+        }
+        public static bool operator <(WrappedNuGetVersion left, WrappedNuGetVersion right)
+        {
+            return left.CompareTo(right) < 0;
+        }
+        public static bool operator >=(WrappedNuGetVersion left, WrappedNuGetVersion right)
+        {
+            return !(left < right);
+        }
+        public static bool operator <=(WrappedNuGetVersion left, WrappedNuGetVersion right)
+        {
+            return !(left > right);
         }
     }
 }

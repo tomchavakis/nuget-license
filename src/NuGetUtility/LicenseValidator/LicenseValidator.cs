@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using NuGetUtility.Extensions;
 using NuGetUtility.PackageInformationReader;
 using NuGetUtility.Wrapper.HttpClientWrapper;
@@ -13,9 +14,9 @@ namespace NuGetUtility.LicenseValidator
         private readonly IEnumerable<string> _allowedLicenses;
         private readonly IFileDownloader _fileDownloader;
         private readonly string[] _ignoredPackages;
-        private readonly Dictionary<Uri, string> _licenseMapping;
+        private readonly IImmutableDictionary<Uri, string> _licenseMapping;
 
-        public LicenseValidator(Dictionary<Uri, string> licenseMapping,
+        public LicenseValidator(IImmutableDictionary<Uri, string> licenseMapping,
             IEnumerable<string> allowedLicenses,
             IFileDownloader fileDownloader,
             string[] ignoredPackages)
@@ -77,8 +78,8 @@ namespace NuGetUtility.LicenseValidator
                 origin,
                 new List<ValidationError> { error });
             result.AddOrUpdate(new LicenseNameAndVersion(info.Identity.Id, info.Identity.Version),
-                key => CreateResult(key, newValue),
-                (key, oldValue) => UpdateResult(key, oldValue, newValue));
+                newValue,
+                (key, oldValue) => UpdateResult(oldValue, newValue));
         }
 
         private void AddOrUpdateLicense(
@@ -94,12 +95,11 @@ namespace NuGetUtility.LicenseValidator
                 license,
                 origin);
             result.AddOrUpdate(new LicenseNameAndVersion(info.Identity.Id, info.Identity.Version),
-                key => CreateResult(key, newValue),
-                (key, oldValue) => UpdateResult(key, oldValue, newValue));
+                newValue,
+                (key, oldValue) => UpdateResult(oldValue, newValue));
         }
 
-        private LicenseValidationResult UpdateResult(LicenseNameAndVersion _,
-            LicenseValidationResult oldValue,
+        private LicenseValidationResult UpdateResult(LicenseValidationResult oldValue,
             LicenseValidationResult newValue)
         {
             oldValue.ValidationErrors.AddRange(newValue.ValidationErrors);
@@ -109,11 +109,6 @@ namespace NuGetUtility.LicenseValidator
                 oldValue.LicenseInformationOrigin = newValue.LicenseInformationOrigin;
             }
             return oldValue;
-        }
-
-        private LicenseValidationResult CreateResult(LicenseNameAndVersion _, LicenseValidationResult newValue)
-        {
-            return newValue;
         }
 
         private void ValidateLicenseByMetadata(IPackageMetadata info,
@@ -212,15 +207,7 @@ namespace NuGetUtility.LicenseValidator
                 return true;
             }
 
-            foreach (string allowedLicense in _allowedLicenses)
-            {
-                if (allowedLicense.Equals(licenseId))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return _allowedLicenses.Any(l => l.Equals(licenseId));
         }
 
         private string GetLicenseNotAllowedMessage(string license)

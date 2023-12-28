@@ -98,6 +98,8 @@ namespace NuGetUtility.Test.Output
                 _version = version;
             }
 
+            public int CompareTo(INuGetVersion? other) => throw new NotImplementedException();
+
             public override string ToString()
             {
                 return _version;
