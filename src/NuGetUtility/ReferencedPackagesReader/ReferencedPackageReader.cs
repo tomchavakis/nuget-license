@@ -27,7 +27,10 @@ namespace NuGetUtility.ReferencedPackagesReader
                 return Enumerable.Empty<PackageIdentity>();
             }
 
-            return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
+            if (project.IsPackageReferenceProject())
+                return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
+
+            return PackagesConfigReader.GetPackages(project.GetPackagesConfigPath());
         }
 
         private IEnumerable<PackageIdentity> GetInstalledPackagesFromAssetsFile(bool includeTransitive,

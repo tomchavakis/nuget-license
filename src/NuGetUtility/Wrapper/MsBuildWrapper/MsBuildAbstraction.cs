@@ -1,3 +1,4 @@
+using System.Management;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Exceptions;
@@ -12,10 +13,17 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
     public class MsBuildAbstraction : IMsBuildAbstraction
     {
         private const string CollectPackageReferences = "CollectPackageReferences";
+        private readonly Dictionary<string, string> _project_props = new();
 
         public MsBuildAbstraction()
         {
             RegisterMsBuildLocatorIfNeeded();
+
+            // to support VC-projects we need to workaround : https://github.com/3F/MvsSln/issues/1
+            // adding 'VCTargetsPath' to Project::GlobalProperties seem to be enough
+
+            if (GetBestVCTargetsPath() is string path)
+                _project_props.Add("VCTargetsPath", $"{path}\\");
         }
 
         public IEnumerable<PackageReference> GetPackageReferencesFromProjectForFramework(IProject project,
@@ -40,16 +48,9 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
         {
             ProjectRootElement rootElement = TryGetProjectRootElement(projectPath);
 
-            var project = new Project(rootElement);
-            var projectWrapper = new ProjectWrapper(project);
+            var project = new Project(rootElement, _project_props, null);
 
-            if (!projectWrapper.IsPackageReferenceProject())
-            {
-                throw new MsBuildAbstractionException(
-                    $"Invalid project structure detected. Currently only PackageReference projects are supported (Project: {project.FullPath})");
-            }
-
-            return projectWrapper;
+            return new ProjectWrapper(project);
         }
 
         public IEnumerable<string> GetProjectsFromSolution(string inputPath)
@@ -57,6 +58,35 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             string absolutePath = Path.GetFullPath(inputPath, Environment.CurrentDirectory);
             var sln = SolutionFile.Parse(absolutePath);
             return sln.ProjectsInOrder.Select(p => p.AbsolutePath);
+        }
+
+        private static string? GetBestVCTargetsPath()
+        {
+            var cpp_props = new List<FileInfo>();
+
+            foreach (string path in GetVisualStudioInstallPaths())
+                cpp_props.AddRange(new DirectoryInfo(path).GetFiles("Microsoft.Cpp.Default.props", SearchOption.AllDirectories));
+
+            // if multiple, assume most recent 'LastWriteTime' property is 'best'
+            return cpp_props.OrderBy(f => f.LastWriteTime).LastOrDefault()?.DirectoryName;
+        }
+
+        private static IEnumerable<string> GetVisualStudioInstallPaths()
+        {
+            // https://learn.microsoft.com/en-us/visualstudio/install/tools-for-managing-visual-studio-instances?view=vs-2022#using-windows-management-instrumentation-wmi
+
+            var result = new List<string>();
+
+            if (OperatingSystem.IsWindows())
+            {
+                var mmc = new ManagementClass("root/cimv2/vs:MSFT_VSInstance");
+
+                foreach (ManagementBaseObject? vs_instance in mmc.GetInstances())
+                    if (vs_instance["InstallLocation"] is string install_path)
+                        result.Add(install_path);
+            }
+
+            return result;
         }
 
         private static void RegisterMsBuildLocatorIfNeeded()

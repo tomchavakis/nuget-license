@@ -30,6 +30,7 @@
     <PackageReference Include="Microsoft.Build.Locator" Version="1.6.10" />
     <PackageReference Include="NuGet.Commands" Version="6.8.0" />
     <PackageReference Include="NuGet.Packaging" Version="6.8.0" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="System.Text.Json" Version="8.0.0" />
   </ItemGroup>
 
