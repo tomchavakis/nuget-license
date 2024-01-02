@@ -1,13 +1,15 @@
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
+using NuGetUtility.Extensions;
+using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core
 {
-    public static class PackagesConfigReader
+    public class WindowsPackagesConfigReader : IPackagesConfigReader
     {
-        public static IEnumerable<PackageIdentity> GetPackages(string path)
+        public IEnumerable<PackageIdentity> GetPackages(IProject project)
         {
-            var document = XDocument.Load(path);
+            var document = XDocument.Load(project.GetPackagesConfigPath());
 
             var reader = new NuGet.Packaging.PackagesConfigReader(document);
 

@@ -1,8 +1,8 @@
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
+using Microsoft.Build.Evaluation;
 using NSubstitute;
 using NuGetUtility.ReferencedPackagesReader;
-using NuGetUtility.Test.Helper.AutoFixture;
 using NuGetUtility.Test.Helper.ShuffelledEnumerable;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Frameworks;
@@ -26,6 +26,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _projectMock = Substitute.For<IProject>();
             _lockFileMock = Substitute.For<ILockFile>();
             _packageSpecMock = Substitute.For<IPackageSpec>();
+            _packagesConfigReader = Substitute.For<IPackagesConfigReader>();
             _lockFileTargets = fixture.CreateMany<ILockFileTarget>(TargetFrameworkCount).ToArray();
             _lockFileLibraries = fixture.CreateMany<ILockFileLibrary>(50).ToArray();
             _packageSpecTargetFrameworks =
@@ -87,13 +88,14 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 }
             }
 
-            _uut = new ReferencedPackageReader(_msBuild, _lockFileFactory);
+            _uut = new ReferencedPackageReader(_msBuild, _lockFileFactory, _packagesConfigReader);
         }
 
         private const int TargetFrameworkCount = 5;
         private ReferencedPackageReader _uut = null!;
         private IMsBuildAbstraction _msBuild = null!;
         private ILockFileFactory _lockFileFactory = null!;
+        private IPackagesConfigReader _packagesConfigReader = null!;
         private string _projectPath = null!;
         private string _assetsFilePath = null!;
         private IProject _projectMock = null!;
@@ -226,6 +228,35 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, false);
 
             Assert.That(result.Count(), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_Use_PackageGonfigReader_If_ProjectIsPackageConfigProject(
+            [Values] bool includeTransitive)
+        {
+            _packageSpecMock.IsValid().Returns(false);
+            _projectMock.FullPath.Returns(_projectPath);
+            _projectMock.GetEvaluatedIncludes().Returns(new List<string> { "packages.config" });
+
+            _ = _uut.GetInstalledPackages(_projectPath, includeTransitive);
+
+            _packagesConfigReader.Received(1).GetPackages(Arg.Any<IProject>());
+            _packagesConfigReader.Received(1).GetPackages(_projectMock);
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_ReturnPackagesReturnedBy_PackageGonfigReader_If_ProjectIsPackageConfigProject(
+            [Values] bool includeTransitive)
+        {
+            _packageSpecMock.IsValid().Returns(false);
+            _projectMock.FullPath.Returns(_projectPath);
+            _projectMock.GetEvaluatedIncludes().Returns(new List<string> { "packages.config" });
+            PackageIdentity[] expectedPackages = _packageReferencesFromProjectForFramework.First().Value.Select(l => new PackageIdentity(l.PackageName, l.Version!)).ToArray();
+            _packagesConfigReader.GetPackages(Arg.Any<IProject>()).Returns(expectedPackages);
+
+            IEnumerable<PackageIdentity> packages = _uut.GetInstalledPackages(_projectPath, includeTransitive);
+
+            CollectionAssert.AreEqual(expectedPackages, packages);
         }
     }
 }
