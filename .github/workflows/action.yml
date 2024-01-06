@@ -65,6 +65,7 @@ jobs:
     strategy:
       matrix:
         targetFramework: [net6.0, net7.0, net8.0]
+        project: [App, Tests]
 
         include:
           - targetFramework: net6.0
@@ -90,4 +91,14 @@ jobs:
         run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj --configuration Release -o ./release -f ${{ matrix.targetFramework }} --no-restore
 
       - name: check
-        run: dotnet ./release/NuGetUtility.dll -ji ./.github/workflows/assets/projectsToCheck.json -t -a ./.github/workflows/assets/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/overwritePackageInformation.json -ignore ./.github/workflows/assets/ignorePackages.json -mapping ./.github/workflows/assets/urlToLicenseMapping.json
+        run: dotnet ./release/NuGetUtility.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.targetFramework }}
+
+      - name: show downloaded licenses
+        shell: pwsh
+        run: |
+          foreach($file in Get-ChildItem -Path ./licenses/${{ matrix.project }}/${{ matrix.targetFramework }})
+          {
+            Write-Host ::group::$file
+            Get-Content $file.FullName
+            Write-Host ::endgroup::
+          }
