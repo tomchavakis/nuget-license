@@ -65,7 +65,7 @@ namespace NuGetUtility.Test.Extensions
             _project.GetRestoreStyleTag().Returns(restoreStyleTag);
             _project.GetEvaluatedIncludes().Returns(new List<string> { "not-packages.config" });
 
-            bool result = _project!.IsPackageReferenceProject();
+            bool result = _project.IsPackageReferenceProject();
 
             Assert.That(result, Is.True);
         }
@@ -86,9 +86,20 @@ namespace NuGetUtility.Test.Extensions
             _project.GetRestoreStyleTag().Returns(restoreStyleTag);
             _project.GetEvaluatedIncludes().Returns(new List<string> { evaluatedInclude });
 
-            bool result = _project!.IsPackageReferenceProject();
+            bool result = _project.IsPackageReferenceProject();
 
             Assert.That(result, Is.False);
+        }
+
+        [TestCase()]
+        public void GetPackagesConfigPath_Should_Return_CorrectPath()
+        {
+            string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            _project.FullPath.Returns(path);
+
+            string result = _project.GetPackagesConfigPath();
+
+            Assert.That(result, Is.EqualTo(Path.Combine(Path.GetDirectoryName(path)!, "packages.config")));
         }
     }
 }

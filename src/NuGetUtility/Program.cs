@@ -99,9 +99,9 @@ namespace NuGetUtility
             IFileDownloader urlLicenseFileDownloader = GetFileDownloader(httpClient);
             IOutputFormatter output = GetOutputFormatter();
 
-            var msBuild = new MsBuildAbstraction();
+            MsBuildAbstraction msBuild = OperatingSystem.IsWindows() ? new WindowsMsBuildAbstraction() : new MsBuildAbstraction();
             var projectCollector = new ProjectsCollector(msBuild);
-            var projectReader = new ReferencedPackageReader(msBuild, new LockFileFactory());
+            var projectReader = new ReferencedPackageReader(msBuild, new LockFileFactory(), GetPackagesConfigReader());
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
                 allowedLicenses,
                 urlLicenseFileDownloader,
@@ -137,6 +137,10 @@ namespace NuGetUtility
             await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
             return results.Count(r => r.ValidationErrors.Any());
         }
+
+        private static IPackagesConfigReader GetPackagesConfigReader() =>
+            OperatingSystem.IsWindows() ? new WindowsPackagesConfigReader() : new FailingPackagesConfigReader();
+
         private static IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfos(
             ProjectWithReferencedPackages projectWithReferences,
             IEnumerable<CustomPackageInformation> overridePackageInformation,
