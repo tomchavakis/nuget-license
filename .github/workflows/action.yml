@@ -79,6 +79,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup dotnet ${{ matrix.dotnetVersion }}
         uses: actions/setup-dotnet@v4
         with:
@@ -101,4 +104,52 @@ jobs:
             Write-Host ::group::$file
             Get-Content $file.FullName
             Write-Host ::endgroup::
+          }
+
+  check_version_command:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        targetFramework: [net6.0, net7.0, net8.0]
+
+        include:
+          - targetFramework: net6.0
+            dotnetVersion: "6.0.x"
+            
+          - targetFramework: net7.0
+            dotnetVersion: "7.0.x"
+
+          - targetFramework: net8.0
+            dotnetVersion: "8.0.x"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup dotnet ${{ matrix.dotnetVersion }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnetVersion }}
+
+      - name: restore
+        run: dotnet restore -p:TargetFramework=${{ matrix.targetFramework }}
+
+      - uses: paulhatch/semantic-version@v5.3.0
+        id: version
+        name: version
+        with:
+          tag_prefix: "v"
+          version_format: "${major}.${minor}.${patch}-test${increment}"
+
+      - name: build
+        run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj --configuration Release -o ./release -f ${{ matrix.targetFramework }} --no-restore -p:Version=${{ steps.version.outputs.version }}
+
+      - name: check app version
+        shell: pwsh
+        run: |
+          $cmdOutput = dotnet ./release/NuGetUtility.dll --version | Out-String
+          if(!($cmdOutput.Trim() -like '${{ steps.version.outputs.version }}')) {
+            Write-Host Versions do not match: read $cmdOutput, expected ${{ steps.version.outputs.version }}
+            exit 1;
           }

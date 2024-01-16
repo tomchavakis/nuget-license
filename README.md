@@ -36,6 +36,8 @@ Usage: nuget-license [options]
 | `-d, --license-information-download-location` | When used, this option downloads the html content of the license URL to the specified folder. This is done for all NuGet packages that specify a license URL instead of providing the license expression. |
 | `-o, --output` | This Parameter accepts the value `table`, `json` or `jsonPretty`. It allows to select the type of output that should be given. If omitted, the output is given in tabular form. |
 | `-err, --error-only` | This flag allows to print only packages that contain validation errors (if there are any). This allows the user to focus on errors instead of having to deal with many properly validated |
+| `-?, -h, --help` | Show help for the application and exit |
+| `--version` | Show version information of the application and exit |
 
 ## Example tool commands
 

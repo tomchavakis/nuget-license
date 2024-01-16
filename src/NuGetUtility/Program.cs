@@ -1,8 +1,10 @@
 ﻿using System.Collections.Immutable;
+using System.Reflection;
 using System.Text.Json;
 using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 using NuGetUtility.Extension;
 using NuGetUtility.LicenseValidator;
 using NuGetUtility.Output;
@@ -20,6 +22,7 @@ using NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types;
 
 namespace NuGetUtility
 {
+    [VersionOptionFromMember(MemberName = nameof(GetVersion))]
     public class Program
     {
         [Option(ShortName = "i",
@@ -80,6 +83,9 @@ namespace NuGetUtility
             ShortName = "include-ignored",
             Description = "If this option is set, the packages matching the ignore regexes are also printed to the output by specifying that they were explicitly ignored.")]
         public bool IncludeIgnoredPackages { get; } = false;
+
+        private static string GetVersion()
+            => typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
 
         public static async Task Main(string[] args)
         {

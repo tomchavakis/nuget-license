@@ -8,6 +8,7 @@
     <PackageType>DotnetTool</PackageType>
     <RepositoryType>git</RepositoryType>
     <Version>100.100.100</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <PackageId>nuget-license</PackageId>
     <ToolCommandName>nuget-license</ToolCommandName>
     <Authors>Tom Chavakis,Simon Ensslen</Authors>
