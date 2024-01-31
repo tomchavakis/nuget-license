@@ -395,3 +395,4 @@ ASALocalRun/
 coverage/**
 .nyc_output/**
 lcov.info
+launchSettings.json
