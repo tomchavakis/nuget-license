@@ -22,7 +22,7 @@ namespace NuGetUtility.Test.LicenseValidator
             HtmlDocument doc = new HtmlDocument();
             doc.Load(downloadStream);
 
-            await Verify(doc.DocumentNode.InnerText);
+            await Verify(doc.DocumentNode.InnerText).HashParameters();
         }
     }
 }
