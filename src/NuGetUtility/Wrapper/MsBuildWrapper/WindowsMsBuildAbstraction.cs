@@ -33,11 +33,19 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             // https://learn.microsoft.com/en-us/visualstudio/install/tools-for-managing-visual-studio-instances?view=vs-2022#using-windows-management-instrumentation-wmi
 
             var result = new List<string>();
-            var mmc = new ManagementClass("root/cimv2/vs:MSFT_VSInstance");
 
-            foreach (ManagementBaseObject? vs_instance in mmc.GetInstances())
-                if (vs_instance["InstallLocation"] is string install_path)
-                    result.Add(install_path);
+            try
+            {
+                var mmc = new ManagementClass("root/cimv2/vs:MSFT_VSInstance");
+
+                foreach (ManagementBaseObject? vs_instance in mmc.GetInstances())
+                    if (vs_instance["InstallLocation"] is string install_path)
+                        result.Add(install_path);
+            }
+            catch (ManagementException me) when (me.Message.Contains("Invalid namespace"))
+            {
+                // Visual Studio might not be installed
+            }
 
             return result;
         }
