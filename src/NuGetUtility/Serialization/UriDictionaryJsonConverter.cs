@@ -1,4 +1,7 @@
-﻿using System.Text.Json;
+﻿// Licensed to the projects contributors.
+// The license conditions are provided in the LICENSE file located in the project root
+
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace NuGetUtility.Serialization

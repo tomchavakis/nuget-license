@@ -1,4 +1,7 @@
-﻿namespace NuGetUtility.Test.Helper.ShuffelledEnumerable
+﻿// Licensed to the projects contributors.
+// The license conditions are provided in the LICENSE file located in the project root
+
+namespace NuGetUtility.Test.Helper.ShuffelledEnumerable
 {
     /// <summary>
     ///     credit: https://stackoverflow.com/a/5807238/1199089

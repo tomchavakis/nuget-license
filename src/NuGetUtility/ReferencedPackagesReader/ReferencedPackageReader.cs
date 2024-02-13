@@ -1,3 +1,6 @@
+// Licensed to the projects contributors.
+// The license conditions are provided in the LICENSE file located in the project root
+
 using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;

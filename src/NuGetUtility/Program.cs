@@ -1,10 +1,12 @@
-﻿using System.Collections.Immutable;
+﻿// Licensed to the projects contributors.
+// The license conditions are provided in the LICENSE file located in the project root
+
+using System.Collections.Immutable;
 using System.Reflection;
 using System.Text.Json;
 using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
-using NuGet.Versioning;
 using NuGetUtility.Extension;
 using NuGetUtility.LicenseValidator;
 using NuGetUtility.Output;

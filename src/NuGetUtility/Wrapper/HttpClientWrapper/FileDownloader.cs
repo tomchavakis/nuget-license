@@ -1,4 +1,5 @@
-using System;
+// Licensed to the projects contributors.
+// The license conditions are provided in the LICENSE file located in the project root
 
 namespace NuGetUtility.Wrapper.HttpClientWrapper
 {
@@ -27,12 +28,12 @@ namespace NuGetUtility.Wrapper.HttpClientWrapper
                     var request = new HttpRequestMessage(HttpMethod.Get, url);
 
                     HttpResponseMessage response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token);
-                    response.EnsureSuccessStatusCode();
                     if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
                     {
                         await Task.Delay((int)Math.Pow(EXPONENTIAL_BACKOFF_WAIT_TIME_MILLISECONDS, i + 1), token);
                         continue;
                     }
+                    response.EnsureSuccessStatusCode();
                     using Stream downloadStream = await response.Content.ReadAsStreamAsync(token);
 
                     await downloadStream.CopyToAsync(file, token);

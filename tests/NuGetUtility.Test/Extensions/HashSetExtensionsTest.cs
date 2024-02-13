@@ -1,4 +1,7 @@
-﻿using System.Collections.Immutable;
+﻿// Licensed to the projects contributors.
+// The license conditions are provided in the LICENSE file located in the project root
+
+using System.Collections.Immutable;
 using AutoFixture;
 using AutoFixture.NUnit3;
 using NuGetUtility.Extensions;

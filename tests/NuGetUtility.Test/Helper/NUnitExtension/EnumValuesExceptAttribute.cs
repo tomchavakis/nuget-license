@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿// Licensed to the projects contributors.
+// The license conditions are provided in the LICENSE file located in the project root
+
+using System.Collections;
 using NUnit.Framework.Interfaces;
 
 namespace NuGetUtility.Test.Helper.NUnitExtension

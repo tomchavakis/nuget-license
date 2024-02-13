@@ -1,4 +1,7 @@
-﻿namespace NuGetUtility.Test.Helper.Type
+﻿// Licensed to the projects contributors.
+// The license conditions are provided in the LICENSE file located in the project root
+
+namespace NuGetUtility.Test.Helper.Type
 {
     /// <summary>
     ///     credit: https://stackoverflow.com/a/29823390/1199089

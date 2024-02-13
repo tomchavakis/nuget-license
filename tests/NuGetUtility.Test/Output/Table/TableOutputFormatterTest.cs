@@ -1,4 +1,7 @@
-﻿using NuGetUtility.Output;
+﻿// Licensed to the projects contributors.
+// The license conditions are provided in the LICENSE file located in the project root
+
+using NuGetUtility.Output;
 using NuGetUtility.Output.Table;
 
 namespace NuGetUtility.Test.Output.Table

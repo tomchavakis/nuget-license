@@ -1,4 +1,7 @@
-﻿namespace NuGetUtility.Test.Helper.AsyncEnumerableExtension
+﻿// Licensed to the projects contributors.
+// The license conditions are provided in the LICENSE file located in the project root
+
+namespace NuGetUtility.Test.Helper.AsyncEnumerableExtension
 {
     internal class AsyncEnumerator<T> : IAsyncEnumerator<T>
     {

@@ -1,4 +1,7 @@
-﻿namespace NuGetUtility.Extension
+﻿// Licensed to the projects contributors.
+// The license conditions are provided in the LICENSE file located in the project root
+
+namespace NuGetUtility.Extension
 {
     public static class AsyncEnumerableExtension
     {

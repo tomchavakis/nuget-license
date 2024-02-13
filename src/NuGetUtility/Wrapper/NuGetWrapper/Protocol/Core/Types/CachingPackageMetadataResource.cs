@@ -1,3 +1,6 @@
+// Licensed to the projects contributors.
+// The license conditions are provided in the LICENSE file located in the project root
+
 using NuGet.Common;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
