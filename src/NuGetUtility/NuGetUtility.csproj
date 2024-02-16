@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -21,18 +21,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;TestWindows</Configurations>
-    <Platforms>AnyCPU</Platforms>        
+    <Platforms>AnyCPU</Platforms>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>A .net core tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects.</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.0" />
-    <PackageReference Include="Microsoft.Build.Locator" Version="1.6.10" />
-    <PackageReference Include="NuGet.Commands" Version="6.8.0" />
-    <PackageReference Include="NuGet.Packaging" Version="6.8.0" />
+    <PackageReference Include="Microsoft.Build.Locator" Version="1.7.1" />
+    <PackageReference Include="NuGet.Commands" Version="6.9.1" />
+    <PackageReference Include="NuGet.Packaging" Version="6.9.1" />
     <PackageReference Include="System.Management" Version="8.0.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.1" />
+    <PackageReference Include="System.Text.Json" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.8.*" />
+    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" Version="17.9.*" />
   </ItemGroup>
 
   <ItemGroup>

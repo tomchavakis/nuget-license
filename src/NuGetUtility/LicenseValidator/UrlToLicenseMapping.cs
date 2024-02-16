@@ -47,7 +47,8 @@ namespace NuGetUtility.LicenseValidator
                     MsEulaNonRedistributable
                 ),
                 KeyValuePair.Create( new Uri("http://go.microsoft.com/fwlink/?LinkId=529444"), MsEulaNonRedistributable ),
-                KeyValuePair.Create( new Uri(" http://opensource.org/licenses/mit-license.php"), Mit )
+                KeyValuePair.Create( new Uri(" http://opensource.org/licenses/mit-license.php"), Mit ),
+                KeyValuePair.Create( new Uri("https://raw.githubusercontent.com/bchavez/Bogus/master/LICENSE"), Mit)
             }
         );
     }
