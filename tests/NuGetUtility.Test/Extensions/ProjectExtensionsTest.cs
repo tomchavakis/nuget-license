@@ -24,7 +24,7 @@ namespace NuGetUtility.Test.Extensions
         {
             _project.GetPackageReferenceCount().Returns(referenceCount);
 
-            bool result = _project.HasNugetPackagesReferenced();
+            bool result = _project.HasNuGetPackagesReferenced();
 
             Assert.That(result, Is.True);
         }
@@ -35,7 +35,7 @@ namespace NuGetUtility.Test.Extensions
             _project.GetPackageReferenceCount().Returns(0);
             _project.GetEvaluatedIncludes().Returns(new List<string> { "packages.config" });
 
-            bool result = _project!.HasNugetPackagesReferenced();
+            bool result = _project!.HasNuGetPackagesReferenced();
 
             Assert.That(result, Is.True);
         }
@@ -48,7 +48,7 @@ namespace NuGetUtility.Test.Extensions
             _project.GetPackageReferenceCount().Returns(referenceCount);
             _project.GetEvaluatedIncludes().Returns(Enumerable.Empty<string>());
 
-            bool result = _project!.HasNugetPackagesReferenced();
+            bool result = _project!.HasNuGetPackagesReferenced();
 
             Assert.That(result, Is.False);
         }
@@ -64,7 +64,7 @@ namespace NuGetUtility.Test.Extensions
             string nugetStyleTag,
             string restoreStyleTag)
         {
-            _project.GetNugetStyleTag().Returns(nugetStyleTag);
+            _project.GetNuGetStyleTag().Returns(nugetStyleTag);
             _project.GetRestoreStyleTag().Returns(restoreStyleTag);
             _project.GetEvaluatedIncludes().Returns(new List<string> { "not-packages.config" });
 
@@ -85,7 +85,7 @@ namespace NuGetUtility.Test.Extensions
             string restoreStyleTag,
             string evaluatedInclude)
         {
-            _project.GetNugetStyleTag().Returns(nugetStyleTag);
+            _project.GetNuGetStyleTag().Returns(nugetStyleTag);
             _project.GetRestoreStyleTag().Returns(restoreStyleTag);
             _project.GetEvaluatedIncludes().Returns(new List<string> { evaluatedInclude });
 

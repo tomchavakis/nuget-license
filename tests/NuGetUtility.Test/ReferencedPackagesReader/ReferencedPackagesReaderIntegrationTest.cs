@@ -14,10 +14,13 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [SetUp]
         public void SetUp()
         {
-            IMsBuildAbstraction msBuildAbstraction = OperatingSystem.IsWindows() ? new WindowsMsBuildAbstraction() : new MsBuildAbstraction();
+#if NETFRAMEWORK
+            IPackagesConfigReader packagesConfigReader = new WindowsPackagesConfigReader();
+#else
             IPackagesConfigReader packagesConfigReader = OperatingSystem.IsWindows() ? new WindowsPackagesConfigReader() : new FailingPackagesConfigReader();
+#endif
 
-            _uut = new ReferencedPackageReader(msBuildAbstraction, new LockFileFactory(), packagesConfigReader);
+            _uut = new ReferencedPackageReader(new MsBuildAbstraction(), new LockFileFactory(), packagesConfigReader);
         }
 
         private ReferencedPackageReader? _uut;
@@ -44,7 +47,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
         [Test]
-        public void GetInstalledPackagesShould_ReturnTransitiveNuget()
+        public void GetInstalledPackagesShould_ReturnTransitiveNuGet()
         {
             string path = Path.GetFullPath(
                 "../../../../targets/ProjectWithTransitiveNuget/ProjectWithTransitiveNuget.csproj");
@@ -71,7 +74,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
         [Test]
         [Platform(Include = "Win")]
-        public void GetInstalledPackagesShould_ReturnPackagesForPackagesConfigProject()
+        public void GetInstalledPackagesShould_ReturnPackages_For_PackagesConfigProject()
         {
             string path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");
 
@@ -82,12 +85,33 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
         [Test]
         [Platform(Exclude = "Win")]
-        public void GetInstalledPackagesShould_ThrowError()
+        public void GetInstalledPackagesShould_ThrowError_PackagesConfigProject()
         {
             string path = Path.GetFullPath("../../../../targets/PackagesConfigProject/PackagesConfigProject.csproj");
 
             PackagesConfigReaderException? exception = Assert.Throws<PackagesConfigReaderException>(() => _uut!.GetInstalledPackages(path, false));
             Assert.That(exception?.Message, Is.EqualTo($"Invalid project structure detected. Currently packages.config projects are only supported on Windows (Project: {path})"));
         }
+
+#if NETFRAMEWORK
+        [Test]
+        public void GetInstalledPackagesShould_ReturnPackages_For_NativeCppProject()
+        {
+            string path = Path.GetFullPath("../../../../targets/SimpleCppProject/SimpleCppProject.vcxproj");
+
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false);
+
+            Assert.That(result.Count, Is.EqualTo(2));
+        }
+#else
+        [Test]
+        public void GetInstalledPackagesShould_ThrowError_For_PackagesForNativeCppProject()
+        {
+            string path = Path.GetFullPath("../../../../targets/SimpleCppProject/SimpleCppProject.vcxproj");
+
+            MsBuildAbstractionException? exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, false));
+            Assert.That(exception?.Message, Is.EqualTo($"Please use the .net Framework version to analyze c++ projects (Project: {path})"));
+        }
+#endif
     }
 }

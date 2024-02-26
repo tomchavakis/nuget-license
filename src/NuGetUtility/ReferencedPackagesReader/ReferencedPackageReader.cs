@@ -28,7 +28,7 @@ namespace NuGetUtility.ReferencedPackagesReader
         {
             IProject project = _msBuild.GetProject(projectPath);
 
-            if (!project.HasNugetPackagesReferenced() && !includeTransitive)
+            if (!project.HasNuGetPackagesReferenced() && !includeTransitive)
             {
                 return Enumerable.Empty<PackageIdentity>();
             }

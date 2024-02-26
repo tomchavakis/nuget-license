@@ -36,7 +36,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             return _project.GetPropertyValue(RestoreStyleTag);
         }
 
-        public string GetNugetStyleTag()
+        public string GetNuGetStyleTag()
         {
             return _project.GetPropertyValue(NugetStyleTag);
         }

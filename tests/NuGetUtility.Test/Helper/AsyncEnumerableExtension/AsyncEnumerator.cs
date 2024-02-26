@@ -15,13 +15,21 @@ namespace NuGetUtility.Test.Helper.AsyncEnumerableExtension
         public ValueTask DisposeAsync()
         {
             _sync.Dispose();
+#if NETFRAMEWORK
+            return new ValueTask(Task.CompletedTask);
+#else
             return ValueTask.CompletedTask;
+#endif
         }
 
         public ValueTask<bool> MoveNextAsync()
         {
             bool result = _sync.MoveNext();
+#if NETFRAMEWORK
+            return new ValueTask<bool>(Task.FromResult(result));
+#else
             return ValueTask.FromResult(result);
+#endif
         }
 
         public T Current => _sync.Current;

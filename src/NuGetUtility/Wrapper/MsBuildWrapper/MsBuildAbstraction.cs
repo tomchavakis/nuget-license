@@ -41,6 +41,13 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
         public IProject GetProject(string projectPath)
         {
+#if !NETFRAMEWORK
+            if (projectPath.EndsWith("vcxproj"))
+            {
+                throw new MsBuildAbstractionException($"Please use the .net Framework version to analyze c++ projects (Project: {projectPath})");
+            }
+#endif
+
             ProjectRootElement rootElement = TryGetProjectRootElement(projectPath);
 
             var project = new Project(rootElement, _globalProjectProperties, null);
@@ -50,7 +57,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
 
         public IEnumerable<string> GetProjectsFromSolution(string inputPath)
         {
-            string absolutePath = Path.GetFullPath(inputPath, Environment.CurrentDirectory);
+            string absolutePath = Path.IsPathRooted(inputPath) ? inputPath : Path.Combine(Environment.CurrentDirectory, inputPath);
             var sln = SolutionFile.Parse(absolutePath);
             return sln.ProjectsInOrder.Select(p => p.AbsolutePath);
         }

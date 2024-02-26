@@ -27,7 +27,7 @@ namespace NuGetUtility.Serialization
 
         public override bool CanConvert(Type typeToConvert)
         {
-            return typeToConvert.IsAssignableTo(typeof(INuGetVersion));
+            return typeof(INuGetVersion).IsAssignableFrom(typeToConvert);
         }
     }
 }

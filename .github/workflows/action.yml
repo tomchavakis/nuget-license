@@ -13,40 +13,59 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
+
+        framework: [net6.0, net7.0, net8.0]
 
         include:
-          - os: ubuntu-latest
-            buildConfiguration: "Release"
+          - targetFramework: net6.0
+            dotnetVersion: "6.0.x"
+            
+          - targetFramework: net7.0
+            dotnetVersion: "7.0.x"
 
-          - os: windows-latest
-            buildConfiguration: "TestWindows"
-
-          - os: macos-latest
-            buildConfiguration: "Release"
+          - targetFramework: net8.0
+            dotnetVersion: "8.0.x"
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup dotnet 6.0.x
+
+      - name: Setup dotnet ${{ matrix.dotnetVersion }}
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "6.0.x"
-      - name: Setup dotnet 7.0.x
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "7.0.x"
-      - name: Setup dotnet 8.0.x
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
+          dotnet-version: ${{ matrix.dotnetVersion }}
+
       - name: restore
-        run: dotnet restore
+        run: dotnet restore -p:TargetFramework=${{ matrix.framework }}
 
       - name: build
-        run: dotnet build --configuration ${{ matrix.buildConfiguration }} --no-restore
+        run: dotnet build --configuration Release
 
       - name: test
-        run: dotnet test --configuration ${{ matrix.buildConfiguration }} --no-restore
+        run: dotnet test --configuration Release -f ${{ matrix.framework }} --no-restore
+
+  test_windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        framework: [net6.0, net7.0, net8.0, net472]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nuget/setup-nuget@v2
+      - run: nuget restore NuGetUtility.sln
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: build
+        run: msbuild -t:rebuild -property:Configuration=TestWindows
+
+      - name: test
+        uses: microsoft/vstest-action@v1.0.0
+        with:
+          testAssembly: "NuGetUtility.Test.dll"
+          searchFolder: "tests/NuGetUtility.Test/bin/TestWindows/${{ matrix.framework }}/"
+          runInParallel: true
 
   check_code_format:
     runs-on: ubuntu-latest

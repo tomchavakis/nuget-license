@@ -1,6 +1,8 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.Text;
+
 namespace NuGetUtility.Output.Table
 {
     /// <summary>
@@ -51,7 +53,7 @@ namespace NuGetUtility.Output.Table
 
         public async Task Print()
         {
-            await using var writer = new StreamWriter(_stream, leaveOpen: true);
+            using var writer = new StreamWriter(_stream, encoding: new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true), bufferSize: 1024, leaveOpen: true);
 
             await WriteSeparator(writer);
             await WriteRow(_titles, writer);

@@ -2,6 +2,7 @@
 // The license conditions are provided in the LICENSE file located in the project root
 
 using System.Collections.Immutable;
+using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
 using McMaster.Extensions.CommandLineUtils;
@@ -107,7 +108,7 @@ namespace NuGetUtility
             IFileDownloader urlLicenseFileDownloader = GetFileDownloader(httpClient);
             IOutputFormatter output = GetOutputFormatter();
 
-            MsBuildAbstraction msBuild = OperatingSystem.IsWindows() ? new WindowsMsBuildAbstraction() : new MsBuildAbstraction();
+            MsBuildAbstraction msBuild = new MsBuildAbstraction();
             var projectCollector = new ProjectsCollector(msBuild);
             var projectReader = new ReferencedPackageReader(msBuild, new LockFileFactory(), GetPackagesConfigReader());
             var validator = new LicenseValidator.LicenseValidator(licenseMappings,
@@ -131,7 +132,7 @@ namespace NuGetUtility
                 return new ProjectWithReferencedPackages(p, installedPackages ?? Enumerable.Empty<PackageIdentity>());
             });
             IAsyncEnumerable<ReferencedPackageWithContext> downloadedLicenseInformation =
-                packagesForProject.SelectMany(p => GetPackageInfos(p, overridePackageInformation, cancellationToken));
+                packagesForProject.SelectMany(p => GetPackageInformations(p, overridePackageInformation, cancellationToken));
             var results = (await validator.Validate(downloadedLicenseInformation, cancellationToken)).ToList();
 
             if (projectReaderExceptions.Any())
@@ -141,15 +142,21 @@ namespace NuGetUtility
                 return -1;
             }
 
-            await using Stream outputStream = Console.OpenStandardOutput();
+            using Stream outputStream = Console.OpenStandardOutput();
             await output.Write(outputStream, results.OrderBy(r => r.PackageId).ThenBy(r => r.PackageVersion).ToList());
             return results.Count(r => r.ValidationErrors.Any());
         }
 
-        private static IPackagesConfigReader GetPackagesConfigReader() =>
-            OperatingSystem.IsWindows() ? new WindowsPackagesConfigReader() : new FailingPackagesConfigReader();
+        private static IPackagesConfigReader GetPackagesConfigReader()
+        {
+#if NETFRAMEWORK
+            return new WindowsPackagesConfigReader();
+#else
+           return OperatingSystem.IsWindows() ? new WindowsPackagesConfigReader() : new FailingPackagesConfigReader();
+#endif
+        }
 
-        private static IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInfos(
+        private static IAsyncEnumerable<ReferencedPackageWithContext> GetPackageInformations(
             ProjectWithReferencedPackages projectWithReferences,
             IEnumerable<CustomPackageInformation> overridePackageInformation,
             CancellationToken cancellation)
