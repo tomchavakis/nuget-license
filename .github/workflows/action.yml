@@ -43,7 +43,6 @@ jobs:
 
       - name: test
         run: dotnet test --configuration Release -f ${{ matrix.framework }} --no-restore
-
   test_windows:
     runs-on: windows-latest
     strategy:
@@ -110,15 +109,55 @@ jobs:
         run: dotnet restore -p:TargetFramework=${{ matrix.targetFramework }}
 
       - name: build
-        run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj --configuration Release -o ./release -f ${{ matrix.targetFramework }} --no-restore
+        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.targetFramework }} --no-restore
 
       - name: check
-        run: dotnet ./release/NuGetUtility.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.targetFramework }}
+        run: dotnet ./release/NuGetLicenseCore.dll -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}/${{ matrix.targetFramework }}
 
       - name: show downloaded licenses
         shell: pwsh
         run: |
           foreach($file in Get-ChildItem -Path ./licenses/${{ matrix.project }}/${{ matrix.targetFramework }})
+          {
+            Write-Host ::group::$file
+            Get-Content $file.FullName
+            Write-Host ::endgroup::
+          }
+  check_licenses_net472:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        project: [App, Tests]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: nuget/setup-nuget@v2
+      - run: nuget restore NuGetUtility.sln
+    
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: fully qualify release path
+        id: release_path
+        shell: pwsh
+        run: |
+          $path = [System.IO.Path]::GetFullPath("./release");
+          echo "publish to path: $path"
+          echo "path=$path" >> $env:GITHUB_OUTPUT
+    
+      - name: build
+        run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }}
+
+      - name: check
+        run: ${{ steps.release_path.outputs.path }}/NuGetLicenseFramework.exe -ji ./.github/workflows/assets/${{ matrix.project }}/projectsToCheck.json -t -a ./.github/workflows/assets/${{ matrix.project }}/allowedLicenses.json -o JsonPretty -override ./.github/workflows/assets/${{ matrix.project }}/overwritePackageInformation.json -ignore ./.github/workflows/assets/${{ matrix.project }}/ignorePackages.json -mapping ./.github/workflows/assets/${{ matrix.project }}/urlToLicenseMapping.json -d ./licenses/${{ matrix.project }}
+
+      - name: show downloaded licenses
+        shell: pwsh
+        run: |
+          foreach($file in Get-ChildItem -Path ./licenses/${{ matrix.project }})
           {
             Write-Host ::group::$file
             Get-Content $file.FullName
@@ -162,12 +201,51 @@ jobs:
           version_format: "${major}.${minor}.${patch}-test${increment}"
 
       - name: build
-        run: dotnet publish ./src/NuGetUtility/NuGetUtility.csproj --configuration Release -o ./release -f ${{ matrix.targetFramework }} --no-restore -p:Version=${{ steps.version.outputs.version }}
+        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.targetFramework }} --no-restore -p:Version=${{ steps.version.outputs.version }}
 
       - name: check app version
         shell: pwsh
         run: |
-          $cmdOutput = dotnet ./release/NuGetUtility.dll --version | Out-String
+          $cmdOutput = dotnet ./release/NuGetLicenseCore.dll --version | Out-String
+          if(!($cmdOutput.Trim() -like '${{ steps.version.outputs.version }}')) {
+            Write-Host Versions do not match: read $cmdOutput, expected ${{ steps.version.outputs.version }}
+            exit 1;
+          }
+  check_version_command_net472:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: nuget/setup-nuget@v2
+      - run: nuget restore NuGetUtility.sln
+        
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+    
+      - name: fully qualify release path
+        id: release_path
+        shell: pwsh
+        run: |
+          $path = [System.IO.Path]::GetFullPath("./release");
+          echo "publish to path: $path"
+          echo "path=$path" >> $env:GITHUB_OUTPUT
+        
+      - uses: paulhatch/semantic-version@v5.4.0
+        id: version
+        name: version
+        with:
+          tag_prefix: "v"
+          version_format: "${major}.${minor}.${patch}-test${increment}"
+
+      - name: build
+        run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.release_path.outputs.path }} /p:Version=${{ steps.version.outputs.version }}
+
+      - name: check app version
+        shell: pwsh
+        run: |
+          $cmdOutput = ${{ steps.release_path.outputs.path }}/NuGetLicenseFramework.exe --version | Out-String
           if(!($cmdOutput.Trim() -like '${{ steps.version.outputs.version }}')) {
             Write-Host Versions do not match: read $cmdOutput, expected ${{ steps.version.outputs.version }}
             exit 1;

@@ -1,1 +1,1 @@
-["./src/NuGetUtility/NuGetUtility.csproj"]
+["./src/NuGetLicenseCore/NuGetLicenseCore.csproj","./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj"]

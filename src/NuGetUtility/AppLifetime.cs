@@ -6,7 +6,7 @@ namespace NuGetUtility
     /// <summary>
     ///     Inspired by: https://github.com/dotnet/aspnetcore/search?q=WebHostLifetime
     /// </summary>
-    internal class AppLifetime
+    public class AppLifetime
     {
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly ManualResetEventSlim _doneEvent = new ManualResetEventSlim();

@@ -90,13 +90,6 @@ namespace NuGetUtility
         private static string GetVersion()
             => typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
 
-        public static async Task Main(string[] args)
-        {
-            var lifetime = new AppLifetime();
-            int returnCode = await CommandLineApplication.ExecuteAsync<Program>(args, lifetime.Token);
-            lifetime.Done(returnCode);
-        }
-
         private async Task<int> OnExecuteAsync(CancellationToken cancellationToken)
         {
             using var httpClient = new HttpClient();
@@ -161,6 +154,7 @@ namespace NuGetUtility
             IEnumerable<CustomPackageInformation> overridePackageInformation,
             CancellationToken cancellation)
         {
+            Console.WriteLine($"get package information for {projectWithReferences}");
             ISettings settings = Settings.LoadDefaultSettings(projectWithReferences.Project);
             var sourceProvider = new PackageSourceProvider(settings);
 

@@ -48,27 +48,27 @@ jobs:
         id: artifacts_path
         shell: pwsh
         run: |
-          New-Item -ItemType "directory" -Path "./artifacts"
-          $path = Resolve-Path ./artifacts
-          echo "::set-output name=path::$path"
+          $path = [System.IO.Path]::GetFullPath("./artifacts");
+          echo "publish to path: $path"
+          echo "path=$path" >> $env:GITHUB_OUTPUT
 
       - name: Publish the application binaries (.net6)
-        run: msbuild ./src/NuGetUtility/NuGetUtility.csproj /t:Publish /p:configuration=Release /p:OutDir=${{ steps.artifacts_path.path}}/net6 /p:TargetFramework=net6.0 /p:Version=${{ steps.version.outputs.full_without_prefix }}
+        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net6 -f net6.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
       - name: Publish the application binaries (.net7)
-        run: msbuild ./src/NuGetUtility/NuGetUtility.csproj /t:Publish /p:configuration=Release /p:OutDir=${{ steps.artifacts_path.path}}/net7 /p:TargetFramework=net7.0 /p:Version=${{ steps.version.outputs.full_without_prefix }}
+        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net7 -f net7.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
       - name: Publish the application binaries (.net8)
-        run: msbuild ./src/NuGetUtility/NuGetUtility.csproj /t:Publish /p:configuration=Release /p:OutDir=${{ steps.artifacts_path.path}}/net8 /p:TargetFramework=net8.0 /p:Version=${{ steps.version.outputs.full_without_prefix }}
+        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net8 -f net8.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
       - name: Publish the application binaries (.net472)
-        run: msbuild ./src/NuGetUtility/NuGetUtility.csproj /t:Publish /p:configuration=Release /p:OutDir=${{ steps.artifacts_path.path}}/net472 /p:TargetFramework=net472 /p:Version=${{ steps.version.outputs.full_without_prefix }}
+        run: msbuild ./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj /t:Publish /p:configuration=Release /p:PublishDir=${{ steps.artifacts_path.outputs.path }}/net472 /p:Version=${{ steps.version.outputs.full_without_prefix }}
       - name: Create nuget package
-        run: msbuild ./src/NuGetUtility/NuGetUtility.csproj /t:Pack /p:configuration=Release /p:OutDir=${{ steps.artifacts_path.path}} /p:Version=${{ steps.version.outputs.full_without_prefix }}
-      
+        run: dotnet pack ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-build -o ${{ steps.artifacts_path.outputs.path }} -p:Version=${{ steps.version.outputs.full_without_prefix }}
+
       - name: Zip artifacts
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: 'zip'
           filename: 'release.zip'
-          path: ${{ steps.artifacts_path.path}}
+          path: ${{ steps.artifacts_path.outputs.path }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -81,4 +81,4 @@ jobs:
 
       - name: publish nuget package to nuget.org
         id: publish_nuget
-        run: dotnet nuget push ${{ steps.artifacts_path.path}}/*.nupkg -s 'https://api.nuget.org/v3/index.json' -k ${{secrets.NUGET_KEY}} --skip-duplicate
+        run: dotnet nuget push ${{ steps.artifacts_path.outputs.path }}/*.nupkg -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_KEY }} --skip-duplicate

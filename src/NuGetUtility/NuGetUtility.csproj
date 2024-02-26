@@ -1,29 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFrameworks>net472;net6.0;net7.0;net8.0</TargetFrameworks>
-    <IsPackable>true</IsPackable>
-    <PackAsTool>true</PackAsTool>
-    <PackageType>DotnetTool</PackageType>
     <RepositoryType>git</RepositoryType>
     <Version>100.100.100</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-    <PackageId>nuget-license</PackageId>
-    <ToolCommandName>nuget-license</ToolCommandName>
+    <PackageId>nuget-license-core</PackageId>
     <Authors>Tom Chavakis,Simon Ensslen</Authors>
     <Company>-</Company>
-    <Title>.NET Core Tool to print and validate the licenses of dotnet project(s)</Title>
+    <Title>.NET Tool to print and validate the licenses of dotnet project(s)</Title>
     <PackageProjectUrl>https://github.com/sensslen/nuget-license</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <GeneratePackageOnBuild Condition="'$(GeneratePackageOnBuild)' == ''">false</GeneratePackageOnBuild>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;TestWindows</Configurations>
     <Platforms>AnyCPU</Platforms>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Description>A .net core tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects.</Description>
+    <Description>A .net tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects.</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="  '$(TargetFramework)' == 'net472' ">

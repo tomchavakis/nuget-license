@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <RepositoryType>git</RepositoryType>
+    <Version>100.100.100</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <PackageId>nuget-license</PackageId>
+    <ToolCommandName>nuget-license</ToolCommandName>
+    <Authors>Tom Chavakis,Simon Ensslen</Authors>
+    <Company>-</Company>
+    <Title>.NET Tool to print and validate the licenses of dotnet project(s)</Title>
+    <PackageProjectUrl>https://github.com/sensslen/nuget-license</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Configurations>Debug;Release;TestWindows</Configurations>
+    <Platforms>AnyCPU</Platforms>
+    <Description>A .net tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects.</Description>
+    <LangVersion>10.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\README.md">
+      <Pack>true</Pack>
+      <PackagePath>README.md</PackagePath>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NuGetUtility\NuGetUtility.csproj" />
+  </ItemGroup>
+
+</Project>
