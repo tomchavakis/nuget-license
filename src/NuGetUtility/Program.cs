@@ -154,7 +154,6 @@ namespace NuGetUtility
             IEnumerable<CustomPackageInformation> overridePackageInformation,
             CancellationToken cancellation)
         {
-            Console.WriteLine($"get package information for {projectWithReferences}");
             ISettings settings = Settings.LoadDefaultSettings(projectWithReferences.Project);
             var sourceProvider = new PackageSourceProvider(settings);
 
