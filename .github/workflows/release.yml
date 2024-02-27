@@ -85,4 +85,9 @@ jobs:
         id: publish_nuget
         shell: pwsh
         run: |
-          Get-ChildItem -Path ${{ steps.artifacts_path.outputs.path }} -Include *.nupkg | Select-Object -ExpandProperty FullName | foreach { dotnet nuget push "$_" -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_KEY }} --skip-duplicate  } 
+          $files = Get-ChildItem -Path ${{ steps.artifacts_path.outputs.path }}/* -Include *.nupkg -Recurse
+          foreach ($f in $files){
+            $fullPath = $F.FullName
+            echo "sending $fullPath"
+            dotnet nuget push "$fullPath" -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_KEY }} --skip-duplicate
+          }
