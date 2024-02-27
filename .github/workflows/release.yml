@@ -37,6 +37,8 @@ jobs:
       - name: build
         run: msbuild -t:rebuild -property:Configuration=Release
 
+      - uses: browser-actions/setup-chrome@latest
+
       - name: test
         uses: microsoft/vstest-action@v1.0.0
         with:
@@ -81,4 +83,6 @@ jobs:
 
       - name: publish nuget package to nuget.org
         id: publish_nuget
-        run: dotnet nuget push ${{ steps.artifacts_path.outputs.path }}/*.nupkg -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_KEY }} --skip-duplicate
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path ${{ steps.artifacts_path.outputs.path }} -Include *.nupkg | Select-Object -ExpandProperty FullName | foreach { dotnet nuget push "$_" -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_KEY }} --skip-duplicate  } 

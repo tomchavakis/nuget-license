@@ -20,7 +20,6 @@ namespace NuGetUtility.LicenseValidator
                 new KeyValuePair<Uri,string>( new Uri("http://www.apache.org/licenses/LICENSE-2.0.html"), Apache20 ),
                 new KeyValuePair<Uri,string>( new Uri("http://www.apache.org/licenses/LICENSE-2.0"), Apache20 ),
                 new KeyValuePair<Uri,string>( new Uri("http://aws.amazon.com/apache2.0/"), Apache20 ),
-                new KeyValuePair<Uri,string>( new Uri("http://logging.apache.org/log4net/license.html"), Apache20 ),
                 new KeyValuePair<Uri,string>( new Uri("https://github.com/owin-contrib/owin-hosting/blob/master/LICENSE.txt"), Apache20 ),
                 new KeyValuePair<Uri,string>( new Uri("https://raw.githubusercontent.com/aspnet/Home/2.0.0/LICENSE.txt"), Apache20 ),
                 new KeyValuePair<Uri,string>(

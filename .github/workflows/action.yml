@@ -35,6 +35,8 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
+      - uses: browser-actions/setup-chrome@latest
+
       - name: restore
         run: dotnet restore -p:TargetFramework=${{ matrix.framework }}
 
@@ -52,6 +54,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: nuget/setup-nuget@v2
       - run: nuget restore NuGetUtility.sln
+
+      - uses: browser-actions/setup-chrome@latest
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
