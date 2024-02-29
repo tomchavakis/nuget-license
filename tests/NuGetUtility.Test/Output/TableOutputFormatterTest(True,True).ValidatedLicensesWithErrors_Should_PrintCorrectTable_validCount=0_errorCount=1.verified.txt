@@ -1,8 +1,11 @@
-﻿+-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+-----------+-----------------------+
-| Package                       | Version | License Information Origin | License Expression                                                                   | Error     | Error Context         |
-+-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+-----------+-----------------------+
-| Principal Functionality Agent | 1.5.3   | Expression                 | connecting the firewall won't do anything, we need to copy the digital XSS firewall! | Judson    | https://wilson.net    |
-|                               |         |                            |                                                                                      | Guadalupe | http://otho.info      |
-|                               |         |                            |                                                                                      | General   | https://skylar.name   |
-|                               |         |                            |                                                                                      | Haylie    | http://audreanne.info |
-+-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+-----------+-----------------------+
+﻿+-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+-----------+------------------------+
+| Package                       | Version | License Information Origin | License Expression                                                                   | Error     | Error Context          |
++-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+-----------+------------------------+
+| Principal Functionality Agent | 1.5.3   | Expression                 | connecting the firewall won't do anything, we need to copy the digital XSS firewall! | Paige     | https://remington.info |
+|                               |         |                            |                                                                                      | Aletha    | https://isobel.info    |
+|                               |         |                            |                                                                                      | Pearline  | https://johnathon.info |
+|                               |         |                            |                                                                                      | Eleanora  | http://jaeden.info     |
+|                               |         |                            |                                                                                      | Nikolas   | https://daphney.net    |
+|                               |         |                            |                                                                                      | Oceane    | http://clifton.com     |
+|                               |         |                            |                                                                                      | Francisco | http://bessie.com      |
++-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+-----------+------------------------+

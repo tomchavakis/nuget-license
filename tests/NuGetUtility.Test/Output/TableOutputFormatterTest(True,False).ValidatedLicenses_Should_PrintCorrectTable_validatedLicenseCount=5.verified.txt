@@ -1,9 +1,9 @@
-﻿+-----------------------------------+---------+----------------------------+----------------------------------------------------------------------------------------+---------------------+
-| Package                           | Version | License Information Origin | License Expression                                                                     | Package Project Url |
-+-----------------------------------+---------+----------------------------+----------------------------------------------------------------------------------------+---------------------+
-| Legacy Metrics Planner            | 9.5.0   | Ignored                    | I'll override the haptic AGP feed, that should feed the AGP feed!                      | http://madisyn.name |
-| International Mobility Technician | 3.7.5   | Expression                 | I'll override the digital SMTP interface, that should interface the SMTP interface!    | https://jayne.name  |
-| Principal Markets Executive       | 4.2.2   | Overwrite                  | Try to generate the EXE array, maybe it will generate the mobile array!                | https://bettie.com  |
-| Future Identity Specialist        | 4.7.4   | Expression                 | If we back up the driver, we can get to the AI driver through the bluetooth AI driver! | http://della.biz    |
-| Forward Functionality Designer    | 5.5.7   | Expression                 | Use the redundant AGP monitor, then you can generate the redundant monitor!            | https://jasen.biz   |
-+-----------------------------------+---------+----------------------------+----------------------------------------------------------------------------------------+---------------------+
+﻿+-----------------------------+---------+----------------------------+------------------------------------------------------------------------------------+---------------------+---------------------+
+| Package                     | Version | License Information Origin | License Expression                                                                 | License Url         | Package Project Url |
++-----------------------------+---------+----------------------------+------------------------------------------------------------------------------------+---------------------+---------------------+
+| Legacy Metrics Planner      | 9.5.0   | Ignored                    | I'll override the haptic AGP feed, that should feed the AGP feed!                  | https://marquis.net | http://madisyn.name |
+| Product Data Analyst        | 6.4.5   | Url                        | The AI matrix is down, index the digital matrix so we can index the AI matrix!     | http://isidro.biz   | https://major.biz   |
+| Customer Research Associate | 3.5.9   | Url                        | I'll input the cross-platform AGP system, that should system the AGP system!       | http://gladyce.biz  | https://floyd.name  |
+| Senior Markets Orchestrator | 4.0.0   | Unknown                    | Use the multi-byte HDD hard drive, then you can connect the multi-byte hard drive! | http://juliet.biz   | http://rebecca.biz  |
+| Principal Mobility Designer | 1.3.7   | Ignored                    | The SQL bus is down, hack the multi-byte bus so we can hack the SQL bus!           | http://renee.org    | https://earlene.com |
++-----------------------------+---------+----------------------------+------------------------------------------------------------------------------------+---------------------+---------------------+

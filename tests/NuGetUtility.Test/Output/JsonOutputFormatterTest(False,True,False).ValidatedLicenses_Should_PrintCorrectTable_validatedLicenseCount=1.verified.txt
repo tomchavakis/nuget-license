@@ -1,1 +1,1 @@
-﻿[{"PackageId":"Legacy Metrics Planner","PackageVersion":"9.5.0","PackageProjectUrl":"http://madisyn.name","License":"I\u0027ll override the haptic AGP feed, that should feed the AGP feed!","LicenseInformationOrigin":3}]
+﻿[{"PackageId":"Legacy Metrics Planner","PackageVersion":"9.5.0","PackageProjectUrl":"http://madisyn.name","License":"I\u0027ll override the haptic AGP feed, that should feed the AGP feed!","LicenseUrl":"https://marquis.net","LicenseInformationOrigin":3}]

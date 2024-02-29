@@ -9,12 +9,14 @@ namespace NuGetUtility.LicenseValidator
         INuGetVersion PackageVersion,
         string? PackageProjectUrl,
         string? License,
+        string? LicenseUrl,
         LicenseInformationOrigin LicenseInformationOrigin,
         List<ValidationError>? ValidationErrors = null)
     {
         public List<ValidationError> ValidationErrors { get; } = ValidationErrors ?? new List<ValidationError>();
 
         public string? License { get; set; } = License;
+        public string? LicenseUrl { get; set; } = LicenseUrl;
         public LicenseInformationOrigin LicenseInformationOrigin { get; set; } = LicenseInformationOrigin;
     }
 }
