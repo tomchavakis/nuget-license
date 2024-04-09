@@ -87,7 +87,7 @@ jobs:
     strategy:
       matrix:
         targetFramework: [net6.0, net7.0, net8.0]
-        project: [App, Tests]
+        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression]
 
         include:
           - targetFramework: net6.0
@@ -110,7 +110,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
-        run: dotnet restore -p:TargetFramework=${{ matrix.targetFramework }}
+        run: dotnet restore NuGetUtility.sln
 
       - name: build
         run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj --configuration Release -o ./release -f ${{ matrix.targetFramework }} --no-restore
@@ -131,7 +131,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        project: [App, Tests]
+        project: [App, Tests, ProjectWithReferenceContainingLicenseExpression]
 
     steps:
       - uses: actions/checkout@v4
@@ -195,7 +195,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnetVersion }}
 
       - name: restore
-        run: dotnet restore -p:TargetFramework=${{ matrix.targetFramework }}
+        run: dotnet restore NuGetUtility.sln
 
       - uses: paulhatch/semantic-version@v5.4.0
         id: version

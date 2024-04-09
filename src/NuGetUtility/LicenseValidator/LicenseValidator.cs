@@ -9,6 +9,7 @@ using NuGetUtility.Wrapper.HttpClientWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
 using NuGetUtility.Wrapper.NuGetWrapper.Versioning;
+using Tethys.SPDX.ExpressionParser;
 
 namespace NuGetUtility.LicenseValidator
 {
@@ -126,7 +127,8 @@ namespace NuGetUtility.LicenseValidator
                 case LicenseType.Expression:
                 case LicenseType.Overwrite:
                     string licenseId = info.LicenseMetadata!.License;
-                    if (IsLicenseValid(licenseId))
+                    SpdxExpression? licenseExpression = SpdxExpressionParser.Parse(licenseId, _ => true, _ => true);
+                    if (IsValidLicenseExpression(licenseExpression))
                     {
                         AddOrUpdateLicense(result,
                             info,
@@ -153,6 +155,14 @@ namespace NuGetUtility.LicenseValidator
                     break;
             }
         }
+
+        private bool IsValidLicenseExpression(SpdxExpression? expression) => expression switch
+        {
+            SpdxAndExpression and => IsValidLicenseExpression(and.Left) && IsValidLicenseExpression(and.Right),
+            SpdxOrExpression or => IsValidLicenseExpression(or.Left) || IsValidLicenseExpression(or.Right),
+            SpdxWithExpression or SpdxLicenseExpression or SpdxLicenseReference => IsLicenseValid(expression.ToString()),
+            _ => false,
+        };
 
         private async Task ValidateLicenseByUrl(IPackageMetadata info,
             string context,

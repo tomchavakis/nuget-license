@@ -309,6 +309,68 @@ namespace NuGetUtility.Test.LicenseValidator
 
         [Test]
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithExpressionLicenseInformation_Should_GiveCorrectValidatedLicenseList_When_Or_Expression(
+            string packageId,
+            INuGetVersion packageVersion,
+            string license1,
+            string license2)
+        {
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
+                Array.Empty<string>(),
+                _fileDownloader,
+                _ignoredLicenses);
+
+            string expression = $"{license1} OR {license2}";
+
+            IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, expression);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            expression,
+                            null,
+                            LicenseInformationOrigin.Expression)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithExpressionLicenseInformation_Should_GiveCorrectValidatedLicenseList_When_And_Expression(
+            string packageId,
+            INuGetVersion packageVersion,
+            string license1,
+            string license2)
+        {
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
+                Array.Empty<string>(),
+                _fileDownloader,
+                _ignoredLicenses);
+
+            string expression = $"{license1} AND {license2}";
+
+            IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, expression);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            expression,
+                            null,
+                            LicenseInformationOrigin.Expression)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithOverwriteLicenseInformation_Should_GiveCorrectValidatedLicenseList(
             string packageId,
             INuGetVersion packageVersion,
@@ -504,6 +566,80 @@ namespace NuGetUtility.Test.LicenseValidator
 
         [Test]
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithExpressionLicenseInformation_Should_GiveCorrectResult_WithOrExpression_If_NoneAllowed(
+            string packageId,
+            INuGetVersion packageVersion,
+            string[] licenses)
+        {
+            string expression = licenses.Length switch
+            {
+                0 => string.Empty,
+                1 => licenses[0],
+                2 => $"{licenses[0]} OR {licenses[1]}",
+                _ => licenses.Skip(2).Aggregate($"{licenses[0]} OR {licenses[1]}", (expression, newLicense) => $"{newLicense} OR ({expression})")
+            };
+
+            IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, expression);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            expression,
+                            null,
+                            LicenseInformationOrigin.Expression,
+                            new List<ValidationError>
+                            {
+                                new ValidationError($"License {expression} not found in list of supported licenses",
+                                    _context)
+                            })
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithExpressionLicenseInformation_Should_GiveCorrectResult_WithAndExpression_If_OneNotAllowed(
+            string packageId,
+            INuGetVersion packageVersion,
+            string unallowedLicense)
+        {
+            string[] licenses = _allowedLicenses.Shuffle(135643).Append(unallowedLicense).ToArray();
+
+            string expression = licenses.Length switch
+            {
+                0 => string.Empty,
+                1 => licenses[0],
+                2 => $"{licenses[0]} AND {licenses[1]}",
+                _ => licenses.Skip(2).Aggregate($"{licenses[0]} AND {licenses[1]}", (expression, newLicense) => $"{newLicense} AND ({expression})")
+            };
+
+            IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, expression);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            expression,
+                            null,
+                            LicenseInformationOrigin.Expression,
+                            new List<ValidationError>
+                            {
+                                new ValidationError($"License {expression} not found in list of supported licenses",
+                                    _context)
+                            })
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithOverwriteLicenseInformation_Should_GiveCorrectResult_If_NotAllowed(
             string packageId,
             INuGetVersion packageVersion,
@@ -549,6 +685,57 @@ namespace NuGetUtility.Test.LicenseValidator
                             packageVersion,
                             _projectUrl.ToString(),
                             validLicense,
+                            null,
+                            LicenseInformationOrigin.Expression)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithExpressionLicenseInformation_Should_GiveCorrectResult_WithOrExpression_If_OneAllowed(
+            string packageId,
+            INuGetVersion packageVersion,
+            string unallowedLicense)
+        {
+            string expression = $"{_allowedLicenses.Shuffle(13563).First()} OR {unallowedLicense}";
+
+            IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, expression);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            expression,
+                            null,
+                            LicenseInformationOrigin.Expression)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithExpressionLicenseInformation_Should_GiveCorrectResult_WithAndExpression_If_AllAllowed(
+            string packageId,
+            INuGetVersion packageVersion)
+        {
+            string[] licenses = _allowedLicenses.Shuffle(135643).Take(2).ToArray();
+
+            string expression = $"{licenses[0]} AND {licenses[1]}";
+
+            IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, expression);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            expression,
                             null,
                             LicenseInformationOrigin.Expression)
                     })

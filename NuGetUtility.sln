@@ -1,4 +1,5 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -31,9 +32,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleCppProject", "tests\targets\SimpleCppProject\SimpleCppProject.vcxproj", "{380FBD90-2CF0-4F83-A58E-EB98CE2EAE15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetLicenseCore", "src\NuGetLicenseCore\NuGetLicenseCore.csproj", "{FBA6622A-C9E3-4250-AB79-35F02CAD2419}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGetLicenseCore", "src\NuGetLicenseCore\NuGetLicenseCore.csproj", "{FBA6622A-C9E3-4250-AB79-35F02CAD2419}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetLicenseFramework", "src\NuGetLicenseFramework\NuGetLicenseFramework.csproj", "{DE079B9C-B6BA-4D53-8B83-03D3CBD4027F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGetLicenseFramework", "src\NuGetLicenseFramework\NuGetLicenseFramework.csproj", "{DE079B9C-B6BA-4D53-8B83-03D3CBD4027F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "integration", "integration", "{FFB2826C-17A3-4C18-8FFE-A34AB51592F7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectWithReferenceContainingLicenseExpression", "integration\ProjectWithReferenceContainingLicenseExpression\ProjectWithReferenceContainingLicenseExpression.csproj", "{01704839-219A-4CE2-93F4-DB3CB8773DCE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -224,6 +229,24 @@ Global
 		{DE079B9C-B6BA-4D53-8B83-03D3CBD4027F}.TestWindows|x64.Build.0 = Debug|Any CPU
 		{DE079B9C-B6BA-4D53-8B83-03D3CBD4027F}.TestWindows|x86.ActiveCfg = Debug|Any CPU
 		{DE079B9C-B6BA-4D53-8B83-03D3CBD4027F}.TestWindows|x86.Build.0 = Debug|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.Debug|x64.Build.0 = Debug|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.Debug|x86.Build.0 = Debug|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.Release|x64.ActiveCfg = Release|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.Release|x64.Build.0 = Release|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.Release|x86.ActiveCfg = Release|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.Release|x86.Build.0 = Release|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.TestWindows|Any CPU.ActiveCfg = TestWindows|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.TestWindows|Any CPU.Build.0 = TestWindows|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.TestWindows|x64.ActiveCfg = TestWindows|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.TestWindows|x64.Build.0 = TestWindows|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.TestWindows|x86.ActiveCfg = TestWindows|Any CPU
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE}.TestWindows|x86.Build.0 = TestWindows|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -240,6 +263,7 @@ Global
 		{380FBD90-2CF0-4F83-A58E-EB98CE2EAE15} = {FA92392F-D895-4D1E-A5ED-E6DC3C08223E}
 		{FBA6622A-C9E3-4250-AB79-35F02CAD2419} = {D2AB2D00-1F48-487D-BFE0-99FDB4E071CC}
 		{DE079B9C-B6BA-4D53-8B83-03D3CBD4027F} = {D2AB2D00-1F48-487D-BFE0-99FDB4E071CC}
+		{01704839-219A-4CE2-93F4-DB3CB8773DCE} = {FFB2826C-17A3-4C18-8FFE-A34AB51592F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {70887D40-0182-4C32-BFA1-B5A02E405F11}

@@ -62,7 +62,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
         [Test]
-        public void GetInstalledPackagesShould_ReturnEmptyEnumerableForProjectsWithoutPackages()
+        public void GetInstalledPackagesShould_ReturnEmptyEnumerable_For_ProjectsWithoutPackages()
         {
             string path = Path.GetFullPath(
                 "../../../../targets/ProjectWithoutNugetReferences/ProjectWithoutNugetReferences.csproj");

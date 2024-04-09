@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <Configurations>Debug;Release;TestWindows</Configurations>
-        <Platforms>AnyCPU</Platforms>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Configurations>Debug;Release;TestWindows</Configurations>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\PackageReferenceProject\PackageReferenceProject.csproj"/>
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PackageReferenceProject\PackageReferenceProject.csproj"/>
+  </ItemGroup>
 
 </Project>
