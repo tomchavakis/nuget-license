@@ -1,7 +1,0 @@
-﻿+-----------------------------+---------+----------------------------+------------------------------------------------------------------------------------+--------------------+---------------------+
-| Package                     | Version | License Information Origin | License Expression                                                                 | License Url        | Package Project Url |
-+-----------------------------+---------+----------------------------+------------------------------------------------------------------------------------+--------------------+---------------------+
-| Product Data Analyst        | 6.4.5   | Url                        | The AI matrix is down, index the digital matrix so we can index the AI matrix!     | http://isidro.biz  | https://major.biz   |
-| Customer Research Associate | 3.5.9   | Url                        | I'll input the cross-platform AGP system, that should system the AGP system!       | http://gladyce.biz | https://floyd.name  |
-| Senior Markets Orchestrator | 4.0.0   | Unknown                    | Use the multi-byte HDD hard drive, then you can connect the multi-byte hard drive! | http://juliet.biz  | http://rebecca.biz  |
-+-----------------------------+---------+----------------------------+------------------------------------------------------------------------------------+--------------------+---------------------+

@@ -1,0 +1,153 @@
+﻿[
+  {
+    "PackageId": "Principal Brand Developer",
+    "PackageVersion": "2.6.5",
+    "ValidationErrors": [
+      {
+        "Error": "Helga",
+        "Context": "https://jermey.info"
+      },
+      {
+        "Error": "Wilfrid",
+        "Context": "https://josianne.org"
+      },
+      {
+        "Error": "Vivian",
+        "Context": "http://gertrude.biz"
+      },
+      {
+        "Error": "Renee",
+        "Context": "https://gabrielle.net"
+      },
+      {
+        "Error": "Jedediah",
+        "Context": "http://amber.info"
+      }
+    ],
+    "License": "Try to hack the TCP circuit, maybe it will hack the auxiliary circuit!",
+    "LicenseUrl": "programming the alarm won\u0027t do anything, we need to calculate the neural RAM alarm!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Principal Functionality Agent",
+    "PackageVersion": "1.5.3",
+    "Authors": "Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson",
+    "ValidationErrors": [
+      {
+        "Error": "Alyson",
+        "Context": "https://carmelo.biz"
+      },
+      {
+        "Error": "Michele",
+        "Context": "https://miles.net"
+      },
+      {
+        "Error": "Freddie",
+        "Context": "http://kade.net"
+      },
+      {
+        "Error": "Jaunita",
+        "Context": "http://marcelina.biz"
+      }
+    ],
+    "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Future Data Manager",
+    "PackageVersion": "2.5.9",
+    "ValidationErrors": [
+      {
+        "Error": "Abner",
+        "Context": "http://tavares.info"
+      },
+      {
+        "Error": "Johann",
+        "Context": "http://andres.net"
+      },
+      {
+        "Error": "Jaquan",
+        "Context": "http://carey.org"
+      },
+      {
+        "Error": "Arvel",
+        "Context": "http://mortimer.org"
+      },
+      {
+        "Error": "Alicia",
+        "Context": "http://paula.com"
+      },
+      {
+        "Error": "Heidi",
+        "Context": "http://letha.name"
+      },
+      {
+        "Error": "Reid",
+        "Context": "https://amely.info"
+      },
+      {
+        "Error": "Nikki",
+        "Context": "https://mckayla.info"
+      },
+      {
+        "Error": "Kiara",
+        "Context": "https://floyd.net"
+      }
+    ],
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Investor Tactics Strategist",
+    "PackageVersion": "1.6.5",
+    "PackageProjectUrl": "http://arch.biz",
+    "Authors": "Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer",
+    "ValidationErrors": [
+      {
+        "Error": "Rosendo",
+        "Context": "https://pierce.name"
+      },
+      {
+        "Error": "Braeden",
+        "Context": "http://ayana.org"
+      },
+      {
+        "Error": "Avery",
+        "Context": "http://jarret.biz"
+      },
+      {
+        "Error": "Clarissa",
+        "Context": "https://audreanne.name"
+      }
+    ],
+    "LicenseUrl": "Try to back up the AI card, maybe it will back up the cross-platform card!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Principal Assurance Representative",
+    "PackageVersion": "3.8.2",
+    "Authors": "Patsy Erdman,Patsy Erdman,Patsy Erdman,Patsy Erdman",
+    "ValidationErrors": [
+      {
+        "Error": "Jadon",
+        "Context": "https://amelia.biz"
+      },
+      {
+        "Error": "Toni",
+        "Context": "http://angie.name"
+      },
+      {
+        "Error": "Ardella",
+        "Context": "http://melissa.net"
+      },
+      {
+        "Error": "Sandra",
+        "Context": "http://pearline.org"
+      },
+      {
+        "Error": "Noble",
+        "Context": "https://dusty.net"
+      }
+    ],
+    "LicenseInformationOrigin": 3
+  }
+]

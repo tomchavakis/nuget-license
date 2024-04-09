@@ -1,0 +1,8 @@
+﻿+---------------------------------+---------+----------------------------+-------------------------------------------------------------------------------------------------+---------------------+
+| Package                         | Version | License Information Origin | License Expression                                                                              | Package Project Url |
++---------------------------------+---------+----------------------------+-------------------------------------------------------------------------------------------------+---------------------+
+| Legacy Metrics Planner          | 9.5.0   | Url                        | Use the open-source JBOD matrix, then you can synthesize the open-source matrix!                |                     |
+| Forward Quality Producer        | 6.3.7   | Overwrite                  | The CSS microchip is down, back up the bluetooth microchip so we can back up the CSS microchip! | https://jayne.name  |
+| Regional Security Architect     | 2.2.5   | Url                        |                                                                                                 |                     |
+| Global Usability Representative | 3.5.9   | Url                        |                                                                                                 |                     |
++---------------------------------+---------+----------------------------+-------------------------------------------------------------------------------------------------+---------------------+

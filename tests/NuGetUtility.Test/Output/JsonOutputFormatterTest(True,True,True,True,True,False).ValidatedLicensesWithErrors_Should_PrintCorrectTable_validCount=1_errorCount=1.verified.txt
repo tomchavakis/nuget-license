@@ -1,0 +1,46 @@
+﻿[
+  {
+    "PackageId": "Principal Functionality Agent",
+    "PackageVersion": "1.5.3",
+    "ValidationErrors": [
+      {
+        "Error": "Wilson",
+        "Context": "https://guadalupe.com"
+      },
+      {
+        "Error": "Otho",
+        "Context": "http://general.net"
+      },
+      {
+        "Error": "Skylar",
+        "Context": "https://haylie.biz"
+      },
+      {
+        "Error": "Audreanne",
+        "Context": "http://graciela.net"
+      },
+      {
+        "Error": "Maddison",
+        "Context": "http://randy.net"
+      },
+      {
+        "Error": "Dereck",
+        "Context": "http://cara.info"
+      },
+      {
+        "Error": "Dawson",
+        "Context": "http://addie.org"
+      },
+      {
+        "Error": "Xander",
+        "Context": "https://everette.info"
+      },
+      {
+        "Error": "Otha",
+        "Context": "https://cletus.net"
+      }
+    ],
+    "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
+    "LicenseInformationOrigin": 2
+  }
+]

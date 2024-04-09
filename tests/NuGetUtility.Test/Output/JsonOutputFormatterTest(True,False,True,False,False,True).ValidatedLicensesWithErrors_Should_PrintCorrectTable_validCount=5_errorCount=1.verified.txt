@@ -1,0 +1,57 @@
+﻿[
+  {
+    "PackageId": "Principal Functionality Agent",
+    "PackageVersion": "1.5.3",
+    "ValidationErrors": [
+      {
+        "Error": "Paige",
+        "Context": "https://remington.info"
+      },
+      {
+        "Error": "Aletha",
+        "Context": "https://isobel.info"
+      },
+      {
+        "Error": "Pearline",
+        "Context": "https://johnathon.info"
+      },
+      {
+        "Error": "Eleanora",
+        "Context": "http://jaeden.info"
+      },
+      {
+        "Error": "Nikolas",
+        "Context": "https://daphney.net"
+      },
+      {
+        "Error": "Oceane",
+        "Context": "http://clifton.com"
+      },
+      {
+        "Error": "Francisco",
+        "Context": "http://bessie.com"
+      }
+    ],
+    "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "District Mobility Administrator",
+    "PackageVersion": "3.2.3",
+    "LicenseUrl": "You can\u0027t compress the transmitter without overriding the auxiliary TCP transmitter!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "International Mobility Technician",
+    "PackageVersion": "3.7.5",
+    "PackageProjectUrl": "http://katelin.org",
+    "License": "We need to parse the cross-platform THX driver!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "District Integration Manager",
+    "PackageVersion": "5.1.0",
+    "License": "I\u0027ll compress the cross-platform JSON capacitor, that should capacitor the JSON capacitor!",
+    "LicenseInformationOrigin": 1
+  }
+]

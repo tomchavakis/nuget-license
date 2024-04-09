@@ -12,27 +12,41 @@ namespace NuGetUtility.Test.Output
 {
     public abstract class TestBase
     {
+        protected TestBase(bool includeCopyright, bool includeAuthors, bool includeLicenseUrl)
+        {
+            _includeCopyright = includeCopyright;
+            _includeAuthors = includeAuthors;
+            _includeLicenseUrl = includeLicenseUrl;
+        }
+
         private IOutputFormatter _uut = null!;
         protected Faker<LicenseValidationResult> LicenseValidationErrorFaker = null!;
-
         protected Faker<LicenseValidationResult> ValidatedLicenseFaker = null!;
+        private readonly bool _includeCopyright;
+        private readonly bool _includeAuthors;
+        private readonly bool _includeLicenseUrl;
+
         [SetUp]
         public void SetUp()
         {
             ValidatedLicenseFaker = new Faker<LicenseValidationResult>().CustomInstantiator(f =>
                     new LicenseValidationResult(f.Name.JobTitle(),
                         new NuGetVersion(f.System.Semver()),
-                        f.Internet.Url(),
-                        f.Hacker.Phrase(),
-                        f.Internet.Url(),
+                        GetNullable(f, f.Internet.Url),
+                        GetNullable(f, f.Hacker.Phrase),
+                        _includeLicenseUrl ? GetNullable(f, f.Hacker.Phrase) : null,
+                        _includeCopyright ? GetNullable(f, f.Hacker.Phrase) : null,
+                        _includeAuthors ? GetNullable(f, () => string.Join(",", Enumerable.Repeat(true, f.Random.Int(0, 10)).Select(_ => f.Person.FullName))) : null,
                         f.Random.Enum<LicenseInformationOrigin>()))
                 .UseSeed(8675309);
             LicenseValidationErrorFaker = new Faker<LicenseValidationResult>().CustomInstantiator(f =>
                     new LicenseValidationResult(f.Name.JobTitle(),
                         new NuGetVersion(f.System.Semver()),
-                        GetNullableUrl(f),
-                        GetNullableLicense(f),
-                        GetNullableUrl(f),
+                        GetNullable(f, f.Internet.Url),
+                        GetNullable(f, f.Hacker.Phrase),
+                        _includeLicenseUrl ? GetNullable(f, f.Hacker.Phrase) : null,
+                        _includeCopyright ? GetNullable(f, f.Hacker.Phrase) : null,
+                        _includeAuthors ? GetNullable(f, () => string.Join(",", Enumerable.Repeat(true, f.Random.Int(0, 10)).Select(_ => f.Person.FullName))) : null,
                         f.Random.Enum<LicenseInformationOrigin>(),
                         GetErrorList(f).ToList()))
                 .UseSeed(9078345);
@@ -40,22 +54,13 @@ namespace NuGetUtility.Test.Output
         }
         protected abstract IOutputFormatter CreateUut();
 
-        private string? GetNullableUrl(Faker faker)
+        private T? GetNullable<T>(Faker faker, Func<T> getter) where T : class
         {
             if (faker.Random.Bool())
             {
                 return null;
             }
-            return faker.Internet.Url();
-        }
-
-        private string? GetNullableLicense(Faker faker)
-        {
-            if (faker.Random.Bool())
-            {
-                return null;
-            }
-            return faker.Hacker.Phrase();
+            return getter();
         }
 
         private IEnumerable<ValidationError> GetErrorList(Faker faker)

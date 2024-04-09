@@ -1,0 +1,96 @@
+﻿[
+  {
+    "PackageId": "Principal Functionality Agent",
+    "PackageVersion": "1.5.3",
+    "Authors": "Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson,Elena Jacobson",
+    "ValidationErrors": [
+      {
+        "Error": "Alyson",
+        "Context": "https://carmelo.biz"
+      },
+      {
+        "Error": "Michele",
+        "Context": "https://miles.net"
+      },
+      {
+        "Error": "Freddie",
+        "Context": "http://kade.net"
+      },
+      {
+        "Error": "Jaunita",
+        "Context": "http://marcelina.biz"
+      }
+    ],
+    "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Investor Tactics Strategist",
+    "PackageVersion": "1.6.5",
+    "PackageProjectUrl": "http://arch.biz",
+    "Authors": "Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer,Rene Sporer",
+    "ValidationErrors": [
+      {
+        "Error": "Rosendo",
+        "Context": "https://pierce.name"
+      },
+      {
+        "Error": "Braeden",
+        "Context": "http://ayana.org"
+      },
+      {
+        "Error": "Avery",
+        "Context": "http://jarret.biz"
+      },
+      {
+        "Error": "Clarissa",
+        "Context": "https://audreanne.name"
+      }
+    ],
+    "LicenseUrl": "Try to back up the AI card, maybe it will back up the cross-platform card!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Future Data Manager",
+    "PackageVersion": "2.5.9",
+    "ValidationErrors": [
+      {
+        "Error": "Abner",
+        "Context": "http://tavares.info"
+      },
+      {
+        "Error": "Johann",
+        "Context": "http://andres.net"
+      },
+      {
+        "Error": "Jaquan",
+        "Context": "http://carey.org"
+      },
+      {
+        "Error": "Arvel",
+        "Context": "http://mortimer.org"
+      },
+      {
+        "Error": "Alicia",
+        "Context": "http://paula.com"
+      },
+      {
+        "Error": "Heidi",
+        "Context": "http://letha.name"
+      },
+      {
+        "Error": "Reid",
+        "Context": "https://amely.info"
+      },
+      {
+        "Error": "Nikki",
+        "Context": "https://mckayla.info"
+      },
+      {
+        "Error": "Kiara",
+        "Context": "https://floyd.net"
+      }
+    ],
+    "LicenseInformationOrigin": 0
+  }
+]

@@ -1,0 +1,9 @@
+﻿+-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+-----------+-----------------------+
+| Package                       | Version | License Information Origin | License Expression                                                                   | Error     | Error Context         |
++-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+-----------+-----------------------+
+| Legacy Metrics Planner        | 9.5.0   | Url                        | Use the open-source JBOD matrix, then you can synthesize the open-source matrix!     |           |                       |
+| Principal Functionality Agent | 1.5.3   | Expression                 | connecting the firewall won't do anything, we need to copy the digital XSS firewall! | Judson    | https://wilson.net    |
+|                               |         |                            |                                                                                      | Guadalupe | http://otho.info      |
+|                               |         |                            |                                                                                      | General   | https://skylar.name   |
+|                               |         |                            |                                                                                      | Haylie    | http://audreanne.info |
++-------------------------------+---------+----------------------------+--------------------------------------------------------------------------------------+-----------+-----------------------+

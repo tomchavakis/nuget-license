@@ -13,6 +13,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Packaging
         string ProjectUrl { get; }
         string Description { get; }
         string Summary { get; }
+        string Copyright { get; }
+        string Authors { get; }
         LicenseMetadata? LicenseMetadata { get; }
     }
 }

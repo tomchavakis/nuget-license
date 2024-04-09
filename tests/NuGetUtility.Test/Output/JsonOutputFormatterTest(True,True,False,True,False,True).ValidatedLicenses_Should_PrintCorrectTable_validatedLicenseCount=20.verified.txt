@@ -1,0 +1,143 @@
+﻿[
+  {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "Copyright": "The USB transmitter is down, generate the bluetooth transmitter so we can generate the USB transmitter!",
+    "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Central Infrastructure Agent",
+    "PackageVersion": "6.1.6",
+    "Copyright": "You can\u0027t quantify the program without overriding the online SDD program!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Senior Identity Designer",
+    "PackageVersion": "9.9.3",
+    "PackageProjectUrl": "https://devyn.info",
+    "Copyright": "You can\u0027t navigate the bandwidth without compressing the open-source AI bandwidth!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Regional Solutions Supervisor",
+    "PackageVersion": "1.8.2",
+    "PackageProjectUrl": "https://lance.net",
+    "License": "You can\u0027t parse the system without compressing the haptic GB system!",
+    "LicenseUrl": "Use the cross-platform CSS capacitor, then you can copy the cross-platform capacitor!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Product Infrastructure Supervisor",
+    "PackageVersion": "8.1.1",
+    "PackageProjectUrl": "https://merle.com",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Forward Factors Director",
+    "PackageVersion": "5.7.8",
+    "Copyright": "Try to synthesize the COM port, maybe it will synthesize the haptic port!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Legacy Research Associate",
+    "PackageVersion": "9.9.5",
+    "PackageProjectUrl": "https://hildegard.name",
+    "LicenseUrl": "We need to navigate the bluetooth RAM bus!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "District Optimization Manager",
+    "PackageVersion": "4.0.4",
+    "Copyright": "Try to program the CSS circuit, maybe it will program the auxiliary circuit!",
+    "License": "Use the bluetooth HDD driver, then you can parse the bluetooth driver!",
+    "LicenseUrl": "We need to quantify the wireless HTTP array!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Principal Branding Assistant",
+    "PackageVersion": "8.2.6",
+    "Copyright": "We need to hack the auxiliary COM hard drive!",
+    "License": "Use the multi-byte JSON panel, then you can bypass the multi-byte panel!",
+    "LicenseUrl": "If we connect the firewall, we can get to the EXE firewall through the neural EXE firewall!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "District Branding Analyst",
+    "PackageVersion": "1.9.5",
+    "PackageProjectUrl": "https://paula.net",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Forward Integration Assistant",
+    "PackageVersion": "4.8.5",
+    "Copyright": "Use the back-end SDD panel, then you can compress the back-end panel!",
+    "LicenseUrl": "The FTP firewall is down, compress the back-end firewall so we can compress the FTP firewall!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "National Directives Analyst",
+    "PackageVersion": "8.2.7",
+    "Copyright": "Use the mobile SCSI bus, then you can program the mobile bus!",
+    "License": "We need to compress the primary GB array!",
+    "LicenseInformationOrigin": 4
+  },
+  {
+    "PackageId": "Corporate Group Planner",
+    "PackageVersion": "9.2.2",
+    "Copyright": "We need to reboot the virtual RSS alarm!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Customer Assurance Officer",
+    "PackageVersion": "0.3.1",
+    "PackageProjectUrl": "https://clementine.info",
+    "License": "I\u0027ll navigate the digital CSS sensor, that should sensor the CSS sensor!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Forward Creative Developer",
+    "PackageVersion": "9.6.7",
+    "PackageProjectUrl": "http://pearline.com",
+    "Copyright": "We need to synthesize the cross-platform SMS circuit!",
+    "LicenseUrl": "I\u0027ll transmit the online SSL feed, that should feed the SSL feed!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Corporate Tactics Strategist",
+    "PackageVersion": "9.9.9",
+    "Copyright": "generating the matrix won\u0027t do anything, we need to parse the solid state GB matrix!",
+    "LicenseUrl": "copying the alarm won\u0027t do anything, we need to index the open-source TCP alarm!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Senior Creative Analyst",
+    "PackageVersion": "5.2.9",
+    "License": "connecting the system won\u0027t do anything, we need to override the back-end SQL system!",
+    "LicenseUrl": "If we synthesize the port, we can get to the ADP port through the neural ADP port!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Central Marketing Assistant",
+    "PackageVersion": "9.5.8",
+    "PackageProjectUrl": "http://julia.biz",
+    "License": "I\u0027ll navigate the redundant RAM capacitor, that should capacitor the RAM capacitor!",
+    "LicenseUrl": "I\u0027ll parse the mobile SSL bandwidth, that should bandwidth the SSL bandwidth!",
+    "LicenseInformationOrigin": 4
+  },
+  {
+    "PackageId": "Senior Optimization Assistant",
+    "PackageVersion": "3.6.0",
+    "PackageProjectUrl": "http://akeem.info",
+    "Copyright": "Try to compress the SMS bus, maybe it will compress the bluetooth bus!",
+    "LicenseUrl": "overriding the pixel won\u0027t do anything, we need to copy the optical JSON pixel!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Legacy Interactions Analyst",
+    "PackageVersion": "3.0.8",
+    "License": "hacking the hard drive won\u0027t do anything, we need to generate the open-source RSS hard drive!",
+    "LicenseUrl": "connecting the system won\u0027t do anything, we need to synthesize the mobile ADP system!",
+    "LicenseInformationOrigin": 1
+  }
+]

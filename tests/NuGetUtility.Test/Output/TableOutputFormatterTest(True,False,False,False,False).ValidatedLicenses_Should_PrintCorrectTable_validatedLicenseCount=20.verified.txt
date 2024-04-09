@@ -1,0 +1,24 @@
+﻿+-------------------------------------+---------+----------------------------+------------------------------------------------------------------------------------------------------+-----------------------+
+| Package                             | Version | License Information Origin | License Expression                                                                                   | Package Project Url   |
++-------------------------------------+---------+----------------------------+------------------------------------------------------------------------------------------------------+-----------------------+
+| Legacy Metrics Planner              | 9.5.0   | Url                        | Use the open-source JBOD matrix, then you can synthesize the open-source matrix!                     |                       |
+| Forward Quality Producer            | 6.3.7   | Overwrite                  | The CSS microchip is down, back up the bluetooth microchip so we can back up the CSS microchip!      | https://jayne.name    |
+| Regional Security Architect         | 2.2.5   | Url                        |                                                                                                      |                       |
+| Global Usability Representative     | 3.5.9   | Url                        |                                                                                                      |                       |
+| District Mobility Administrator     | 3.2.3   | Ignored                    |                                                                                                      |                       |
+| Regional Solutions Supervisor       | 1.8.2   | Ignored                    | You can't parse the system without compressing the haptic GB system!                                 | https://lance.net     |
+| Customer Directives Director        | 7.9.2   | Overwrite                  | Try to hack the COM panel, maybe it will hack the auxiliary panel!                                   |                       |
+| Chief Assurance Associate           | 3.3.1   | Url                        | overriding the panel won't do anything, we need to parse the open-source IB panel!                   | https://tyrese.info   |
+| Customer Operations Officer         | 2.6.0   | Overwrite                  | Use the bluetooth USB alarm, then you can override the bluetooth alarm!                              | http://antonette.org  |
+| Dynamic Security Technician         | 6.8.3   | Unknown                    |                                                                                                      |                       |
+| Central Integration Analyst         | 0.4.0   | Overwrite                  | If we synthesize the protocol, we can get to the JBOD protocol through the multi-byte JBOD protocol! | https://laverne.name  |
+| National Communications Facilitator | 3.1.0   | Url                        | quantifying the transmitter won't do anything, we need to program the mobile HDD transmitter!        |                       |
+| Dynamic Functionality Agent         | 5.9.5   | Unknown                    |                                                                                                      | http://annabelle.net  |
+| Forward Functionality Analyst       | 4.5.1   | Expression                 |                                                                                                      | http://orie.name      |
+| District Branding Analyst           | 1.9.5   | Url                        |                                                                                                      | https://paula.net     |
+| Product Applications Assistant      | 2.8.4   | Overwrite                  | The FTP firewall is down, compress the back-end firewall so we can compress the FTP firewall!        | https://carleton.info |
+| Global Security Liaison             | 8.1.2   | Expression                 |                                                                                                      |                       |
+| Central Interactions Manager        | 7.0.9   | Expression                 |                                                                                                      |                       |
+| National Tactics Engineer           | 3.7.5   | Url                        | generating the matrix won't do anything, we need to override the redundant GB matrix!                | https://alexys.org    |
+| Dynamic Applications Director       | 5.1.4   | Ignored                    |                                                                                                      |                       |
++-------------------------------------+---------+----------------------------+------------------------------------------------------------------------------------------------------+-----------------------+

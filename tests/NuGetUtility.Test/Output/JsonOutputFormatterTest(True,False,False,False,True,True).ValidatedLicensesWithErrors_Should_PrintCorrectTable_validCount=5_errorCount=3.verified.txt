@@ -1,0 +1,142 @@
+﻿[
+  {
+    "PackageId": "Global Implementation Strategist",
+    "PackageVersion": "5.9.8",
+    "PackageProjectUrl": "https://enos.info",
+    "Authors": "Colleen Schroeder,Colleen Schroeder",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Principal Functionality Agent",
+    "PackageVersion": "1.5.3",
+    "ValidationErrors": [
+      {
+        "Error": "Wilson",
+        "Context": "https://guadalupe.com"
+      },
+      {
+        "Error": "Otho",
+        "Context": "http://general.net"
+      },
+      {
+        "Error": "Skylar",
+        "Context": "https://haylie.biz"
+      },
+      {
+        "Error": "Audreanne",
+        "Context": "http://graciela.net"
+      },
+      {
+        "Error": "Maddison",
+        "Context": "http://randy.net"
+      },
+      {
+        "Error": "Dereck",
+        "Context": "http://cara.info"
+      },
+      {
+        "Error": "Dawson",
+        "Context": "http://addie.org"
+      },
+      {
+        "Error": "Xander",
+        "Context": "https://everette.info"
+      },
+      {
+        "Error": "Otha",
+        "Context": "https://cletus.net"
+      }
+    ],
+    "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Internal Program Designer",
+    "PackageVersion": "7.2.5",
+    "License": "We need to hack the auxiliary COM hard drive!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "National Research Developer",
+    "PackageVersion": "8.9.3",
+    "PackageProjectUrl": "https://rodrigo.biz",
+    "Authors": "Nina Donnelly,Nina Donnelly",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Corporate Data Supervisor",
+    "PackageVersion": "3.9.4",
+    "PackageProjectUrl": "http://andres.net",
+    "ValidationErrors": [
+      {
+        "Error": "Adelbert",
+        "Context": "https://zoe.com"
+      },
+      {
+        "Error": "Clare",
+        "Context": "https://bobby.info"
+      },
+      {
+        "Error": "Cecil",
+        "Context": "https://kira.net"
+      }
+    ],
+    "LicenseInformationOrigin": 4
+  },
+  {
+    "PackageId": "Corporate Factors Architect",
+    "PackageVersion": "4.7.7",
+    "ValidationErrors": [
+      {
+        "Error": "Ila",
+        "Context": "http://rachel.com"
+      },
+      {
+        "Error": "Catalina",
+        "Context": "http://jolie.com"
+      },
+      {
+        "Error": "Dianna",
+        "Context": "https://leda.net"
+      },
+      {
+        "Error": "Nicola",
+        "Context": "http://aleen.name"
+      },
+      {
+        "Error": "Nelda",
+        "Context": "http://delpha.net"
+      },
+      {
+        "Error": "Delores",
+        "Context": "http://rae.biz"
+      },
+      {
+        "Error": "Cynthia",
+        "Context": "https://zella.com"
+      },
+      {
+        "Error": "Greta",
+        "Context": "http://adolph.com"
+      }
+    ],
+    "License": "If we input the panel, we can get to the COM panel through the optical COM panel!",
+    "LicenseUrl": "connecting the application won\u0027t do anything, we need to synthesize the 1080p PCI application!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "Authors": "Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson",
+    "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Principal Mobility Designer",
+    "PackageVersion": "1.3.7",
+    "PackageProjectUrl": "http://antonette.net",
+    "Authors": "",
+    "LicenseUrl": "If we parse the transmitter, we can get to the IB transmitter through the back-end IB transmitter!",
+    "LicenseInformationOrigin": 1
+  }
+]

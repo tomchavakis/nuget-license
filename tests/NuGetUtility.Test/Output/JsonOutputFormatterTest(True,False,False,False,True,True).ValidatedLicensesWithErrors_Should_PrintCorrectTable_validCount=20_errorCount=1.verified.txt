@@ -1,0 +1,186 @@
+﻿[
+  {
+    "PackageId": "Legacy Interactions Supervisor",
+    "PackageVersion": "9.7.2",
+    "Authors": "Gordon Kuhn,Gordon Kuhn,Gordon Kuhn,Gordon Kuhn,Gordon Kuhn,Gordon Kuhn,Gordon Kuhn",
+    "LicenseUrl": "Try to generate the SAS matrix, maybe it will generate the cross-platform matrix!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Principal Functionality Agent",
+    "PackageVersion": "1.5.3",
+    "ValidationErrors": [
+      {
+        "Error": "Wilson",
+        "Context": "https://guadalupe.com"
+      },
+      {
+        "Error": "Otho",
+        "Context": "http://general.net"
+      },
+      {
+        "Error": "Skylar",
+        "Context": "https://haylie.biz"
+      },
+      {
+        "Error": "Audreanne",
+        "Context": "http://graciela.net"
+      },
+      {
+        "Error": "Maddison",
+        "Context": "http://randy.net"
+      },
+      {
+        "Error": "Dereck",
+        "Context": "http://cara.info"
+      },
+      {
+        "Error": "Dawson",
+        "Context": "http://addie.org"
+      },
+      {
+        "Error": "Xander",
+        "Context": "https://everette.info"
+      },
+      {
+        "Error": "Otha",
+        "Context": "https://cletus.net"
+      }
+    ],
+    "License": "connecting the firewall won\u0027t do anything, we need to copy the digital XSS firewall!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "International Optimization Coordinator",
+    "PackageVersion": "6.5.5",
+    "PackageProjectUrl": "http://antoinette.org",
+    "Authors": "Darnell Terry",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Corporate Assurance Executive",
+    "PackageVersion": "3.2.1",
+    "PackageProjectUrl": "http://darrell.com",
+    "LicenseUrl": "programming the driver won\u0027t do anything, we need to bypass the mobile PNG driver!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Dynamic Interactions Facilitator",
+    "PackageVersion": "6.8.2",
+    "License": "You can\u0027t quantify the capacitor without backing up the haptic SMTP capacitor!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "Central Integration Facilitator",
+    "PackageVersion": "5.7.1",
+    "License": "programming the hard drive won\u0027t do anything, we need to transmit the cross-platform HTTP hard drive!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Global Implementation Strategist",
+    "PackageVersion": "5.9.8",
+    "PackageProjectUrl": "https://enos.info",
+    "Authors": "Colleen Schroeder,Colleen Schroeder",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Internal Program Designer",
+    "PackageVersion": "7.2.5",
+    "License": "We need to hack the auxiliary COM hard drive!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Customer Assurance Officer",
+    "PackageVersion": "0.3.1",
+    "PackageProjectUrl": "https://clementine.info",
+    "License": "I\u0027ll navigate the digital CSS sensor, that should sensor the CSS sensor!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Human Accounts Representative",
+    "PackageVersion": "4.5.5",
+    "PackageProjectUrl": "https://darien.net",
+    "Authors": "Penny Klein,Penny Klein,Penny Klein,Penny Klein,Penny Klein,Penny Klein,Penny Klein",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Internal Factors Developer",
+    "PackageVersion": "3.7.7",
+    "PackageProjectUrl": "http://santa.name",
+    "Authors": "",
+    "LicenseUrl": "We need to override the solid state USB interface!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Customer Division Manager",
+    "PackageVersion": "1.3.9",
+    "Authors": "Rafael Altenwerth,Rafael Altenwerth,Rafael Altenwerth",
+    "License": "Try to navigate the PCI driver, maybe it will navigate the mobile driver!",
+    "LicenseUrl": "If we copy the monitor, we can get to the USB monitor through the haptic USB monitor!",
+    "LicenseInformationOrigin": 3
+  },
+  {
+    "PackageId": "Product Communications Producer",
+    "PackageVersion": "8.0.6",
+    "License": "Try to synthesize the PNG application, maybe it will synthesize the auxiliary application!",
+    "LicenseInformationOrigin": 4
+  },
+  {
+    "PackageId": "National Research Developer",
+    "PackageVersion": "8.9.3",
+    "PackageProjectUrl": "https://rodrigo.biz",
+    "Authors": "Nina Donnelly,Nina Donnelly",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "District Infrastructure Strategist",
+    "PackageVersion": "9.1.5",
+    "Authors": "Lloyd Carroll,Lloyd Carroll,Lloyd Carroll,Lloyd Carroll,Lloyd Carroll,Lloyd Carroll,Lloyd Carroll,Lloyd Carroll",
+    "License": "parsing the hard drive won\u0027t do anything, we need to override the haptic PNG hard drive!",
+    "LicenseUrl": "The HDD alarm is down, transmit the auxiliary alarm so we can transmit the HDD alarm!",
+    "LicenseInformationOrigin": 4
+  },
+  {
+    "PackageId": "Legacy Metrics Planner",
+    "PackageVersion": "9.5.0",
+    "Authors": "Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson,Sandy Halvorson",
+    "License": "Use the open-source JBOD matrix, then you can synthesize the open-source matrix!",
+    "LicenseInformationOrigin": 2
+  },
+  {
+    "PackageId": "International Tactics Administrator",
+    "PackageVersion": "9.9.9",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "Global Integration Planner",
+    "PackageVersion": "9.1.4",
+    "Authors": "Melissa Kuhlman,Melissa Kuhlman,Melissa Kuhlman,Melissa Kuhlman,Melissa Kuhlman",
+    "License": "You can\u0027t override the capacitor without overriding the mobile XML capacitor!",
+    "LicenseInformationOrigin": 1
+  },
+  {
+    "PackageId": "District Research Producer",
+    "PackageVersion": "9.1.3",
+    "PackageProjectUrl": "http://mason.net",
+    "Authors": "Irvin Abernathy,Irvin Abernathy,Irvin Abernathy,Irvin Abernathy,Irvin Abernathy,Irvin Abernathy,Irvin Abernathy,Irvin Abernathy",
+    "LicenseUrl": "copying the protocol won\u0027t do anything, we need to copy the back-end EXE protocol!",
+    "LicenseInformationOrigin": 4
+  },
+  {
+    "PackageId": "Forward Creative Developer",
+    "PackageVersion": "9.6.7",
+    "PackageProjectUrl": "http://pearline.com",
+    "Authors": "Melanie Bailey,Melanie Bailey",
+    "LicenseUrl": "I\u0027ll transmit the online SSL feed, that should feed the SSL feed!",
+    "LicenseInformationOrigin": 0
+  },
+  {
+    "PackageId": "Principal Mobility Designer",
+    "PackageVersion": "1.3.7",
+    "PackageProjectUrl": "http://antonette.net",
+    "Authors": "",
+    "LicenseUrl": "If we parse the transmitter, we can get to the IB transmitter through the back-end IB transmitter!",
+    "LicenseInformationOrigin": 1
+  }
+]
