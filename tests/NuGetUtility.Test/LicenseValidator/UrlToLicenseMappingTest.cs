@@ -27,13 +27,15 @@ namespace NuGetUtility.Test.LicenseValidator
                     await Verify(driver.FindElement(By.TagName("body")).Text).HashParameters().UseStringComparer(CompareLicense);
                     return;
                 }
-                catch (Exception)
+                catch (WebDriverException e)
                 {
                     if (retryCount >= 3)
                     {
                         throw;
                     }
                     retryCount++;
+                    TestContext.Out.WriteLine($"Failed to check license for the {retryCount} time - retrying");
+                    TestContext.Out.WriteLine(e);
                 }
                 finally
                 {
