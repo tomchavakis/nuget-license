@@ -20,7 +20,7 @@
     <PackageReference Include="AutoFixture" Version="4.18.1" />
     <PackageReference Include="AutoFixture.AutoNSubstitute" Version="4.18.1" />
     <PackageReference Include="AutoFixture.NUnit3" Version="4.18.1" />
-    <PackageReference Include="Bogus" Version="35.5.0" />
+    <PackageReference Include="Bogus" Version="35.5.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="NetArchTest.Rules" Version="1.3.2" />
     <PackageReference Include="NSubstitute" Version="5.1.0" />
@@ -30,7 +30,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Selenium.WebDriver" Version="4.19.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.21.0" />
     <PackageReference Include="Verify.NUnit" Version="22.5.0" />
   </ItemGroup>
 
