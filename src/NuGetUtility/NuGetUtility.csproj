@@ -29,7 +29,7 @@
     <PackageReference Include="Microsoft.Build.Locator" Version="1.7.8" />
     <PackageReference Include="NuGet.Commands" Version="6.9.1" />
     <PackageReference Include="NuGet.Packaging" Version="6.9.1" />
-    <PackageReference Include="Tethys.SPDX.ExpressionParser" Version="2.1.1" />
+    <PackageReference Include="Tethys.SPDX.ExpressionParser" Version="2.1.2" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
