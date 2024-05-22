@@ -14,10 +14,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "6.0.x"
-      - name: Setup dotnet 7.0.x
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "7.0.x"
       - name: Setup dotnet 8.0.x
         uses: actions/setup-dotnet@v4
         with:
@@ -56,8 +52,6 @@ jobs:
 
       - name: Publish the application binaries (.net6)
         run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net6 -f net6.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
-      - name: Publish the application binaries (.net7)
-        run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net7 -f net7.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
       - name: Publish the application binaries (.net8)
         run: dotnet publish ./src/NuGetLicenseCore/NuGetLicenseCore.csproj -c Release --no-restore -o ${{ steps.artifacts_path.outputs.path }}/net8 -f net8.0 -p:Version=${{ steps.version.outputs.full_without_prefix }}
       - name: Publish the application binaries (.net472)

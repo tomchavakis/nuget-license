@@ -15,14 +15,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
 
-        framework: [net6.0, net7.0, net8.0]
+        framework: [net6.0, net8.0]
 
         include:
           - framework: net6.0
             dotnetVersion: "6.0.x"
-            
-          - framework: net7.0
-            dotnetVersion: "7.0.x"
 
           - framework: net8.0
             dotnetVersion: "8.0.x"
@@ -49,14 +46,11 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        framework: [net6.0, net7.0, net8.0, net472]       
+        framework: [net6.0, net8.0, net472]       
         
         include:
           - framework: net6.0
             dotnetVersion: "6.0.x"
-            
-          - framework: net7.0
-            dotnetVersion: "7.0.x"
 
           - framework: net8.0
             dotnetVersion: "8.0.x"
@@ -102,15 +96,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        targetFramework: [net6.0, net7.0, net8.0]
+        targetFramework: [net6.0, net8.0]
         project: [App, Tests, ProjectWithReferenceContainingLicenseExpression]
 
         include:
           - targetFramework: net6.0
             dotnetVersion: "6.0.x"
-            
-          - targetFramework: net7.0
-            dotnetVersion: "7.0.x"
 
           - targetFramework: net8.0
             dotnetVersion: "8.0.x"
@@ -188,14 +179,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        targetFramework: [net6.0, net7.0, net8.0]
+        targetFramework: [net6.0, net8.0]
 
         include:
           - targetFramework: net6.0
             dotnetVersion: "6.0.x"
-            
-          - targetFramework: net7.0
-            dotnetVersion: "7.0.x"
 
           - targetFramework: net8.0
             dotnetVersion: "8.0.x"
