@@ -1,5 +1,6 @@
 # Nuget License Utility [![Build Status](https://travis-ci.com/tomchavakis/nuget-license.svg?branch=develop)](https://travis-ci.com/tomchavakis/nuget-license.svg?branch=develop) [![NuGet](https://img.shields.io/nuget/v/dotnet-project-licenses.svg)](https://www.nuget.org/packages/dotnet-project-licenses)
 
+> :warning: **This project seems to be abandoned**: The original author of this project has not shown up in quite some while. Therefore it's impossible to move forward with it (even though there are people that do have write access to the repository. There has been a rewrite of the project that provides similar functionality. Please check it out here: https://github.com/sensslen/nuget-license.
 
 A .net core tool to print the licenses of a project. This tool support .NET Core and .NET Standard Projects.
 
