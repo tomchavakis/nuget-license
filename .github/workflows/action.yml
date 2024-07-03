@@ -74,7 +74,7 @@ jobs:
         run: msbuild -t:rebuild -property:Configuration=TestWindows
 
       - name: test
-        uses: microsoft/vstest-action@v1.0.0
+        uses: josepho0918/vstest-action@main
         with:
           testAssembly: "NuGetUtility.Test.dll"
           searchFolder: "tests/NuGetUtility.Test/bin/TestWindows/${{ matrix.framework }}/"
