@@ -1,8 +1,1 @@
-﻿[
-  {
-    "PackageId": "Central Infrastructure Agent",
-    "PackageVersion": "6.1.6",
-    "Copyright": "You can\u0027t quantify the program without overriding the online SDD program!",
-    "LicenseInformationOrigin": 0
-  }
-]
+﻿[]

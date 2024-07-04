@@ -27,15 +27,9 @@ namespace NuGetUtility.Output.Json
         {
             if (_printErrorsOnly)
             {
-                IEnumerable<LicenseValidationResult> resultsWithErrors = results.Where(r => r.ValidationErrors.Any());
-                if (resultsWithErrors.Any())
-                {
-                    await JsonSerializer.SerializeAsync(stream, resultsWithErrors, _options);
-                    return;
-                }
+                results = results.Where(r => r.ValidationErrors.Any()).ToList();
             }
-
-            if (_skipIgnoredPackages)
+            else if (_skipIgnoredPackages)
             {
                 results = results.Where(r => r.LicenseInformationOrigin != LicenseInformationOrigin.Ignored).ToList();
             }

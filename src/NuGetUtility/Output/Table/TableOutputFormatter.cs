@@ -41,12 +41,11 @@ namespace NuGetUtility.Output.Table
                 }
             }
 
-            if (_printErrorsOnly && errorColumnDefinition.Enabled)
+            if (_printErrorsOnly)
             {
                 results = results.Where(r => r.ValidationErrors.Any()).ToList();
             }
-
-            if (_skipIgnoredPackages)
+            else if (_skipIgnoredPackages)
             {
                 results = results.Where(r => r.LicenseInformationOrigin != LicenseInformationOrigin.Ignored).ToList();
             }

@@ -1,1 +1,1 @@
-﻿[{"PackageId":"Legacy Metrics Planner","PackageVersion":"9.5.0","Copyright":"The USB transmitter is down, generate the bluetooth transmitter so we can generate the USB transmitter!","License":"Use the open-source JBOD matrix, then you can synthesize the open-source matrix!","LicenseInformationOrigin":3}]
+﻿[]
