@@ -405,6 +405,30 @@ namespace NuGetUtility.Test.LicenseValidator
 
         [Test]
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithExpression_Should_StartDownloadingSaidLicense(
+            string packageId,
+            INuGetVersion packageVersion,
+            string license1,
+            string license2)
+        {
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping,
+                Array.Empty<string>(),
+                _fileDownloader,
+                _ignoredLicenses);
+
+            string expression = $"{license1} AND {license2}";
+
+            IPackageMetadata package = SetupPackageWithExpressionLicenseInformation(packageId, packageVersion, expression);
+
+            _ = await _uut.Validate(CreateInput(package, _context), _token.Token);
+
+            await _fileDownloader.Received(1).DownloadFile(new Uri($"https://licenses.nuget.org/({expression})"),
+                    $"{package.Identity.Id}__{package.Identity.Version}.html",
+                    _token.Token);
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicensesWithOverwriteLicenseInformation_Should_GiveCorrectValidatedLicenseList(
             string packageId,
             INuGetVersion packageVersion,
