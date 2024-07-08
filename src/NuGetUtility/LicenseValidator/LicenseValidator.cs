@@ -46,7 +46,7 @@ namespace NuGetUtility.LicenseValidator
                 }
                 else if (info.PackageInfo.LicenseMetadata != null)
                 {
-                    ValidateLicenseByMetadata(info.PackageInfo, info.Context, result);
+                    await ValidateLicenseByMetadataAsync(info.PackageInfo, info.Context, result, token);
                 }
                 else if (info.PackageInfo.LicenseUrl != null)
                 {
@@ -122,9 +122,10 @@ namespace NuGetUtility.LicenseValidator
             return oldValue;
         }
 
-        private void ValidateLicenseByMetadata(IPackageMetadata info,
+        private async Task ValidateLicenseByMetadataAsync(IPackageMetadata info,
             string context,
-            ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result)
+            ConcurrentDictionary<LicenseNameAndVersion, LicenseValidationResult> result,
+            CancellationToken token)
         {
             switch (info.LicenseMetadata!.Type)
             {
@@ -134,6 +135,7 @@ namespace NuGetUtility.LicenseValidator
                     SpdxExpression? licenseExpression = SpdxExpressionParser.Parse(licenseId, _ => true, _ => true);
                     if (IsValidLicenseExpression(licenseExpression))
                     {
+                        await DownloadLicenseAsync(GetLicenseUrl(licenseId), info.Identity, context, token);
                         AddOrUpdateLicense(result,
                             info,
                             ToLicenseOrigin(info.LicenseMetadata.Type),
@@ -175,20 +177,7 @@ namespace NuGetUtility.LicenseValidator
         {
             if (info.LicenseUrl!.IsAbsoluteUri)
             {
-                try
-                {
-                    await _fileDownloader.DownloadFile(info.LicenseUrl,
-                        $"{info.Identity.Id}__{info.Identity.Version}.html",
-                        token);
-                }
-                catch (OperationCanceledException)
-                {
-                    // swallow cancellation
-                }
-                catch (Exception e)
-                {
-                    throw new LicenseDownloadException(e, context, info.Identity);
-                }
+                await DownloadLicenseAsync(info.LicenseUrl, info.Identity, context, token);
             }
 
             if (_licenseMapping.TryGetValue(info.LicenseUrl, out string? licenseId))
@@ -226,6 +215,25 @@ namespace NuGetUtility.LicenseValidator
             }
         }
 
+        private async Task DownloadLicenseAsync(Uri licenseUrl, PackageIdentity identity, string context, CancellationToken token)
+        {
+            try
+            {
+                await _fileDownloader.DownloadFile(licenseUrl,
+                    $"{identity.Id}__{identity.Version}.html",
+                    token);
+            }
+            catch (OperationCanceledException)
+            {
+                // swallow cancellation
+            }
+            catch (Exception e)
+            {
+                throw new LicenseDownloadException(e, context, identity);
+            }
+        }
+
+
         private bool IsLicenseValid(string licenseId)
         {
             if (!_allowedLicenses.Any())
@@ -239,6 +247,11 @@ namespace NuGetUtility.LicenseValidator
         private string GetLicenseNotAllowedMessage(string license)
         {
             return $"License {license} not found in list of supported licenses";
+        }
+
+        private Uri GetLicenseUrl(string spdxIdentifier)
+        {
+            return new Uri($"https://licenses.nuget.org/({spdxIdentifier})");
         }
 
         private LicenseInformationOrigin ToLicenseOrigin(LicenseType type) => type switch
