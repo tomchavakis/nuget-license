@@ -51,19 +51,19 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol.Core.Types
 
             public PackageIdentity Identity { get; }
 
-            public string Title => _searchMetadata.Title;
+            public string? Title => _searchMetadata.Title;
 
             public Uri? LicenseUrl => _searchMetadata.LicenseUrl;
 
-            public string ProjectUrl => _searchMetadata.ProjectUrl?.ToString() ?? string.Empty;
+            public string? ProjectUrl => _searchMetadata.ProjectUrl?.ToString();
 
-            public string Description => _searchMetadata.Description;
+            public string? Description => _searchMetadata.Description;
 
-            public string Summary => _searchMetadata.Summary;
+            public string? Summary => _searchMetadata.Summary;
 
-            public string Copyright => string.Empty;
+            public string? Copyright => null;
 
-            public string Authors => _searchMetadata.Authors;
+            public string? Authors => _searchMetadata.Authors;
 
             public LicenseMetadata? LicenseMetadata { get; }
         }

@@ -21,19 +21,19 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Protocol
 
         public PackageIdentity Identity { get; }
 
-        public string Title => _metadata.Title;
+        public string? Title => _metadata.Title;
 
         public Uri? LicenseUrl => _metadata.LicenseUrl;
 
-        public string ProjectUrl => _metadata.ProjectUrl?.ToString() ?? string.Empty;
+        public string? ProjectUrl => _metadata.ProjectUrl?.ToString();
 
-        public string Description => _metadata.Description;
+        public string? Description => _metadata.Description;
 
-        public string Summary => _metadata.Summary;
+        public string? Summary => _metadata.Summary;
 
-        public string Copyright => _metadata.Copyright;
+        public string? Copyright => _metadata.Copyright;
 
-        public string Authors => string.Join(",", _metadata.Authors); // https://learn.microsoft.com/en-us/nuget/reference/nuspec#authors
+        public string? Authors => string.Join(",", _metadata.Authors); // https://learn.microsoft.com/en-us/nuget/reference/nuspec#authors
 
         public Packaging.LicenseMetadata? LicenseMetadata { get; }
     }

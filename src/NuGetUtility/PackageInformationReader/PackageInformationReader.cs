@@ -95,7 +95,7 @@ namespace NuGetUtility.PackageInformationReader
                 return new PackageSearchResult();
             }
 
-            return new PackageSearchResult(new PackageMetadata(package, resolvedCustomInformation.License, LicenseType.Overwrite));
+            return new PackageSearchResult(new PackageMetadata(package, LicenseType.Overwrite, resolvedCustomInformation));
         }
 
         private static async Task<IPackageMetadataResource?> TryGetPackageMetadataResource(ISourceRepository repository)

@@ -94,8 +94,14 @@ namespace NuGetUtility.Test.PackageInformationReader
         {
             CollectionAssert.AreEquivalent(packages,
                 result.Select(s => new CustomPackageInformation(s.PackageInfo.Identity.Id,
-                    s.PackageInfo.Identity.Version,
-                    s.PackageInfo.LicenseMetadata!.License)));
+                                                                s.PackageInfo.Identity.Version,
+                                                                s.PackageInfo.LicenseMetadata!.License,
+                                                                s.PackageInfo.Copyright,
+                                                                s.PackageInfo.Authors,
+                                                                s.PackageInfo.Title,
+                                                                s.PackageInfo.ProjectUrl,
+                                                                s.PackageInfo.Summary,
+                                                                s.PackageInfo.Description)));
             foreach (ReferencedPackageWithContext r in result)
             {
                 Assert.AreEqual(project, r.Context);
@@ -113,6 +119,12 @@ namespace NuGetUtility.Test.PackageInformationReader
                 var identity = new PackageIdentity(info.Id, info.Version);
                 IPackageMetadata mockedInfo = Substitute.For<IPackageMetadata>();
                 mockedInfo.Identity.Returns(identity);
+                mockedInfo.Copyright.Returns(info.Copyright);
+                mockedInfo.Authors.Returns(info.Authors);
+                mockedInfo.Title.Returns(info.Title);
+                mockedInfo.ProjectUrl.Returns(info.ProjectUrl);
+                mockedInfo.Summary.Returns(info.Summary);
+                mockedInfo.Description.Returns(info.Description);
                 mockedInfo.LicenseMetadata.Returns(new LicenseMetadata(LicenseType.Expression, info.License));
                 _globalPackagesFolderUtility.GetPackage(identity).Returns(mockedInfo);
 
@@ -136,6 +148,12 @@ namespace NuGetUtility.Test.PackageInformationReader
                 IPackageMetadata resultingInfo = Substitute.For<IPackageMetadata>();
                 resultingInfo.Identity.Returns(new PackageIdentity(package.Id, package.Version));
                 resultingInfo.LicenseMetadata.Returns(new LicenseMetadata(LicenseType.Expression, package.License));
+                resultingInfo.Copyright.Returns(package.Copyright);
+                resultingInfo.Authors.Returns(package.Authors);
+                resultingInfo.Title.Returns(package.Title);
+                resultingInfo.Summary.Returns(package.Summary);
+                resultingInfo.Description.Returns(package.Description);
+                resultingInfo.ProjectUrl.Returns(package.ProjectUrl);
 
                 metadataReturningProperInformation.TryGetMetadataAsync(new PackageIdentity(package.Id, package.Version), Arg.Any<CancellationToken>()).
                     Returns(_ => Task.FromResult<IPackageMetadata?>(resultingInfo));
@@ -193,8 +211,8 @@ namespace NuGetUtility.Test.PackageInformationReader
                 Assert.AreEqual(expectation.Version, result.PackageInfo.Identity.Version);
                 Assert.IsNull(result.PackageInfo.LicenseMetadata);
                 Assert.IsNull(result.PackageInfo.LicenseUrl);
-                Assert.AreEqual(string.Empty, result.PackageInfo.Summary);
-                Assert.AreEqual(string.Empty, result.PackageInfo.Title);
+                Assert.IsNull(result.PackageInfo.Summary);
+                Assert.IsNull(result.PackageInfo.Title);
             }
         }
     }

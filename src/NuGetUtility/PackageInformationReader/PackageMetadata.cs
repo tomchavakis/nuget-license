@@ -13,27 +13,30 @@ namespace NuGetUtility.PackageInformationReader
             Identity = identity;
         }
 
-        public PackageMetadata(PackageIdentity identity, string licenseIdentifier, LicenseType licenseType)
+        public PackageMetadata(PackageIdentity identity, LicenseType licenseType, CustomPackageInformation customPackageInformation)
         {
             Identity = identity;
-            LicenseMetadata = new LicenseMetadata(licenseType, licenseIdentifier);
+            LicenseMetadata = new LicenseMetadata(licenseType, customPackageInformation.License);
+            CustomPackageInformation = customPackageInformation;
         }
+
+        private CustomPackageInformation? CustomPackageInformation { get; }
 
         public PackageIdentity Identity { get; }
 
-        public string Title { get; } = string.Empty;
+        public string? Title => CustomPackageInformation?.Title;
 
         public Uri? LicenseUrl => null;
 
-        public string ProjectUrl => string.Empty;
+        public string? ProjectUrl => CustomPackageInformation?.ProjectUrl;
 
-        public string Description => string.Empty;
+        public string? Description => CustomPackageInformation?.Description;
 
-        public string Summary => string.Empty;
+        public string? Summary => CustomPackageInformation?.Summary;
 
-        public string Copyright => string.Empty;
+        public string? Copyright => CustomPackageInformation?.Copyright;
 
-        public string Authors => string.Empty;
+        public string? Authors => CustomPackageInformation?.Authors;
 
         public LicenseMetadata? LicenseMetadata { get; } = null;
     }
