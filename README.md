@@ -1,6 +1,6 @@
 # Nuget License Utility [![Tests](https://github.com/sensslen/nuget-license/actions/workflows/action.yml/badge.svg)](https://github.com/sensslen/nuget-license/actions/workflows/action.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sensslen_nuget-license&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=sensslen_nuget-license) [![NuGet](https://img.shields.io/nuget/v/nuget-license.svg)](https://www.nuget.org/packages/nuget-license)
 
-A .net tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects. Native c++ projects are supported too but only in the .NET Framework variant.
+A .net tool to print and validate the licenses of .net code. This tool supports .NET (Core), .NET Standard and .NET Framework projects. Native c++ projects are supported too but only in the .NET Framework variant of nuget-license. These projects will not work if the tool is installed via `dotnet tool install`.
 
 ## nuget-license tool
 
