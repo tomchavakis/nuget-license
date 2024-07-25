@@ -9,6 +9,7 @@ using McMaster.Extensions.CommandLineUtils;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 using NuGetUtility.Extension;
+using NuGetUtility.Extensions;
 using NuGetUtility.LicenseValidator;
 using NuGetUtility.Output;
 using NuGetUtility.Output.Json;
@@ -84,8 +85,13 @@ namespace NuGetUtility
 
         [Option(LongName = "include-ignored-packages",
             ShortName = "include-ignored",
-            Description = "If this option is set, the packages matching the ignore regexes are also printed to the output by specifying that they were explicitly ignored.")]
+            Description = "If this option is set, the packages that are ignored from validation are still included in the output.")]
         public bool IncludeIgnoredPackages { get; } = false;
+
+        [Option(LongName = "exclude-projects-matching",
+            ShortName = "exclude-projects",
+            Description = "This option allows to specify project name(s) to exclude from the analysis. This can be useful to exclude test projects from the analysis when supplying a solution file as input. Wildcard characters (*) are supported to specify ranges of ignored projects. The input can either be a file name containing a list of project names in json format or a plain string that is then used as a single entry.")]
+        public string? ExcludedProjects { get; } = null;
 
         private static string GetVersion()
             => typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
@@ -110,7 +116,8 @@ namespace NuGetUtility
                 ignoredPackages);
             var projectReaderExceptions = new List<Exception>();
 
-            IEnumerable<string> projects = inputFiles.SelectMany(projectCollector.GetProjects);
+            string[] excludedProjects = GetExcludedProjects();
+            IEnumerable<string> projects = inputFiles.SelectMany(projectCollector.GetProjects).Where(p => !Array.Exists(excludedProjects, ignored => p.Like(ignored)));
             IEnumerable<ProjectWithReferencedPackages> packagesForProject = projects.Select(p =>
             {
                 IEnumerable<PackageIdentity>? installedPackages = null;
@@ -243,6 +250,21 @@ namespace NuGetUtility
             }
 
             return JsonSerializer.Deserialize<string[]>(File.ReadAllText(IgnoredPackages))!;
+        }
+
+        private string[] GetExcludedProjects()
+        {
+            if (ExcludedProjects == null)
+            {
+                return Array.Empty<string>();
+            }
+
+            if (File.Exists(ExcludedProjects))
+            {
+                return JsonSerializer.Deserialize<string[]>(File.ReadAllText(ExcludedProjects))!;
+            }
+
+            return new[] { ExcludedProjects };
         }
 
         private string[] GetInputFiles()
