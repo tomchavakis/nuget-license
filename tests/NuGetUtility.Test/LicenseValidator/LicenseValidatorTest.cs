@@ -979,6 +979,185 @@ namespace NuGetUtility.Test.LicenseValidator
 
         [Test]
         [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithMatchingUrlInformation_Should_GiveCorrectResult_WithOrExpression_If_OneAllowed(
+            string packageId,
+            INuGetVersion packageVersion,
+            Uri orLicenseUri,
+            string firstLicense,
+            string secondLicense)
+        {
+            string licenseExpression = $"{firstLicense} OR {secondLicense}";
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping.Add(orLicenseUri, licenseExpression),
+                _allowedLicenses.Append(firstLicense),
+                _fileDownloader,
+                _ignoredLicenses);
+            IPackageMetadata package = SetupPackageWithLicenseUrl(packageId, packageVersion, orLicenseUri);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            licenseExpression,
+                            orLicenseUri.AbsoluteUri,
+                            null,
+                            null,
+                            LicenseInformationOrigin.Url)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithMatchingUrlInformation_Should_GiveCorrectResult_WithAndExpression_If_AllAllowed(
+            string packageId,
+            INuGetVersion packageVersion,
+            Uri orLicenseUri,
+            string firstLicense,
+            string secondLicense)
+        {
+            string licenseExpression = $"{firstLicense} AND {secondLicense}";
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping.Add(orLicenseUri, licenseExpression),
+                _allowedLicenses.Append(firstLicense).Append(secondLicense),
+                _fileDownloader,
+                _ignoredLicenses);
+            IPackageMetadata package = SetupPackageWithLicenseUrl(packageId, packageVersion, orLicenseUri);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            licenseExpression,
+                            orLicenseUri.AbsoluteUri,
+                            null,
+                            null,
+                            LicenseInformationOrigin.Url)
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithMatchingUrlInformation_Should_Create_ValidationError_If_None_Is_Not_Supported(
+            string packageId,
+            INuGetVersion packageVersion,
+            Uri orLicenseUri,
+            string firstLicense,
+            string secondLicense)
+        {
+            string licenseExpression = $"{firstLicense} OR {secondLicense}";
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping.Add(orLicenseUri, licenseExpression),
+                _allowedLicenses,
+                _fileDownloader,
+                _ignoredLicenses);
+            IPackageMetadata package = SetupPackageWithLicenseUrl(packageId, packageVersion, orLicenseUri);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            licenseExpression,
+                            orLicenseUri.AbsoluteUri,
+                            null,
+                            null,
+                            LicenseInformationOrigin.Url,
+                            new List<ValidationError>
+                            {
+                                new ValidationError($"License \"{licenseExpression}\" not found in list of supported licenses",
+                                    _context)
+                            })
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithMatchingUrlInformation_Should_Create_ValidationError_If_Second_Is_Not_Supported(
+            string packageId,
+            INuGetVersion packageVersion,
+            Uri orLicenseUri,
+            string firstLicense,
+            string secondLicense)
+        {
+            string licenseExpression = $"{firstLicense} AND {secondLicense}";
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping.Add(orLicenseUri, licenseExpression),
+                _allowedLicenses.Append(firstLicense),
+                _fileDownloader,
+                _ignoredLicenses);
+            IPackageMetadata package = SetupPackageWithLicenseUrl(packageId, packageVersion, orLicenseUri);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            licenseExpression,
+                            orLicenseUri.AbsoluteUri,
+                            null,
+                            null,
+                            LicenseInformationOrigin.Url,
+                            new List<ValidationError>
+                            {
+                                new ValidationError($"License \"{licenseExpression}\" not found in list of supported licenses",
+                                    _context)
+                            })
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
+        public async Task ValidatingLicensesWithMatchingUrlInformation_Should_Create_ValidationError_If_First_Is_Not_Supported(
+            string packageId,
+            INuGetVersion packageVersion,
+            Uri orLicenseUri,
+            string firstLicense,
+            string secondLicense)
+        {
+            string licenseExpression = $"{firstLicense} AND {secondLicense}";
+            _uut = new NuGetUtility.LicenseValidator.LicenseValidator(_licenseMapping.Add(orLicenseUri, licenseExpression),
+                _allowedLicenses.Append(secondLicense),
+                _fileDownloader,
+                _ignoredLicenses);
+            IPackageMetadata package = SetupPackageWithLicenseUrl(packageId, packageVersion, orLicenseUri);
+
+            IEnumerable<LicenseValidationResult> result = await _uut.Validate(CreateInput(package, _context), _token.Token);
+
+            Assert.That(result,
+                Is.EquivalentTo(new[]
+                    {
+                        new LicenseValidationResult(packageId,
+                            packageVersion,
+                            _projectUrl.ToString(),
+                            licenseExpression,
+                            orLicenseUri.AbsoluteUri,
+                            null,
+                            null,
+                            LicenseInformationOrigin.Url,
+                            new List<ValidationError>
+                            {
+                                new ValidationError($"License \"{licenseExpression}\" not found in list of supported licenses",
+                                    _context)
+                            })
+                    })
+                    .Using(new LicenseValidationResultValueEqualityComparer()));
+        }
+
+        [Test]
+        [ExtendedAutoData(typeof(NuGetVersionBuilder))]
         public async Task ValidatingLicenses_ShouldContainCopyright(
             string packageId,
             INuGetVersion packageVersion,

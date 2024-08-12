@@ -182,7 +182,9 @@ namespace NuGetUtility.LicenseValidator
 
             if (_licenseMapping.TryGetValue(info.LicenseUrl, out string? licenseId))
             {
-                if (IsLicenseValid(licenseId))
+                SpdxExpression? licenseExpression = SpdxExpressionParser.Parse(licenseId, _ => true, _ => true);
+
+                if (IsValidLicenseExpression(licenseExpression))
                 {
                     AddOrUpdateLicense(result,
                         info,
