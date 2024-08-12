@@ -114,5 +114,13 @@
         "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
         "Authors": "Microsoft",
         "License": "MIT"
+    },
+    {
+        "Id": "Microsoft.NETCore.Platforms",
+        "Version": "1.1.0",
+        "ProjectUrl": "https://dot.net/",
+        "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+        "Authors": "Microsoft",
+        "License": "MIT"
     }
 ]

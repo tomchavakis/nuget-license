@@ -1,1 +1,3 @@
-["./tests/NuGetUtility.Test/NuGetUtility.Test.csproj"]
+[
+    "./tests/NuGetUtility.Test/NuGetUtility.Test.csproj"
+]

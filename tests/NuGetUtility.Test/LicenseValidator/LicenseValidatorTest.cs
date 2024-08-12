@@ -627,7 +627,7 @@ namespace NuGetUtility.Test.LicenseValidator
                             LicenseInformationOrigin.Expression,
                             new List<ValidationError>
                             {
-                                new ValidationError($"License {license} not found in list of supported licenses",
+                                new ValidationError($"License \"{license}\" not found in list of supported licenses",
                                     _context)
                             })
                     })
@@ -665,7 +665,7 @@ namespace NuGetUtility.Test.LicenseValidator
                             LicenseInformationOrigin.Expression,
                             new List<ValidationError>
                             {
-                                new ValidationError($"License {expression} not found in list of supported licenses",
+                                new ValidationError($"License \"{expression}\" not found in list of supported licenses",
                                     _context)
                             })
                     })
@@ -705,7 +705,7 @@ namespace NuGetUtility.Test.LicenseValidator
                             LicenseInformationOrigin.Expression,
                             new List<ValidationError>
                             {
-                                new ValidationError($"License {expression} not found in list of supported licenses",
+                                new ValidationError($"License \"{expression}\" not found in list of supported licenses",
                                     _context)
                             })
                     })
@@ -736,7 +736,7 @@ namespace NuGetUtility.Test.LicenseValidator
                             LicenseInformationOrigin.Overwrite,
                             new List<ValidationError>
                             {
-                                new ValidationError($"License {license} not found in list of supported licenses",
+                                new ValidationError($"License \"{license}\" not found in list of supported licenses",
                                     _context)
                             })
                     })
@@ -874,7 +874,7 @@ namespace NuGetUtility.Test.LicenseValidator
                             LicenseInformationOrigin.Url,
                             new List<ValidationError>
                             {
-                                new ValidationError($"License {urlMatch.Value} not found in list of supported licenses",
+                                new ValidationError($"License \"{urlMatch.Value}\" not found in list of supported licenses",
                                     _context)
                             })
                     })

@@ -1,1 +1,3 @@
-["./integration/ProjectWithReferenceContainingLicenseExpression/ProjectWithReferenceContainingLicenseExpression.csproj"]
+[
+    "./integration/ProjectWithReferenceContainingLicenseExpression/ProjectWithReferenceContainingLicenseExpression.csproj"
+]

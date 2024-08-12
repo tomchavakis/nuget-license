@@ -1,1 +1,4 @@
-["./src/NuGetLicenseCore/NuGetLicenseCore.csproj","./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj"]
+[
+    "./src/NuGetLicenseCore/NuGetLicenseCore.csproj",
+    "./src/NuGetLicenseFramework/NuGetLicenseFramework.csproj"
+]

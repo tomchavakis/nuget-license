@@ -246,7 +246,7 @@ namespace NuGetUtility.LicenseValidator
 
         private string GetLicenseNotAllowedMessage(string license)
         {
-            return $"License {license} not found in list of supported licenses";
+            return $"License \"{license}\" not found in list of supported licenses";
         }
 
         private Uri GetLicenseUrl(string spdxIdentifier)
