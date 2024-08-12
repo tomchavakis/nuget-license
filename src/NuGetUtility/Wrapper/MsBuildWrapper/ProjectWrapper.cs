@@ -25,7 +25,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             if (!File.Exists(assetsFile))
             {
                 throw new MsBuildAbstractionException(
-                    $"Failed to get the project assets file for project {_project.FullPath}");
+                    $"Failed to get the project assets file for project {_project.FullPath} ({assetsFile})");
             }
 
             return assetsFile;

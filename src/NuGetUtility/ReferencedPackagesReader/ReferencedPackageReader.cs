@@ -34,7 +34,9 @@ namespace NuGetUtility.ReferencedPackagesReader
             }
 
             if (project.IsPackageReferenceProject())
+            {
                 return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
+            }
 
             return _packagesConfigReader.GetPackages(project);
         }

@@ -1,2 +1,10 @@
 [
+    {
+        "Id": "System.Runtime.InteropServices.RuntimeInformation",
+        "Version": "4.3.0",
+        "PackageProjectUrl": "https://dot.net/",
+        "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+        "Authors": "Microsoft",
+        "License": "MIT"
+    }
 ]

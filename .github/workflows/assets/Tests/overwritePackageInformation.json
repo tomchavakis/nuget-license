@@ -98,5 +98,21 @@
         "Id": "Fare",
         "Version": "2.1.1",
         "License": "MIT"
+    },
+    {
+        "Id": "System.Runtime.InteropServices.RuntimeInformation",
+        "Version": "4.3.0",
+        "ProjectUrl": "https://dot.net/",
+        "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+        "Authors": "Microsoft",
+        "License": "MIT"
+    },
+    {
+        "Id": "System.IO.Compression",
+        "Version": "4.3.0",
+        "ProjectUrl": "https://dot.net/",
+        "Copyright": "\u00A9 Microsoft Corporation.  All rights reserved.",
+        "Authors": "Microsoft",
+        "License": "MIT"
     }
 ]
