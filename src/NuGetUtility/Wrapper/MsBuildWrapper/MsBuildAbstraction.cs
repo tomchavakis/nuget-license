@@ -14,7 +14,9 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
     public class MsBuildAbstraction : IMsBuildAbstraction
     {
         private const string CollectPackageReferences = "CollectPackageReferences";
-        private readonly Dictionary<string, string> _globalProjectProperties = new();
+        private ProjectCollection? _projects;
+
+        private ProjectCollection Projects => _projects ??= InitializeProjectCollection();
 
         public MsBuildAbstraction()
         {
@@ -48,9 +50,7 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             }
 #endif
 
-            ProjectRootElement rootElement = TryGetProjectRootElement(projectPath);
-
-            var project = new Project(rootElement, _globalProjectProperties, null);
+            Project project = Projects.LoadProject(projectPath);
 
             return new ProjectWrapper(project);
         }
@@ -82,6 +82,11 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             }
         }
 
-        protected void AddGlobalProjectProperty(string name, string value) => _globalProjectProperties.Add(name, value);
+        private static ProjectCollection InitializeProjectCollection()
+        {
+            ProjectCollection collection = ProjectCollection.GlobalProjectCollection;
+            collection.UnloadAllProjects();
+            return collection;
+        }
     }
 }

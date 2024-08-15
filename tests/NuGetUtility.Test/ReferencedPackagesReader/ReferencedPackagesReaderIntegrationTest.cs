@@ -8,7 +8,7 @@ using NuGetUtility.Wrapper.NuGetWrapper.ProjectModel;
 
 namespace NuGetUtility.Test.ReferencedPackagesReader
 {
-    [TestFixture]
+    [TestFixture, FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
     public class ReferencedPackagesReaderIntegrationTest
     {
         [SetUp]
@@ -94,22 +94,47 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
 #if NETFRAMEWORK
-        [Test]
-        public void GetInstalledPackagesShould_ReturnPackages_For_NativeCppProject()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void GetInstalledPackagesShould_ReturnPackages_For_NativeCppProject_With_References(bool includeTransitive)
         {
             string path = Path.GetFullPath("../../../../targets/SimpleCppProject/SimpleCppProject.vcxproj");
 
-            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, false);
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive);
 
             Assert.That(result.Count, Is.EqualTo(2));
         }
 #else
-        [Test]
-        public void GetInstalledPackagesShould_ThrowError_For_PackagesForNativeCppProject()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void GetInstalledPackagesShould_ThrowError_For_PackagesForNativeCppProject_With_References(bool includeTransitive)
         {
             string path = Path.GetFullPath("../../../../targets/SimpleCppProject/SimpleCppProject.vcxproj");
 
-            MsBuildAbstractionException? exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, false));
+            MsBuildAbstractionException? exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, includeTransitive));
+            Assert.That(exception?.Message, Is.EqualTo($"Please use the .net Framework version to analyze c++ projects (Project: {path})"));
+        }
+#endif
+
+#if NETFRAMEWORK
+        [TestCase(true)]
+        [TestCase(false)]
+        public void GetInstalledPackagesShould_ReturnPackages_For_NativeCppProject_Without_References(bool includeTransitive)
+        {
+            string path = Path.GetFullPath("../../../../targets/EmptyCppProject/EmptyCppProject.vcxproj");
+
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive);
+
+            Assert.That(result.Count, Is.EqualTo(0));
+        }
+#else
+        [TestCase(true)]
+        [TestCase(false)]
+        public void GetInstalledPackagesShould_ThrowError_For_PackagesForNativeCppProject_Without_References(bool includeTransitive)
+        {
+            string path = Path.GetFullPath("../../../../targets/EmptyCppProject/EmptyCppProject.vcxproj");
+
+            MsBuildAbstractionException? exception = Assert.Throws<MsBuildAbstractionException>(() => _uut!.GetInstalledPackages(path, includeTransitive));
             Assert.That(exception?.Message, Is.EqualTo($"Please use the .net Framework version to analyze c++ projects (Project: {path})"));
         }
 #endif

@@ -37,8 +37,11 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _packageReferencesFromProjectForFramework = new Dictionary<string, PackageReference[]>();
 
             _msBuild.GetProject(_projectPath).Returns(_projectMock);
-            _projectMock.GetPackageReferenceCount().Returns(1);
-            _projectMock.GetAssetsPath().Returns(_assetsFilePath);
+            _projectMock.TryGetAssetsPath(out Arg.Any<string>()).Returns(args =>
+            {
+                args[0] = _assetsFilePath;
+                return true;
+            });
             _projectMock.FullPath.Returns(_projectPath);
             _lockFileFactory.GetFromFile(_assetsFilePath).Returns(_lockFileMock);
             _lockFileMock.PackageSpec.Returns(_packageSpecMock);
@@ -185,10 +188,10 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
         [Test]
-        public void GetInstalledPackages_Should_LoadAssetsFileFromProject([Values] bool includeTransitive)
+        public void GetInstalledPackages_Should_TryLoadAssetsFileFromProject([Values] bool includeTransitive)
         {
             _uut.GetInstalledPackages(_projectPath, includeTransitive);
-            _projectMock.Received(1).GetAssetsPath();
+            _projectMock.Received(1).TryGetAssetsPath(out Arg.Any<string>());
             _lockFileFactory.Received(1).GetFromFile(Arg.Any<string>());
             _lockFileFactory.Received(1).GetFromFile(_assetsFilePath);
         }
@@ -223,9 +226,9 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
         [Test]
         public void
-            GetInstalledPackages_Should_ReturnEmptyCollection_When_ProjectHasNoPackageReferences_And_IsNotTransitive()
+            GetInstalledPackages_Should_ReturnEmptyCollection_If_Cannot_Get_Asset_File_Path_And_Has_No_Packages_Config()
         {
-            _projectMock.GetPackageReferenceCount().Returns(0);
+            _projectMock.TryGetAssetsPath(out Arg.Any<string>()).Returns(false);
             _projectMock.GetEvaluatedIncludes().Returns(Enumerable.Empty<string>());
             IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, false);
 
@@ -236,7 +239,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public void GetInstalledPackages_Should_Use_PackageGonfigReader_If_ProjectIsPackageConfigProject(
             [Values] bool includeTransitive)
         {
-            _packageSpecMock.IsValid().Returns(false);
+            _projectMock.TryGetAssetsPath(out Arg.Any<string>()).Returns(false);
             _projectMock.FullPath.Returns(_projectPath);
             _projectMock.GetEvaluatedIncludes().Returns(new List<string> { "packages.config" });
 
@@ -250,7 +253,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public void GetInstalledPackages_Should_ReturnPackagesReturnedBy_PackageGonfigReader_If_ProjectIsPackageConfigProject(
             [Values] bool includeTransitive)
         {
-            _packageSpecMock.IsValid().Returns(false);
+            _projectMock.TryGetAssetsPath(out Arg.Any<string>()).Returns(false);
             _projectMock.FullPath.Returns(_projectPath);
             _projectMock.GetEvaluatedIncludes().Returns(new List<string> { "packages.config" });
             PackageIdentity[] expectedPackages = _packageReferencesFromProjectForFramework.First().Value.Select(l => new PackageIdentity(l.PackageName, l.Version!)).ToArray();

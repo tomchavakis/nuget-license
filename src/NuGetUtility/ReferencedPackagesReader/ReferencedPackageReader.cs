@@ -1,6 +1,7 @@
 // Licensed to the projects contributors.
 // The license conditions are provided in the LICENSE file located in the project root
 
+using System.Diagnostics.CodeAnalysis;
 using NuGetUtility.Extensions;
 using NuGetUtility.Wrapper.MsBuildWrapper;
 using NuGetUtility.Wrapper.NuGetWrapper.Packaging.Core;
@@ -28,23 +29,28 @@ namespace NuGetUtility.ReferencedPackagesReader
         {
             IProject project = _msBuild.GetProject(projectPath);
 
-            if (!project.HasNuGetPackagesReferenced() && !includeTransitive)
+            if (TryGetInstalledPackagesFromAssetsFile(includeTransitive, project, out IEnumerable<PackageIdentity>? dependencies))
             {
-                return Enumerable.Empty<PackageIdentity>();
+                return dependencies;
             }
 
-            if (project.IsPackageReferenceProject())
+            if (project.HasPackagesConfigFile())
             {
-                return GetInstalledPackagesFromAssetsFile(includeTransitive, project);
+                return _packagesConfigReader.GetPackages(project);
             }
 
-            return _packagesConfigReader.GetPackages(project);
+            return Array.Empty<PackageIdentity>();
         }
 
-        private IEnumerable<PackageIdentity> GetInstalledPackagesFromAssetsFile(bool includeTransitive,
-            IProject project)
+        private bool TryGetInstalledPackagesFromAssetsFile(bool includeTransitive,
+            IProject project,
+            [NotNullWhen(true)] out IEnumerable<PackageIdentity>? installedPackages)
         {
-            ILockFile assetsFile = LoadAssetsFile(project);
+            installedPackages = null;
+            if (!TryLoadAssetsFile(project, out ILockFile? assetsFile))
+            {
+                return false;
+            }
 
             var referencedLibraries = new HashSet<ILockFileLibrary>();
 
@@ -55,7 +61,8 @@ namespace NuGetUtility.ReferencedPackagesReader
                 referencedLibraries.AddRange(referencedLibrariesForTarget);
             }
 
-            return referencedLibraries.Select(r => new PackageIdentity(r.Name, r.Version));
+            installedPackages = referencedLibraries.Select(r => new PackageIdentity(r.Name, r.Version));
+            return true;
         }
 
         private IEnumerable<ILockFileLibrary> GetReferencedLibrariesForTarget(IProject project,
@@ -102,10 +109,14 @@ namespace NuGetUtility.ReferencedPackagesReader
             }
         }
 
-        private ILockFile LoadAssetsFile(IProject project)
+        private bool TryLoadAssetsFile(IProject project, [NotNullWhen(true)] out ILockFile? assetsFile)
         {
-            string assetsPath = project.GetAssetsPath();
-            ILockFile assetsFile = _lockFileFactory.GetFromFile(assetsPath);
+            if (!project.TryGetAssetsPath(out string assetsPath))
+            {
+                assetsFile = null;
+                return false;
+            }
+            assetsFile = _lockFileFactory.GetFromFile(assetsPath);
 
             if (!assetsFile.PackageSpec.IsValid() || !(assetsFile.Targets?.Any() ?? false))
             {
@@ -113,7 +124,7 @@ namespace NuGetUtility.ReferencedPackagesReader
                     $"Failed to validate project assets for project {project.FullPath}");
             }
 
-            return assetsFile;
+            return true;
         }
     }
 }
