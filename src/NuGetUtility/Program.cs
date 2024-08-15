@@ -31,7 +31,7 @@ namespace NuGetUtility
     {
         [Option(ShortName = "i",
             LongName = "input",
-            Description = "The project (or solution) file who's dependencies should be analyzed")]
+            Description = "The project (or solution) file for which to analyze dependency licenses")]
         public string? InputFile { get; } = null;
 
         [Option(ShortName = "ji",
