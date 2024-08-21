@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -231,13 +232,31 @@ namespace NugetUtility
                 return version;
             }
 
+            string versionStartWithNumberPattern = @"^\d";
             var versionList = await GetVersions(name);
-            version = GetVersionFromRange(versionRange, versionList.Select(v => NuGetVersion.Parse(v)));
+            version = GetVersionFromRange(versionRange, versionList
+                    .Where(v => Regex.IsMatch(v, versionStartWithNumberPattern))
+                    .Select(ParseNuGetVersion)
+                    .Where(v => v != null));
+            
             if (!string.IsNullOrEmpty(version))
             {
                 _versionResolverCache[Tuple.Create(name, versionRange)] = version;
             }
             return version;
+        }
+
+        private NuGetVersion ParseNuGetVersion(string version)
+        {
+            try
+            {
+                return NuGetVersion.Parse(version);
+            }
+            catch (Exception e)
+            {
+                WriteOutput(e.Message, e, LogLevel.Warning);
+                return null;
+            }
         }
 
         private async Task<string> ResolvePackageVersionFromLocalCacheAsync(string name, string versionRange)
