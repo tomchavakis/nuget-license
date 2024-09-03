@@ -75,7 +75,7 @@ namespace NuGetUtility.ReferencedPackagesReader
             if (!includeTransitive)
             {
                 ITargetFrameworkInformation targetFrameworkInformation = GetTargetFrameworkInformation(target, assetsFile);
-                IEnumerable<PackageReference> directlyReferencedPackages = _msBuild.GetPackageReferencesFromProjectForFramework(project,
+                IEnumerable<string> directlyReferencedPackages = _msBuild.GetPackageReferencesFromProjectForFramework(project,
                     targetFrameworkInformation.FrameworkName.ToString()!);
 
                 referencedLibrariesForTarget =
@@ -86,11 +86,10 @@ namespace NuGetUtility.ReferencedPackagesReader
         }
 
         private bool IsDirectlyReferenced(ILockFileLibrary library,
-            IEnumerable<PackageReference> directlyReferencedPackages)
+            IEnumerable<string> directlyReferencedPackages)
         {
             return directlyReferencedPackages.Any(p =>
-                library.Name.Equals(p.PackageName, StringComparison.OrdinalIgnoreCase) && ((p.Version == null) ||
-                    library.Version.Equals(p.Version)));
+                library.Name.Equals(p, StringComparison.OrdinalIgnoreCase));
         }
 
         private static ITargetFrameworkInformation GetTargetFrameworkInformation(ILockFileTarget target,

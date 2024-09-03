@@ -51,7 +51,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _packageSpecMock.TargetFrameworks.Returns(_packageSpecTargetFrameworks);
 
             _msBuild.GetPackageReferencesFromProjectForFramework(_projectMock, Arg.Any<string>())
-                .Returns(args => _packageReferencesFromProjectForFramework[args.ArgAt<string>(1)]);
+                .Returns(args => _packageReferencesFromProjectForFramework[args.ArgAt<string>(1)].Select(p => p.PackageName));
 
             foreach (ILockFileLibrary lockFileLibrary in _lockFileLibraries)
             {

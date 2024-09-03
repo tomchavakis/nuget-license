@@ -42,6 +42,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectWithReferenceContain
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EmptyCppProject", "tests\targets\EmptyCppProject\EmptyCppProject.vcxproj", "{9B107A91-87F9-420C-ADF8-732C77DAFB93}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VersionRangesProject", "tests\targets\VersionRangesProject\VersionRangesProject.csproj", "{6C96D10E-6CB6-4387-922F-C7C97C037495}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -265,6 +267,24 @@ Global
 		{9B107A91-87F9-420C-ADF8-732C77DAFB93}.TestWindows|x64.Build.0 = Debug|x64
 		{9B107A91-87F9-420C-ADF8-732C77DAFB93}.TestWindows|x86.ActiveCfg = Debug|Win32
 		{9B107A91-87F9-420C-ADF8-732C77DAFB93}.TestWindows|x86.Build.0 = Debug|Win32
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.Debug|x64.Build.0 = Debug|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.Debug|x86.Build.0 = Debug|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.Release|x64.ActiveCfg = Release|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.Release|x64.Build.0 = Release|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.Release|x86.ActiveCfg = Release|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.Release|x86.Build.0 = Release|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.TestWindows|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.TestWindows|Any CPU.Build.0 = Debug|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.TestWindows|x64.ActiveCfg = Debug|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.TestWindows|x64.Build.0 = Debug|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.TestWindows|x86.ActiveCfg = Debug|Any CPU
+		{6C96D10E-6CB6-4387-922F-C7C97C037495}.TestWindows|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -283,6 +303,7 @@ Global
 		{DE079B9C-B6BA-4D53-8B83-03D3CBD4027F} = {D2AB2D00-1F48-487D-BFE0-99FDB4E071CC}
 		{01704839-219A-4CE2-93F4-DB3CB8773DCE} = {FFB2826C-17A3-4C18-8FFE-A34AB51592F7}
 		{9B107A91-87F9-420C-ADF8-732C77DAFB93} = {FA92392F-D895-4D1E-A5ED-E6DC3C08223E}
+		{6C96D10E-6CB6-4387-922F-C7C97C037495} = {FA92392F-D895-4D1E-A5ED-E6DC3C08223E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {70887D40-0182-4C32-BFA1-B5A02E405F11}

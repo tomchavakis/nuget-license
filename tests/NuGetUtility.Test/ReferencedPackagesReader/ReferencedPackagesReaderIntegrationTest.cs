@@ -73,6 +73,17 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         }
 
         [Test]
+        public void GetInstalledPackagesShould_ReturnResolvedDependency_For_ProjectWithRangedDependencies([Values] bool includeTransitive)
+        {
+            string path = Path.GetFullPath(
+                "../../../../targets/VersionRangesProject/VersionRangesProject.csproj");
+
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive);
+
+            Assert.That(result.Count, Is.EqualTo(includeTransitive ? 2 : 1));
+        }
+
+        [Test]
         [Platform(Include = "Win")]
         public void GetInstalledPackagesShould_ReturnPackages_For_PackagesConfigProject()
         {
