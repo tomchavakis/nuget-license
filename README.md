@@ -46,6 +46,7 @@ Usage: dotnet-project-licenses [options]
   <tr><td> -p, --print </td><td>(Default: true) Print licenses</td></tr>
   <tr><td> -e, --export-license-texts </td><td>Export the raw license texts</td></tr>
   <tr><td> -c, --convert-html-to-text </td><td>Strip HTML tags if the license file is HTML and save as plain text (EXPERIMENTAL)</td></tr>
+  <tr><td> --exclude-non-referenced-manual-packages</td><td>(Default: false) Exclude non-referenced manual packages from detected package list. Only applicable when using <code>--manual-package-information</code>.</td></tr>
   <tr><td> --help </td><td>Display this help screen</td></tr>
   <tr><td> --version </td><td>Display version information</td></tr>
   <tr><td> --ignore-ssl-certificate-errors </td><td>Ignore SSL certificate errors in HttpClient</td></tr>
