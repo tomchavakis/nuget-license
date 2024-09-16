@@ -20,21 +20,22 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         [SetUp]
         public void SetUp()
         {
-            IFixture fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
+            _fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
             _msBuild = Substitute.For<IMsBuildAbstraction>();
             _lockFileFactory = Substitute.For<ILockFileFactory>();
-            _projectPath = fixture.Create<string>();
-            _assetsFilePath = fixture.Create<string>();
+            _projectPath = _fixture.Create<string>();
+            _assetsFilePath = _fixture.Create<string>();
             _projectMock = Substitute.For<IProject>();
             _lockFileMock = Substitute.For<ILockFile>();
             _packageSpecMock = Substitute.For<IPackageSpec>();
             _packagesConfigReader = Substitute.For<IPackagesConfigReader>();
-            _lockFileTargets = fixture.CreateMany<ILockFileTarget>(TargetFrameworkCount).ToArray();
-            _lockFileLibraries = fixture.CreateMany<ILockFileLibrary>(50).ToArray();
+            _lockFileTargets = _fixture.CreateMany<ILockFileTarget>(TargetFrameworkCount).ToArray();
+            _lockFileLibraries = _fixture.CreateMany<ILockFileLibrary>(50).ToArray();
             _packageSpecTargetFrameworks =
-                fixture.CreateMany<ITargetFrameworkInformation>(TargetFrameworkCount).ToArray();
-            _targetFrameworks = fixture.CreateMany<INuGetFramework>(TargetFrameworkCount).ToArray();
-            _packageReferencesFromProjectForFramework = new Dictionary<string, PackageReference[]>();
+                _fixture.CreateMany<ITargetFrameworkInformation>(TargetFrameworkCount).ToArray();
+            _targetFrameworks = _fixture.CreateMany<INuGetFramework>(TargetFrameworkCount).ToArray();
+            _referencedPackagesForFramework = new Dictionary<INuGetFramework, PackageIdentity[]>();
+            _directlyReferencedPackagesForFramework = new Dictionary<INuGetFramework, PackageIdentity[]>();
 
             _msBuild.GetProject(_projectPath).Returns(_projectMock);
             _projectMock.TryGetAssetsPath(out Arg.Any<string>()).Returns(args =>
@@ -47,31 +48,19 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _lockFileMock.PackageSpec.Returns(_packageSpecMock);
             _packageSpecMock.IsValid().Returns(true);
             _lockFileMock.Targets.Returns(_lockFileTargets);
-            _lockFileMock.Libraries.Returns(_lockFileLibraries);
             _packageSpecMock.TargetFrameworks.Returns(_packageSpecTargetFrameworks);
 
-            _msBuild.GetPackageReferencesFromProjectForFramework(_projectMock, Arg.Any<string>())
-                .Returns(args => _packageReferencesFromProjectForFramework[args.ArgAt<string>(1)].Select(p => p.PackageName));
-
+            var rnd = new Random(75643);
             foreach (ILockFileLibrary lockFileLibrary in _lockFileLibraries)
             {
                 INuGetVersion version = Substitute.For<INuGetVersion>();
                 lockFileLibrary.Version.Returns(version);
-                lockFileLibrary.Name.Returns(fixture.Create<string>());
+                lockFileLibrary.Name.Returns(_fixture.Create<string>());
             }
 
             foreach (INuGetFramework targetFramework in _targetFrameworks)
             {
-                targetFramework.ToString().Returns(fixture.Create<string>());
-            }
-
-            foreach (INuGetFramework targetFramework in _targetFrameworks)
-            {
-                PackageReference[] returnedLibraries = _lockFileLibraries.Shuffle(75643)
-                    .Take(5)
-                    .Select(l => new PackageReference(l.Name, l.Version))
-                    .ToArray();
-                _packageReferencesFromProjectForFramework[targetFramework.ToString()!] = returnedLibraries;
+                targetFramework.ToString().Returns(_fixture.Create<string>());
             }
 
             using (IEnumerator<INuGetFramework> targetFrameworksIterator = _targetFrameworks.GetEnumerator())
@@ -80,6 +69,12 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                 {
                     targetFrameworksIterator.MoveNext();
                     lockFileTarget.TargetFramework.Returns(targetFrameworksIterator.Current);
+
+                    ILockFileLibrary[] referencedLibraries = _lockFileLibraries.Shuffle(rnd)
+                        .Take(5)
+                        .ToArray();
+                    _referencedPackagesForFramework[targetFrameworksIterator.Current] = referencedLibraries.Select(l => new PackageIdentity(l.Name, l.Version!)).ToArray();
+                    lockFileTarget.Libraries.Returns(referencedLibraries);
                 }
             }
 
@@ -90,6 +85,17 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
                     targetFrameworksIterator.MoveNext();
                     packageSpecTargetFramework.FrameworkName
                         .Returns(targetFrameworksIterator.Current);
+
+                    PackageIdentity[] directDependencies = _referencedPackagesForFramework[targetFrameworksIterator.Current].Shuffle(rnd)
+                        .Take(2).ToArray();
+
+                    _directlyReferencedPackagesForFramework[targetFrameworksIterator.Current] = directDependencies;
+                    packageSpecTargetFramework.Dependencies.Returns(directDependencies.Select(l =>
+                    {
+                        ILibraryDependency sub = Substitute.For<ILibraryDependency>();
+                        sub.Name.Returns(l.Id);
+                        return sub;
+                    }));
                 }
             }
 
@@ -110,7 +116,9 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         private IEnumerable<ILockFileLibrary> _lockFileLibraries = null!;
         private IEnumerable<ITargetFrameworkInformation> _packageSpecTargetFrameworks = null!;
         private IEnumerable<INuGetFramework> _targetFrameworks = null!;
-        private Dictionary<string, PackageReference[]> _packageReferencesFromProjectForFramework = null!;
+        private IFixture _fixture = null!;
+        private IDictionary<INuGetFramework, PackageIdentity[]> _referencedPackagesForFramework = null!;
+        private IDictionary<INuGetFramework, PackageIdentity[]> _directlyReferencedPackagesForFramework = null!;
 
         [Test]
         public void GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_PackageSpecificationIsInvalid(
@@ -168,15 +176,26 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
 
         [Test]
         public void
-            GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_IncludingTransitive_And_PackageSpecFrameworkInformationGetFails()
+            GetInstalledPackages_Should_ThrowReferencedPackageReaderException_If_Requested_FrameworkIsNotFound()
         {
+            string targetFramework = _fixture.Create<string>();
             _packageSpecMock.TargetFrameworks
                 .Returns(Enumerable.Empty<ITargetFrameworkInformation>());
+            ReferencedPackageReaderException? exception = Assert.Throws<ReferencedPackageReaderException>(() =>
+                _uut.GetInstalledPackages(_projectPath, false, targetFramework));
+
+            Assert.AreEqual(
+                $"Target framework {targetFramework} not found.",
+                exception!.Message);
+        }
+
+        [Test]
+        public void
+            GetInstalledPackages_Should_ReturnCorrectValues_If_TargetFrameworks_Returns_Empty_And_Requested_Transitive_Packages()
+        {
+            _packageSpecMock.TargetFrameworks.Returns(Enumerable.Empty<ITargetFrameworkInformation>());
             IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true);
-            CollectionAssert.AreEquivalent(
-                _lockFileLibraries.Select(l =>
-                    new PackageIdentity(l.Name, l.Version)),
-                result);
+            CollectionAssert.AreEquivalent(_referencedPackagesForFramework.SelectMany(kvp => kvp.Value).Distinct(), result);
         }
 
         [Test]
@@ -200,10 +219,17 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         public void GetInstalledPackages_Should_ReturnCorrectValues_If_IncludingTransitive()
         {
             IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true);
-            CollectionAssert.AreEquivalent(
-                _lockFileLibraries.Select(l =>
-                    new PackageIdentity(l.Name, l.Version)),
-                result);
+            CollectionAssert.AreEquivalent(_referencedPackagesForFramework.SelectMany(kvp => kvp.Value).Distinct(), result);
+        }
+
+        [Test]
+        public void GetInstalledPackages_Should_OnlyReturnPackages_For_TargetFramework()
+        {
+            string name = _fixture.Create<string>();
+            INuGetFramework targetFramework = _targetFrameworks.Shuffle(new Random(69843456)).First();
+            targetFramework.Equals(name).Returns(true);
+            IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, true, name);
+            CollectionAssert.AreEquivalent(_referencedPackagesForFramework[targetFramework], result);
         }
 
         [Test]
@@ -211,11 +237,11 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
         {
             IEnumerable<PackageIdentity> result = _uut.GetInstalledPackages(_projectPath, false);
 
-            PackageReference[] expectedReferences = _packageReferencesFromProjectForFramework.SelectMany(p => p.Value)
+            PackageIdentity[] expectedReferences = _directlyReferencedPackagesForFramework.SelectMany(p => p.Value)
                 .Distinct()
                 .ToArray();
             ILockFileLibrary[] expectedResult = _lockFileLibraries.Where(l =>
-                    Array.Exists(expectedReferences, e => e.PackageName.Equals(l.Name)) &&
+                    Array.Exists(expectedReferences, e => e.Id.Equals(l.Name)) &&
                     Array.Exists(expectedReferences, e => e.Version!.Equals(l.Version)))
                 .ToArray();
             CollectionAssert.AreEquivalent(
@@ -256,7 +282,7 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             _projectMock.TryGetAssetsPath(out Arg.Any<string>()).Returns(false);
             _projectMock.FullPath.Returns(_projectPath);
             _projectMock.GetEvaluatedIncludes().Returns(new List<string> { "packages.config" });
-            PackageIdentity[] expectedPackages = _packageReferencesFromProjectForFramework.First().Value.Select(l => new PackageIdentity(l.PackageName, l.Version!)).ToArray();
+            PackageIdentity[] expectedPackages = _referencedPackagesForFramework.First().Value;
             _packagesConfigReader.GetPackages(Arg.Any<IProject>()).Returns(expectedPackages);
 
             IEnumerable<PackageIdentity> packages = _uut.GetInstalledPackages(_projectPath, includeTransitive);

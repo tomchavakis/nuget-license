@@ -25,11 +25,11 @@ namespace NuGetUtility.ReferencedPackagesReader
             _packagesConfigReader = packagesConfigReader;
         }
 
-        public IEnumerable<PackageIdentity> GetInstalledPackages(string projectPath, bool includeTransitive)
+        public IEnumerable<PackageIdentity> GetInstalledPackages(string projectPath, bool includeTransitive, string? targetFramework = null)
         {
             IProject project = _msBuild.GetProject(projectPath);
 
-            if (TryGetInstalledPackagesFromAssetsFile(includeTransitive, project, out IEnumerable<PackageIdentity>? dependencies))
+            if (TryGetInstalledPackagesFromAssetsFile(includeTransitive, project, targetFramework, out IEnumerable<PackageIdentity>? dependencies))
             {
                 return dependencies;
             }
@@ -44,6 +44,7 @@ namespace NuGetUtility.ReferencedPackagesReader
 
         private bool TryGetInstalledPackagesFromAssetsFile(bool includeTransitive,
             IProject project,
+            string? targetFramework,
             [NotNullWhen(true)] out IEnumerable<PackageIdentity>? installedPackages)
         {
             installedPackages = null;
@@ -54,42 +55,37 @@ namespace NuGetUtility.ReferencedPackagesReader
 
             var referencedLibraries = new HashSet<ILockFileLibrary>();
 
-            foreach (ILockFileTarget target in assetsFile.Targets!)
+            if (targetFramework is not null)
             {
-                IEnumerable<ILockFileLibrary> referencedLibrariesForTarget =
-                    GetReferencedLibrariesForTarget(project, includeTransitive, assetsFile, target);
-                referencedLibraries.AddRange(referencedLibrariesForTarget);
+                ILockFileTarget target = (assetsFile.Targets?.FirstOrDefault(t => t.TargetFramework.Equals(targetFramework))) ??
+                    throw new ReferencedPackageReaderException($"Target framework {targetFramework} not found.");
+
+                referencedLibraries.AddRange(GetReferencedLibrariesForTarget(includeTransitive, assetsFile, target));
+            }
+            else
+            {
+                foreach (ILockFileTarget target in assetsFile.Targets!)
+                {
+                    referencedLibraries.AddRange(GetReferencedLibrariesForTarget(includeTransitive, assetsFile, target));
+                }
             }
 
             installedPackages = referencedLibraries.Select(r => new PackageIdentity(r.Name, r.Version));
             return true;
         }
 
-        private IEnumerable<ILockFileLibrary> GetReferencedLibrariesForTarget(IProject project,
-            bool includeTransitive,
+        private static IEnumerable<ILockFileLibrary> GetReferencedLibrariesForTarget(bool includeTransitive,
             ILockFile assetsFile,
             ILockFileTarget target)
         {
-            IEnumerable<ILockFileLibrary> referencedLibrariesForTarget = assetsFile.Libraries.Where(l => l.Type != ProjectReferenceIdentifier);
-
+            IEnumerable<ILockFileLibrary> dependencies = target.Libraries.Where(l => l.Type != ProjectReferenceIdentifier);
             if (!includeTransitive)
             {
                 ITargetFrameworkInformation targetFrameworkInformation = GetTargetFrameworkInformation(target, assetsFile);
-                IEnumerable<string> directlyReferencedPackages = _msBuild.GetPackageReferencesFromProjectForFramework(project,
-                    targetFrameworkInformation.FrameworkName.ToString()!);
-
-                referencedLibrariesForTarget =
-                    referencedLibrariesForTarget.Where(l => IsDirectlyReferenced(l, directlyReferencedPackages));
+                IEnumerable<ILibraryDependency> directDependencies = targetFrameworkInformation.Dependencies;
+                return dependencies.Where(d => directDependencies.Any(direct => direct.Name == d.Name));
             }
-
-            return referencedLibrariesForTarget;
-        }
-
-        private bool IsDirectlyReferenced(ILockFileLibrary library,
-            IEnumerable<string> directlyReferencedPackages)
-        {
-            return directlyReferencedPackages.Any(p =>
-                library.Name.Equals(p, StringComparison.OrdinalIgnoreCase));
+            return dependencies;
         }
 
         private static ITargetFrameworkInformation GetTargetFrameworkInformation(ILockFileTarget target,

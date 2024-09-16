@@ -24,6 +24,12 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.Frameworks
             return false;
         }
 
+        public bool Equals(string targetFramework)
+        {
+            var other = NuGetFramework.Parse(targetFramework);
+            return _framework.Equals(other);
+        }
+
         public override int GetHashCode()
         {
             return _framework.GetHashCode();

@@ -3,16 +3,12 @@
 
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
-using Microsoft.Build.Exceptions;
-using Microsoft.Build.Execution;
-using Microsoft.Build.Framework;
 using Microsoft.Build.Locator;
 
 namespace NuGetUtility.Wrapper.MsBuildWrapper
 {
     public class MsBuildAbstraction : IMsBuildAbstraction
     {
-        private const string CollectPackageReferences = "CollectPackageReferences";
         private ProjectCollection? _projects;
 
         private ProjectCollection Projects => _projects ??= InitializeProjectCollection();
@@ -20,20 +16,6 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
         public MsBuildAbstraction()
         {
             RegisterMsBuildLocatorIfNeeded();
-        }
-
-        public IEnumerable<string> GetPackageReferencesFromProjectForFramework(IProject project,
-            string framework)
-        {
-            var globalProperties = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "TargetFramework", framework }
-            };
-            var newProject = new ProjectInstance(project.FullPath, globalProperties, null);
-            newProject.Build(new[] { CollectPackageReferences }, new List<ILogger>(), out IDictionary<string, TargetResult>? targetOutputs);
-
-            return targetOutputs.First(e => e.Key.Equals(CollectPackageReferences))
-                .Value.Items.Select(p => p.ItemSpec);
         }
 
         public IProject GetProject(string projectPath)
@@ -62,18 +44,6 @@ namespace NuGetUtility.Wrapper.MsBuildWrapper
             if (!MSBuildLocator.IsRegistered)
             {
                 MSBuildLocator.RegisterDefaults();
-            }
-        }
-
-        private static ProjectRootElement TryGetProjectRootElement(string projectPath)
-        {
-            try
-            {
-                return ProjectRootElement.Open(projectPath, ProjectCollection.GlobalProjectCollection)!;
-            }
-            catch (InvalidProjectFileException e)
-            {
-                throw new MsBuildAbstractionException($"Failed to open project: {projectPath}", e);
             }
         }
 

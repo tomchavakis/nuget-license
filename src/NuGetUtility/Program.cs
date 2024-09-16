@@ -93,6 +93,11 @@ namespace NuGetUtility
             Description = "This option allows to specify project name(s) to exclude from the analysis. This can be useful to exclude test projects from the analysis when supplying a solution file as input. Wildcard characters (*) are supported to specify ranges of ignored projects. The input can either be a file name containing a list of project names in json format or a plain string that is then used as a single entry.")]
         public string? ExcludedProjects { get; } = null;
 
+        [Option(LongName = "target-framework",
+            ShortName = "f",
+            Description = "This option allows to select a Target framework mockier (https://learn.microsoft.com/en-us/dotnet/standard/frameworks) for which to analyze dependencies.")]
+        public string? TargetFramework { get; } = null;
+
         private static string GetVersion()
             => typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? string.Empty;
 

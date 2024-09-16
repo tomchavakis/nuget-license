@@ -149,5 +149,21 @@ namespace NuGetUtility.Test.ReferencedPackagesReader
             Assert.That(exception?.Message, Is.EqualTo($"Please use the .net Framework version to analyze c++ projects (Project: {path})"));
         }
 #endif
+
+
+        [TestCase("net472", false, "NSubstitute")]
+        [TestCase("net6.0", false, "TinyCsvParser")]
+        [TestCase("net8.0", false, "Microsoft.Extensions.Logging.Abstractions")]
+        [TestCase("net472", true, "NSubstitute", "Castle.Core", "System.Threading.Tasks.Extensions")]
+        [TestCase("net6.0", true, "TinyCsvParser")]
+        [TestCase("net8.0", true, "Microsoft.Extensions.Logging.Abstractions", "Microsoft.Extensions.DependencyInjection.Abstractions")]
+        public void GetInstalledPackagesShould_OnlyReturn_PackagesPackagesReferencedByRequestedFramework(string framework, bool includeTransitive, params string[] packages)
+        {
+            string path = Path.GetFullPath("../../../../targets/MultiTargetProjectWithDifferentDependencies/MultiTargetProjectWithDifferentDependencies.csproj");
+
+            IEnumerable<PackageIdentity> result = _uut!.GetInstalledPackages(path, includeTransitive, framework);
+
+            CollectionAssert.AreEquivalent(packages, result.Select(p => p.Id));
+        }
     }
 }

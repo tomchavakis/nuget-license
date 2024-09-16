@@ -17,6 +17,8 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 
         public INuGetFramework FrameworkName => new WrappedNuGetFramework(_info.FrameworkName);
 
+        public IEnumerable<ILibraryDependency> Dependencies => _info.Dependencies.Select(library => new WrappedLibraryDependency(library));
+
         public override string ToString()
         {
             return _info.ToString();

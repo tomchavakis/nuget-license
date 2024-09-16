@@ -3,9 +3,8 @@
 
 namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
 {
-    public interface ILockFile
+    public interface ILibraryDependency
     {
-        IPackageSpec PackageSpec { get; }
-        IEnumerable<ILockFileTarget>? Targets { get; }
+        string Name { get; }
     }
 }

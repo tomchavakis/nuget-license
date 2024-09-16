@@ -8,5 +8,6 @@ namespace NuGetUtility.Wrapper.NuGetWrapper.ProjectModel
     public interface ITargetFrameworkInformation
     {
         INuGetFramework FrameworkName { get; }
+        IEnumerable<ILibraryDependency> Dependencies { get; }
     }
 }
