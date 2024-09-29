@@ -1139,11 +1139,15 @@ namespace NugetUtility
             if (!libraries.Any()) { return; }
 
             WriteOutput(Environment.NewLine + "References:", logLevel: LogLevel.Always);
-            WriteOutput(libraries.ToStringTable(new[] { "Reference", "Version", "License Type", "License" }, false,
-                                                            a => a.PackageName ?? "---",
-                                                            a => a.PackageVersion ?? "---",
-                                                            a => a.LicenseType ?? "---",
-                                                            a => a.LicenseUrl ?? "---"), logLevel: LogLevel.Always);
+            var columns = _packageOptions.IncludeProjectFile
+                ? StandardMdColumns.Append("Project").ToArray()
+                : StandardMdColumns;
+
+            var valueSelectors = _packageOptions.IncludeProjectFile
+                ? StandardMdValueSelectors.Append(a => a.Projects ?? "---").ToArray()
+                : StandardMdValueSelectors;
+
+            WriteOutput(libraries.ToStringTable(columns, false, valueSelectors), logLevel: LogLevel.Always);
         }
 
         public void SaveAsJson(List<LibraryInfo> libraries)
@@ -1198,17 +1202,31 @@ namespace NugetUtility
             File.WriteAllText(GetOutputFilename("licenses.txt"), sb.ToString());
         }
 
+        private static readonly string[] StandardMdColumns = { "Reference", "Version", "License Type", "License" };
+
+        private static readonly Func<LibraryInfo, object>[] StandardMdValueSelectors =
+        {
+            a => a.PackageName ?? "---",
+            a => a.PackageVersion ?? "---",
+            a => a.LicenseType ?? "---",
+            a => a.LicenseUrl ?? "---"
+        };
+
         public void SaveAsMarkdown(List<LibraryInfo> libraries)
         {
-            if (libraries is null) { throw new ArgumentNullException(nameof(libraries)); }
+            if (libraries is null) { throw new ArgumentNullException(nameof(libraries)); }t
             if (!libraries.Any()) { return; }
 
             WriteOutput(Environment.NewLine + "References:", logLevel: LogLevel.Always);
-            var output = (libraries.ToStringTable(new[] { "Reference", "Version", "License Type", "License" }, true,
-                                                            a => a.PackageName ?? "---",
-                                                            a => a.PackageVersion ?? "---",
-                                                            a => a.LicenseType ?? "---",
-                                                            a => a.LicenseUrl ?? "---"), logLevel: LogLevel.Always);
+            var columns = _packageOptions.IncludeProjectFile
+                ? StandardMdColumns.Append("Project").ToArray()
+                : StandardMdColumns;
+
+            var valueSelectors = _packageOptions.IncludeProjectFile
+                ? StandardMdValueSelectors.Append(a => a.Projects ?? "---").ToArray()
+                : StandardMdValueSelectors;
+
+            var output = (libraries.ToStringTable(columns, true, valueSelectors), logLevel: LogLevel.Always);
 
             File.WriteAllText(GetOutputFilename("licenses.md"), output.Item1);
         }
