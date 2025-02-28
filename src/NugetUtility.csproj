@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFrameworks>netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>net8.0</TargetFrameworks>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<LangVersion>latest</LangVersion>
 		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
@@ -12,8 +12,8 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageId>dotnet-project-licenses</PackageId>
 		<ToolCommandName>dotnet-project-licenses</ToolCommandName>
-		<Version>2.7.1</Version>
-		<Authors>Tom Chavakis, Lexy2, senslen</Authors>
+		<Version>2.7.2</Version>
+		<Authors>Tom Chavakis, Lexy2, sensslen</Authors>
 		<Company>-</Company>
 		<Title>.NET Core Tool to print a list of the licenses of a projects</Title>
 		<PackageProjectUrl>https://github.com/tomchavakis/nuget-license</PackageProjectUrl>

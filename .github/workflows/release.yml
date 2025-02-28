@@ -12,30 +12,10 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-      - name: Setup dotnet 3.0.100
+      - name: Setup dotnet 8.x
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: "3.1.100" # SDK Version to use.
-        env:
-          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Setup dotnet 5.0.x
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: "5.0.x" # SDK Version to use (x uses the latest version).
-        env:
-          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Setup dotnet 6.0.x
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: "6.0.x" # SDK Version to use (x uses the latest version).
-        env:
-          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Setup dotnet 7.0.x
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: "7.0.103" # SDK Version to use (x uses the latest version).
+          dotnet-version: "8.x" # SDK Version to use (x uses the latest version).
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       # dotnet restore
@@ -52,10 +32,10 @@ jobs:
         run: dotnet pack --configuration Release
       # publish the package
       - name: Publish the artifact
-        run: dotnet publish -f net7.0 -c Release -o ./artifacts
+        run: dotnet publish -f net8.0 -c Release -o ./artifacts
       # publish the package to package folder
       - name: Publish the artifact
-        run: dotnet publish -f net7.0 -c Release -o ./package
+        run: dotnet publish -f net8.0 -c Release -o ./package
       # Add nuget package
       - name: Nuget package
         run: dotnet pack -c Release -o ./artifacts
