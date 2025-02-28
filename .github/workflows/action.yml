@@ -12,8 +12,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
+      - uses: actions/checkout@v4
       - name: Setup dotnet 8.x
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.x" # SDK Version to use (x uses the latest version).
       # dotnet restore
