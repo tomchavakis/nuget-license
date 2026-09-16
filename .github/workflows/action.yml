@@ -16,7 +16,7 @@ jobs:
       - name: Setup dotnet 8.x
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8.x" # SDK Version to use (x uses the latest version).
+          dotnet-version: "10.x" # SDK Version to use (x uses the latest version).
       # dotnet restore
       - name: restore
         run: dotnet restore
